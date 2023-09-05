@@ -23,16 +23,17 @@ def dicom(dir: str = None, files: list[str] = None) -> np.ndarray[np.float64]:
 
     # skip files with no SliceLocation information (should be a float)
     slices = []
-    skipcount = 0
+    skipped: list[str] = []
     for f in files:
         ds = dcmread(f)
         if isinstance(ds.SliceLocation, float):
             slices.append(ds)
         else:
-            skipcount = skipcount + 1
+            skipped.append(f)
 
-    print("skipped, no SliceLocation: {}".format(skipcount))
-    print("loaded: {}".format(len(slices)))
+    if len(skipped) > 0:
+        raise Exception(f"Failed to load {len(skipped)} files, missing SliceLocation: {skipped}")
+
     # re-sort to put the slices in the right order
     slices = sorted(slices, key=lambda s: s.SliceLocation)
 
