@@ -1,4 +1,4 @@
-# Core CT
+# Core-CT
 The `core-ct` scan library was built to assist geologists with the visualization and analysis of the CT scans of rock cores.
 
 ## Resources
