@@ -7,14 +7,14 @@ class Core:
         pixel_array -- 3D numpy array of pixel data that make up the core
 
     Methods:
-        slice_2D(self, axis, loc) -- get a 2D slice of the core
+        slice(self, axis, loc) -- get a 2D slice of the core
     """
 
     def __init__(self, pixel_array):
         """Constructs necessary attributes of a Core
 
         Parameters:
-            pixel_array - 3D array of pixel data that make up the core
+            pixel_array - 3D numpy array of pixel data that make up the core
         """
         # data must be in a numpy array for slicing methods to work
         if not isinstance(pixel_array, np.ndarray):
@@ -23,12 +23,15 @@ class Core:
             self.pixel_array = pixel_array
 
     
-    def slice_2D(self, axis, loc):
+    def slice(self, axis, loc):
         """Get a single two-dimensional slice of the core scan at the specified location along the specified axis 
         A normal vector of the resulting plane will be parallel to the specified axis
         
         Parameters:
-            axis -- integer either 0,1,2 specifying which dimension to collapse
+            axis -- integer either 0,1,2 specifying which dimension to collapse:
+                    0 corresponds to z-axis
+                    1 corresponds to y-axis
+                    2 corresponds to x-axis
             loc -- integer value along the axis specifying the location of the slice
 
         Returns:
