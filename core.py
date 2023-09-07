@@ -36,13 +36,16 @@ class Core:
 
         Returns:
             2D numpy array representing a single slice of the core
+
+        Raises:
+            Exception if axis is a value other than 0, 1, or 2
         """
-        if axis not in [0,1,2]: 
-            raise Exception("axis must be a value between 0 and 2 (inclusive)")
-        
-        if axis == 0:
-            return self.pixel_array[loc]
-        elif axis == 1:
-            return self.pixel_array[:,loc]
-        else: # axis == 2
-            return self.pixel_array[:,:,loc]
+        match axis:
+            case 0:
+                return self.pixel_array[loc]
+            case 1:
+                return self.pixel_array[:,loc]
+            case 2:
+                return self.pixel_array[:,:,loc]
+            case _:
+                raise Exception("axis must be a value between 0 and 2 (inclusive)")
