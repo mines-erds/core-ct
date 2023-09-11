@@ -7,3 +7,9 @@ The `core-ct` scan library was built to assist geologists with the visualization
 
 ## Credits
 This software was built by the Golden Rocks team as a part of the Fall 2023 session of the Colorado School of Mines' [CSCI-370](https://cs-courses.mines.edu/csci370/index.html) course.
+
+### Authors
+Carla Ellefsen, Kira Hanson, Connor Sparks, Asa Sprow
+
+### Sponsors
+Zane Jobe, Ryan Venturelli
