@@ -2,9 +2,15 @@ from importers import dicom
 from glob import glob
 from PIL import Image as im
 import numpy as np
+import argparse
 
 def main() -> None:
-    dir: str = "C:/Users/Asa Sprow/Downloads/zone-1-low-energy-dicom/Zone 1 - Low Energy DICOM/PAT_4615_18L/Series0001"
+    parser = argparse.ArgumentParser(description="Test loading of a dicom dataset")
+    parser.add_argument("dir", metavar="DIRECTORY", type=str, help="Path to the directory containing dicom dataset")
+
+    args = parser.parse_args()
+    dir: str = args.dir
+    
     dicom_from_dir(dir)
     glob_str = dir + "/*"
     dicom_from_files(glob(glob_str))
