@@ -1,4 +1,6 @@
 @startuml
+left to right direction
+
 class Importer {
  +dicom(folder?: string, files?: string[]): np.ndarray
  +ibf(folder?: string, files?: string[]): np.ndarray
@@ -11,7 +13,7 @@ class Core {
  +slice(axis: int, location: int): np.ndarray
  +chunk(dimensions: np.ndarray): np.ndarray
  +join(core: Core): void
- +filter(range: [float, float]): void
+ +filter(callback: (x: int) -> bool): void
  +volume(): void
  +shape(): void
 }
