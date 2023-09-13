@@ -5,12 +5,13 @@ class Core:
 
     Attributes:
         pixel_array -- 3D numpy array of pixel data that make up the core
+        pixel_dimensions - list containing the dimensions of each pixel/voxel
 
     Methods:
         slice(self, axis, loc) -- get a 2D slice of the core
     """
 
-    def __init__(self, pixel_array: np.ndarray, pixel_dimensions: list[float]):
+    def __init__(self, pixel_array: np.ndarray, pixel_dimensions: list[float]=[1.0,1.0,1.0]):
         """Constructs necessary attributes of a Core
 
         Parameters:
