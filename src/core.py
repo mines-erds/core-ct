@@ -10,12 +10,15 @@ class Core:
         slice(self, axis, loc) -- get a 2D slice of the core
     """
 
-    def __init__(self, pixel_array):
+    def __init__(self, pixel_array: np.ndarray, pixel_dimensions: list[float]):
         """Constructs necessary attributes of a Core
 
         Parameters:
             pixel_array - 3D numpy array of pixel data that make up the core
+            pixel_dimensions - list containing the dimensions of each pixel/voxel
         """
+        self.pixel_dimensions: list[float] = pixel_dimensions
+
         # data must be in a numpy array for slicing methods to work
         if not isinstance(pixel_array, np.ndarray):
             self.pixel_array = np.array(pixel_array)
@@ -29,9 +32,9 @@ class Core:
         
         Parameters:
             axis -- integer either 0,1,2 specifying which dimension to collapse:
-                    0 corresponds to z-axis
+                    0 corresponds to x-axis
                     1 corresponds to y-axis
-                    2 corresponds to x-axis
+                    2 corresponds to z-axis
             loc -- integer value along the axis specifying the location of the slice
 
         Returns:
