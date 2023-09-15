@@ -2,8 +2,8 @@
 left to right direction
 
 class Importer {
- +dicom(folder?: string, files?: string[]): np.ndarray
- +ibf(folder?: string, files?: string[]): np.ndarray
+ +dicom(folder?: string, files?: string[]): Core
+ +ibf(folder?: string, files?: string[]): Core
 }
 
 class Core {
