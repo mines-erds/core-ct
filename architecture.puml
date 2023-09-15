@@ -8,8 +8,7 @@ class Importer {
 
 class Core {
  +pixel_array
- +pixel_spacing
- +slice_thickness
+ +pixel_dimensions
  +slice(axis: int, location: int): np.ndarray
  +chunk(dimensions: np.ndarray): np.ndarray
  +trim(dimensions: np.ndarray): void
