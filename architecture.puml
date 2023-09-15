@@ -14,8 +14,8 @@ class Core {
  +trim(dimensions: np.ndarray): void
  +join(core: Core): void
  +filter(callback: (x: float) -> bool): void
- +volume(): void
- +shape(): void
+ +volume(): float
+ +shape(): np.ndarray
 }
 
 class Analyze {
