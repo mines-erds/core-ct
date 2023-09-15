@@ -4,6 +4,8 @@ from PIL import Image as im
 import numpy as np
 import argparse
 
+from core import Core
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Test loading of a dicom dataset")
     parser.add_argument("dir", metavar="DIRECTORY", type=str, help="Path to the directory containing dicom dataset")
@@ -16,19 +18,27 @@ def main() -> None:
     dicom_from_files(glob(glob_str))
 
 def dicom_from_dir(dir: str) -> None:
-    core = dicom(dir=dir)
-    display_core(core, "dicom_from_dir.png")
+    core: Core = dicom(dir=dir)
+    display_core(core, "dicom_from_dir.png", axis=2, index=0)
 
 def dicom_from_files(files: list[str]) -> None:
-    core = dicom(files=files)
-    display_core(core, "dicom_from_files.png")
+    core: Core = dicom(files=files)
+    display_core(core, "dicom_from_files.png", axis=2, index=0)
 
-def display_core(core, output: str, z: int = 0) -> None:
+def display_core(core: Core, output: str, axis: int = 2, index: int = 0) -> None:
     """
     Output an image containing the slice at the provided z index in the dicom dataset
     """
     # retrieve slice data
-    slice = core[:, :, z]
+    match axis:
+        case 0:
+            slice = core.pixel_array[index]
+        case 1:
+            slice = core.pixel_array[:,index]
+        case 2:
+            slice = core.pixel_array[:,:,index]
+        case _:
+            raise Exception("axis must be a value between 0 and 2 (inclusive)")
 
     # find the min and max brightness value to help with normalizing
     max: float = np.max(slice)

@@ -3,8 +3,9 @@ import os.path
 from os import listdir
 import numpy as np
 
+from core import Core
 
-def dicom(dir: str = None, files: list[str] = None) -> np.ndarray[np.float64]:
+def dicom(dir: str = None, files: list[str] = None) -> Core:
     """
     Load a DICOM dataset into a 3D numpy array containing brightness levels for each voxel.
 
@@ -52,4 +53,4 @@ def dicom(dir: str = None, files: list[str] = None) -> np.ndarray[np.float64]:
         img2d = s.pixel_array
         img3d[:, :, i] = img2d
     
-    return img3d
+    return Core(pixel_array=img3d, pixel_dimensions=[ps, ps, ss])
