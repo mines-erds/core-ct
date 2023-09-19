@@ -1,4 +1,4 @@
-from importers import dicom
+from core_ct import importers, Core
 from glob import glob
 from PIL import Image as im
 import numpy as np
@@ -16,11 +16,11 @@ def main() -> None:
     dicom_from_files(glob(glob_str))
 
 def dicom_from_dir(dir: str) -> None:
-    core: Core = dicom(dir=dir)
+    core: Core = importers.dicom(dir=dir)
     display_core(core, "dicom_from_dir.png", axis=2, index=0)
 
 def dicom_from_files(files: list[str]) -> None:
-    core: Core = dicom(files=files)
+    core: Core = importers.dicom(files=files)
     display_core(core, "dicom_from_files.png", axis=2, index=0)
 
 def display_core(core: Core, output: str, axis: int = 2, index: int = 0) -> None:

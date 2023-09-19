@@ -1,9 +1,8 @@
+from core import Core
 from pydicom import dcmread
 import os.path
 from os import listdir
 import numpy as np
-
-from core import Core
 
 def dicom(dir: str = None, files: list[str] = None) -> Core:
     """
