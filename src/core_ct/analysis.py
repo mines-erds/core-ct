@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class analysis:
     """
     The analysis class takes sections of core and preforms analysis of them

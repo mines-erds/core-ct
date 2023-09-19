@@ -4,8 +4,6 @@ from PIL import Image as im
 import numpy as np
 import argparse
 
-from core import Core
-
 def main() -> None:
     parser = argparse.ArgumentParser(description="Test loading of a dicom dataset")
     parser.add_argument("dir", metavar="DIRECTORY", type=str, help="Path to the directory containing dicom dataset")
