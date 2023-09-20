@@ -10,7 +10,11 @@ readme = "README.md"
 python = ">=3.11,<3.13"
 numpy = "^1.26.0"
 pydicom = "^2.4.3"
+matplotlib = "^3.8.0"
 
+
+[tool.poetry.group.dev.dependencies]
+pillow = "^10.0.1"
 
 [build-system]
 requires = ["poetry-core"]
