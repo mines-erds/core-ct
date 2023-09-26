@@ -1,9 +1,8 @@
+from .core import Core
 from pydicom import dcmread
-import os.path
 from os import listdir
+import os.path
 import numpy as np
-
-from core import Core
 
 def dicom(dir: str = None, files: list[str] = None) -> Core:
     """
@@ -41,7 +40,6 @@ def dicom(dir: str = None, files: list[str] = None) -> Core:
     # pixel dimensions, assuming all slices are the same
     ps = slices[0].PixelSpacing
     ss = slices[0].SliceThickness
-    print(f"ps: {ps}, ss: {ss}")
 
     # create 3D array
     img_shape: list = list(slices[0].pixel_array.shape)

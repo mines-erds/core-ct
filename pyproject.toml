@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "core-ct"
+version = "0.1.0"
+description = "A Python library to assist geologists with the analysis of rock core CT scans"
+authors = [
+    "Kira Hanson <khanson@mines.edu>",
+    "Carla Ellefsen <cellefsen@mines.edu>",
+    "Connor Sparks <csparks@mines.edu>",
+    "Asa Sprow <arsprow@mines.edu>"
+]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+numpy = "^1.26.0"
+pydicom = "^2.4.3"
+matplotlib = "^3.8.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pillow = "^10.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
