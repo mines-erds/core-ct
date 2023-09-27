@@ -13,11 +13,11 @@ def test_brightness_trace():
     bt = analysis.brightness_trace(slice)
 
     # Check that the mean of each row was taken correctly
-    assert bt[0][0] == np.mean(slice[0])
-    assert bt[1][0] == np.mean(slice[1])
-    assert bt[2][0] == np.mean(slice[2])
+    assert bt['mean'][0] == np.mean(slice[0])
+    assert bt['mean'][1] == np.mean(slice[1])
+    assert bt['mean'][2] == np.mean(slice[2])
 
     # Check that the STD of each row was taken correctly
-    assert bt[0][1] == np.std(slice[0])
-    assert bt[1][1] == np.std(slice[1])
-    assert bt[2][1] == np.std(slice[2]) 
+    assert bt['std'][0] == np.std(slice[0])
+    assert bt['std'][1] == np.std(slice[1])
+    assert bt['std'][2] == np.std(slice[2]) 

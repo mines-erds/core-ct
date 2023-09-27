@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 def brightness_trace(slice):
     """
@@ -10,10 +11,8 @@ def brightness_trace(slice):
             standard deviation.
     """
 
-    # Flip the two result arrays to make the orientation correct
-    brightness_result = np.mean(slice, axis=1)
-    std_result = np.std(slice, axis=1)
-
-    # TODO: Return this as a pandas dataframe with labels
-    # Make the two result arrays into one returnable array
-    return np.array([brightness_result, std_result]).T
+    # Return a pandas dataframe containing the mean and STD for each slice row
+    return pd.DataFrame({
+        'mean': np.mean(slice, axis=1),
+        'std': np.std(slice, axis=1)
+    })
