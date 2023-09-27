@@ -14,5 +14,5 @@ def brightness_trace(slice):
     # Return a pandas dataframe containing the mean and STD for each slice row
     return pd.DataFrame({
         'mean': np.mean(slice, axis=1),
-        'std': np.std(slice, axis=1)
+        'stddev': np.std(slice, axis=1)
     })
