@@ -33,10 +33,10 @@ def dicom(dir: str = None, files: list[str] = None, force: bool = False) -> Core
         # try to read slice
         try:
             ds = dcmread(f, force=force)
-        except Exception as pydicom_exception:
+        except:
             if not force:
                 # forward pydicom exception so the stack trace is more useful
-                raise pydicom_exception
+                raise
             else:
                 continue
         
@@ -49,7 +49,7 @@ def dicom(dir: str = None, files: list[str] = None, force: bool = False) -> Core
         # in case SliceLocation isn't an attribute of ds
         except Exception as pydicom_exception:
             if not force:
-                raise pydicom_exception
+                raise Exception(f"File does not contain SliceLocation in header: {f}") from pydicom_exception
             else:
                 skipped.append(f)
 
