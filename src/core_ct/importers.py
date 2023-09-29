@@ -4,13 +4,18 @@ from os import listdir
 import os.path
 import numpy as np
 
-def dicom(dir: str = None, files: list[str] = None) -> Core:
+def dicom(dir: str = None, files: list[str] = None, force: bool = False) -> Core:
     """
-    Load a DICOM dataset into a 3D numpy array containing brightness levels for each voxel.
+    Load a DICOM dataset into a `Core` object containing brightness values, voxel dimensions, etc.
 
     Files containing the DICOM dataset can be specifed by providing a directory or a list of files. If both `dir` and `files` are provided, `dir` will be ignored.
 
-    Note: When specifying a directory all files in that directory will be treated as part of the DICOM dataset. If this is undesirable, use `files` instead.
+    Note: when specifying a directory all files in that directory will be treated as part of the DICOM dataset. If this is undesirable, use `files` instead.
+
+    ## Parameters
+        dir: path to directory containing DICOM dataset (ignored if `files` is specified)
+        files: list of filepaths belonging to DICOM dataset
+        force: if set to `True`, files that produce errors during reading will be ignored
     """
 
     # if files was not provided, load files from the provided directory
@@ -25,13 +30,30 @@ def dicom(dir: str = None, files: list[str] = None) -> Core:
     slices = []
     skipped: list[str] = []
     for f in files:
-        ds = dcmread(f)
-        if isinstance(ds.SliceLocation, float):
-            slices.append(ds)
-        else:
-            skipped.append(f)
+        # try to read slice
+        try:
+            ds = dcmread(f, force=force)
+        except Exception as pydicom_exception:
+            if not force:
+                # forward pydicom exception so the stack trace is more useful
+                raise pydicom_exception
+            else:
+                continue
+        
+        # make sure SliceLocation exists in the slice
+        try:
+            if isinstance(ds.SliceLocation, float):
+                slices.append(ds)
+            else:
+                skipped.append(f)
+        # in case SliceLocation isn't an attribute of ds
+        except Exception as pydicom_exception:
+            if not force:
+                raise pydicom_exception
+            else:
+                skipped.append(f)
 
-    if len(skipped) > 0:
+    if not force and len(skipped) > 0:
         raise Exception(f"Failed to load {len(skipped)} files, missing SliceLocation: {skipped}")
 
     # re-sort to put the slices in the right order
