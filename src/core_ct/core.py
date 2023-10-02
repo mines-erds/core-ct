@@ -74,15 +74,15 @@ class Core:
 
         match axis:
             case 0:
-                return self.pixel_array[self.pixel_array[trim_amount:len(trim_amount[0, 0])-trim_amount]]
+                self.pixel_array = self.pixel_array[trim_amount:len(self.pixel_array)-trim_amount]
             case 1:
-                return self.pixel_array[:, trim_amount:len(trim_amount[0, 0])-trim_amount]
+                self.pixel_array = self.pixel_array[:, trim_amount:len(self.pixel_array[0])-trim_amount]
             case 2:
-                return self.pixel_array[:, :, trim_amount:len(trim_amount[0, 0])-trim_amount]
+                self.pixel_array = self.pixel_array[:, :, trim_amount:len(self.pixel_array[0, 0])-trim_amount]
             case _:
                 raise Exception("axis must be a value between 0 and 2 (inclusive)")
 
-    def chunk(self, x1, y1, z1, x2, y2, z2):
+    def chunk(self, core, x1, y1, z1, x2, y2, z2):
         """Get a three-dimensional slice of the core scan trimming off the outside specified amount on the specified
             axis.
 
@@ -95,18 +95,18 @@ class Core:
         """
 
         # Make sure that the first value smaller
-        if x2 > x1:
+        if x2 < x1:
             temp = x1
             x1 = x2
             x2 = temp
-        if y2 > y1:
+        if y2 < y1:
             temp = y1
             y1 = y2
             y2 = temp
-        if z2 > z1:
+        if z2 < z1:
             temp = z1
             z1 = z2
             z2 = temp
 
-        new_core = Core(self.pixel_array[x1:x2, y1:y2, z1:z2], [x2-x1, y2-y1, z2-z1])
+        new_core = Core(self.pixel_array[x1:x2, y1:y2, z1:z2], core.pixel_dimensions)
         return new_core
