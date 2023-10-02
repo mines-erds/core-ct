@@ -3,8 +3,9 @@ from pydicom import dcmread
 from os import listdir
 import os.path
 import numpy as np
+import re
 
-def dicom(dir: str = None, files: list[str] = None, force: bool = False) -> Core:
+def dicom(dir: str = None, files: list[str] = None, force: bool = False, ignore_hidden_files: bool = True) -> Core:
     """
     Load a DICOM dataset into a `Core` object containing brightness values, voxel dimensions, etc.
 
@@ -16,6 +17,7 @@ def dicom(dir: str = None, files: list[str] = None, force: bool = False) -> Core
         dir: path to directory containing DICOM dataset (ignored if `files` is specified)
         files: list of filepaths belonging to DICOM dataset
         force: if set to `True`, files that produce errors during reading will be ignored
+        ignore_hidden_files: if set to `True`, hidden files (names starting with ".") will be ignored
     """
 
     # if files was not provided, load files from the provided directory
@@ -30,6 +32,12 @@ def dicom(dir: str = None, files: list[str] = None, force: bool = False) -> Core
     slices = []
     skipped: list[str] = []
     for f in files:
+        # check if we should ignore this file
+        # this regex tries to account for which slash type the system uses ("/" in Linux/Unix/MacOS, "\" in Windows)
+        hidden_file_regex: str = r"([\\/])\.[^\1]+$"
+        if ignore_hidden_files and re.search(hidden_file_regex, f):
+            continue
+
         # try to read slice
         try:
             ds = dcmread(f, force=force)
