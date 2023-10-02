@@ -33,7 +33,10 @@ def dicom(dir: str = None, files: list[str] = None, force: bool = False, ignore_
     skipped: list[str] = []
     for f in files:
         # check if we should ignore this file
-        # this regex tries to account for which slash type the system uses ("/" in Linux/Unix/MacOS, "\" in Windows)
+        # this regex tries to account for which slash type the system uses
+        # ("/" in Linux/Unix/MacOS, "\" in Windows) which is important because
+        # backslashes ("\") are technically valid characters in Linux/unix/MacOS
+        # file names and do not necessarily denote a directory level
         hidden_file_regex: str = r"([\\/])\.[^\1]+$"
         if ignore_hidden_files and re.search(hidden_file_regex, f):
             continue
