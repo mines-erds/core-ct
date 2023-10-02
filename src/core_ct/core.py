@@ -53,3 +53,60 @@ class Core:
                 return self.pixel_array[:,:,loc]
             case _:
                 raise Exception("axis must be a value between 0 and 2 (inclusive)")
+
+    def trim(self, axis, trim_amount):
+        """Get a three-dimensional slice of the core scan trimming off the outside specified amount on the specified
+            axis.
+
+        Parameters:
+            axis -- integer either 0,1,2 specifying which dimension to collapse:
+                    0 corresponds to x-axis
+                    1 corresponds to y-axis
+                    2 corresponds to z-axis
+            loc -- integer value along the axis specifying the location of the slice
+
+        Returns:
+            3D numpy array representing the trimmed section of the core
+
+        Raises:
+            Exception if axis is a value other than 0, 1, or 2
+        """
+
+        match axis:
+            case 0:
+                return self.pixel_array[self.pixel_array[trim_amount:len(trim_amount[0, 0])-trim_amount]]
+            case 1:
+                return self.pixel_array[:, trim_amount:len(trim_amount[0, 0])-trim_amount]
+            case 2:
+                return self.pixel_array[:, :, trim_amount:len(trim_amount[0, 0])-trim_amount]
+            case _:
+                raise Exception("axis must be a value between 0 and 2 (inclusive)")
+
+    def chunk(self, x1, y1, z1, x2, y2, z2):
+        """Get a three-dimensional slice of the core scan trimming off the outside specified amount on the specified
+            axis.
+
+        Parameters:
+            x/y/z1 -- integer value representing the starting x/y/z position for the chunk to be taken
+            x/y/z2 -- integer value representing the ending x/y/z position for the chunk to be taken
+
+        Returns:
+            3D numpy array representing the specified chunk of the core
+        """
+
+        # Make sure that the first value smaller
+        if x2 > x1:
+            temp = x1
+            x1 = x2
+            x2 = temp
+        if y2 > y1:
+            temp = y1
+            y1 = y2
+            y2 = temp
+        if z2 > z1:
+            temp = z1
+            z1 = z2
+            z2 = temp
+
+        new_core = Core(self.pixel_array[x1:x2, y1:y2, z1:z2], [x2-x1, y2-y1, z2-z1])
+        return new_core
