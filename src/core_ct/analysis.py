@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 def brightness_trace(slice):
     """
@@ -10,25 +11,8 @@ def brightness_trace(slice):
             standard deviation.
     """
 
-    # Initialize the result variables to store data in
-    brightness_result = np.zeros(0)
-    std_result = np.zeros(0)
-
-    # Step through each section of the slice that was passed in
-    for section in slice:
-        # Calculate the average brightness of that section and add it to the result array
-        brightness_of_slice = section.sum()
-        brightness_of_slice /= section.size
-        brightness_result = np.append(brightness_of_slice, brightness_result)
-
-        # Calculate the standard deviation of that slice and add it to the result array
-        std_of_slice = section.std()
-        std_result = np.append(std_of_slice, std_result)
-    # Flip the two result arrays to make the orientation correct
-    brightness_result = np.flip(brightness_result)
-    std_result = np.flip(std_result)
-
-    # Make the two result arrays into one returnable array
-    result = np.vstack((brightness_result, std_result))
-
-    return result
+    # Return a pandas dataframe containing the mean and STD for each slice row
+    return pd.DataFrame({
+        'mean': np.mean(slice, axis=1),
+        'stddev': np.std(slice, axis=1)
+    })

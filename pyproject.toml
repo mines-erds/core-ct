@@ -16,10 +16,12 @@ python = ">=3.10,<3.13"
 numpy = "^1.26.0"
 pydicom = "^2.4.3"
 matplotlib = "^3.8.0"
+pandas = "^2.1.1"
 
 
 [tool.poetry.group.dev.dependencies]
 pillow = "^10.0.1"
+pytest = "^7.4.2"
 
 [build-system]
 requires = ["poetry-core"]
