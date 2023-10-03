@@ -15,15 +15,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout the Repository
-      uses: actions/checkout@v4
-    - name: Configure Python 3.10
+    - name: Checkout the Branch
+    - uses: actions/checkout@v3
+    - name: Install Poetry
+      run: pipx install poetry
+    - name: Setup Python 3.10
       uses: actions/setup-python@v4
       with:
         python-version: "3.10"
-    - name: Install Poetry
-      uses: snok/install-poetry@v1
-    - name: Install Python Dependencies via Poetry
+        cache: "poetry"
+    - name: Install Dependencies via Poetry
       run: poetry install
-    - name: Run Tests with PyTest
-      run: pytest
+    - name: Run Tests via PyTest
+    - run: poetry run pytest
