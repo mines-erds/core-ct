@@ -3,11 +3,9 @@ from pydicom import dcmread
 from os import listdir
 import os.path
 import numpy as np
-import re
 
 def dicom(dir: str = None, files: list[str] = None, force: bool = False, ignore_hidden_files: bool = True) -> Core:
-    """
-    Load a DICOM dataset into a `Core` object containing brightness values, voxel dimensions, etc.
+    """Load a DICOM dataset into a `Core` object containing brightness values, voxel dimensions, etc.
 
     Files containing the DICOM dataset can be specifed by providing a directory or a list of files. If both `dir` and `files` are provided, `dir` will be ignored.
 
@@ -19,11 +17,10 @@ def dicom(dir: str = None, files: list[str] = None, force: bool = False, ignore_
         force: if set to `True`, files that produce errors during reading will be ignored
         ignore_hidden_files: if set to `True`, hidden files (names starting with ".") will be ignored
     """
-
     # if files was not provided, load files from the provided directory
-    if files == None:
+    if files is None:
         # throw error if directory not provided
-        if dir == None:
+        if dir is None:
             raise Exception("Must provide a directory or file list")
         # get the list of files for the core
         files = [os.path.join(dir, file_name) for file_name in listdir(dir)]

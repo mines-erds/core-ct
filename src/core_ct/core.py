@@ -1,20 +1,23 @@
 import numpy as np
 
 class Core:
-    """Core class contains properties of a core CT-scan and methods to isolate sections of the core
+    """Core class contains properties of a core CT-scan and methods to isolate sections of the core.
 
-    Attributes:
+    Attributes
+    ----------
         pixel_array -- 3D numpy array of pixel data that make up the core
         pixel_dimensions - list containing the dimensions of each pixel/voxel
 
-    Methods:
+    Methods
+    -------
         slice(self, axis, loc) -- get a 2D slice of the core
     """
 
     def __init__(self, pixel_array: np.ndarray, pixel_dimensions: list[float]=[1.0,1.0,1.0]):
-        """Constructs necessary attributes of a Core
+        """Constructs necessary attributes of a Core.
 
-        Parameters:
+        Parameters
+        ----------
             pixel_array - 3D numpy array of pixel data that make up the core
             pixel_dimensions - list containing the dimensions of each pixel/voxel
         """
@@ -28,20 +31,23 @@ class Core:
 
     
     def slice(self, axis, loc):
-        """Get a single two-dimensional slice of the core scan at the specified location along the specified axis 
-        A normal vector of the resulting plane will be parallel to the specified axis
+        """Get a single two-dimensional slice of the core scan at the specified location along the specified axis
+        A normal vector of the resulting plane will be parallel to the specified axis.
         
-        Parameters:
+        Parameters
+        ----------
             axis -- integer either 0,1,2 specifying which dimension to collapse:
                     0 corresponds to x-axis
                     1 corresponds to y-axis
                     2 corresponds to z-axis
             loc -- integer value along the axis specifying the location of the slice
 
-        Returns:
+        Returns
+        -------
             2D numpy array representing a single slice of the core
 
-        Raises:
+        Raises
+        ------
             Exception if axis is a value other than 0, 1, or 2
         """
         match axis:

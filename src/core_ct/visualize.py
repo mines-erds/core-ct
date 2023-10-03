@@ -3,9 +3,7 @@ from core_ct import Core
 from PIL import Image as im
 
 def slice(core: Core, output: str, axis: int = 2, index: int = 0) -> None:
-    """
-    Output an image containing the slice at the provided z index in the dicom dataset
-    """
+    """Output an image containing the slice at the provided z index in the dicom dataset."""
     # retrieve slice data
     match axis:
         case 0:
