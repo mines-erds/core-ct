@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - name: Checkout the Branch
-    - uses: actions/checkout@v3
+      uses: actions/checkout@v3
     - name: Install Poetry
       run: pipx install poetry
     - name: Setup Python 3.10
@@ -27,4 +27,4 @@ jobs:
     - name: Install Dependencies via Poetry
       run: poetry install
     - name: Run Tests via PyTest
-    - run: poetry run pytest
+      run: poetry run pytest
