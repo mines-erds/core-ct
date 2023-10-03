@@ -18,6 +18,6 @@ def test_brightness_trace():
     assert bt['mean'][2] == np.mean(slice[2])
 
     # Check that the STD of each row was taken correctly
-    assert bt['std'][0] == np.std(slice[0])
-    assert bt['std'][1] == np.std(slice[1])
-    assert bt['std'][2] == np.std(slice[2]) 
+    assert bt['stddev'][0] == np.std(slice[0])
+    assert bt['stddev'][1] == np.std(slice[1])
+    assert bt['stddev'][2] == np.std(slice[2]) 
