@@ -1,7 +1,9 @@
+"""Provides abstractions for the CT scan of a rock core."""
+
 import numpy as np
 
 class Core:
-    """Core class contains properties of a core CT-scan and methods to isolate sections of the core.
+    """Abstracts properties of a core CT-scan and methods for manipulating it.
 
     Attributes
     ----------
@@ -14,12 +16,12 @@ class Core:
     """
 
     def __init__(self, pixel_array: np.ndarray, pixel_dimensions: list[float]=[1.0,1.0,1.0]):
-        """Constructs necessary attributes of a Core.
+        """Construct necessary attributes of a Core.
 
         Parameters
         ----------
-            pixel_array - 3D numpy array of pixel data that make up the core
-            pixel_dimensions - list containing the dimensions of each pixel/voxel
+        pixel_array: 3D numpy array of pixel data that make up the core
+        pixel_dimensions: list containing the dimensions of each pixel/voxel
         """
         self.pixel_dimensions: list[float] = pixel_dimensions
 
