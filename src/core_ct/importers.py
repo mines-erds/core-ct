@@ -8,8 +8,8 @@ import numpy as np
 
 
 def dicom(
-    dir: str = None,
-    files: list[str] = None,
+    dir: str | None = None,
+    files: list[str] | None = None,
     force: bool = False,
     ignore_hidden_files: bool = True,
 ) -> Core:
@@ -86,6 +86,7 @@ def dicom(
     # create 3D array
     img_shape: list = list(slices[0].pixel_array.shape)
     img_shape.append(len(slices))
+    # numpy.typing.NDArray
     img3d: np.ndarray[np.float64] = np.zeros(img_shape)
 
     # fill 3D array with the images from the files

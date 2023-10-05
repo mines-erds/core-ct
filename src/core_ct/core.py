@@ -18,7 +18,9 @@ class Core:
     """
 
     def __init__(
-        self, pixel_array: np.ndarray, pixel_dimensions: list[float] = [1.0, 1.0, 1.0]
+        self,
+        pixel_array: np.ndarray | list,
+        pixel_dimensions: list[float] = [1.0, 1.0, 1.0],
     ):
         """
         Construct necessary attributes of a Core.

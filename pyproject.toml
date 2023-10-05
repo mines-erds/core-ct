@@ -18,6 +18,8 @@ pydicom = "^2.4.3"
 matplotlib = "^3.8.0"
 pandas = "^2.1.1"
 pillow = "^10.0.1"
+pandas-stubs = "^2.1.1.230928"
+types-pillow = "^10.0.0.3"
 
 
 [tool.poetry.group.dev.dependencies]
