@@ -28,9 +28,17 @@ jobs:
       run: poetry install
 
   test:
+
+    runs-on: ubuntu-latest
+
+    steps:
     - name: Run Tests via PyTest
       run: poetry run pytest
 
   lint: 
+
+    runs-on: ubuntu-latest
+
+    steps:
     - name: Lint Code with Ruff
       uses: chartboost/ruff-action@v1
