@@ -6,7 +6,7 @@ authors = [
     "Kira Hanson <khanson@mines.edu>",
     "Carla Ellefsen <cellefsen@mines.edu>",
     "Connor Sparks <csparks@mines.edu>",
-    "Asa Sprow <arsprow@mines.edu>"
+    "Asa Sprow <arsprow@mines.edu>",
 ]
 license = "MIT"
 readme = "README.md"
@@ -25,11 +25,13 @@ pytest = "^7.4.2"
 ruff = "^0.0.292"
 flake8 = "^6.1.0"
 black = "^23.9.1"
+mypy = "^1.5.1"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
-# Enable pycodestyle (`E`), Pyflakes (`F`), pep8-naming (`N`), and pydocstyle (`D`)
-select = ["E", "F", "N", "D"]
+# Enable pycodestyle (`E`), Pyflakes (`F`) and pydocstyle (`D`)
+select = ["E", "F", "D"]
+ignore = ["D203", "D212"]

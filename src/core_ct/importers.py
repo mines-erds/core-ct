@@ -1,21 +1,33 @@
+"""Methods that assist in importing CT scans of rock cores."""
+
 from .core import Core
 from pydicom import dcmread
 from os import listdir
 import os.path
 import numpy as np
 
-def dicom(dir: str = None, files: list[str] = None, force: bool = False, ignore_hidden_files: bool = True) -> Core:
-    """Load a DICOM dataset into a `Core` object containing brightness values, voxel dimensions, etc.
 
-    Files containing the DICOM dataset can be specifed by providing a directory or a list of files. If both `dir` and `files` are provided, `dir` will be ignored.
+def dicom(
+    dir: str = None,
+    files: list[str] = None,
+    force: bool = False,
+    ignore_hidden_files: bool = True,
+) -> Core:
+    """
+    Load a DICOM dataset into a `Core` object.
 
-    Note: when specifying a directory all files in that directory will be treated as part of the DICOM dataset. If this is undesirable, use `files` instead.
+    Files containing the DICOM dataset can be specified by providing a directory or a
+    list of files. If both `dir` and `files` are provided, `dir` will be ignored.
 
-    ## Parameters
-        dir: path to directory containing DICOM dataset (ignored if `files` is specified)
+    When specifying a directory all files in that directory will be treated as
+    part of the DICOM dataset. If this is undesirable, use `files` instead.
+
+    Arguments:
+    ---------
+        dir: path to directory containing DICOM dataset; ignored if `files` is specified
         files: list of filepaths belonging to DICOM dataset
-        force: if set to `True`, files that produce errors during reading will be ignored
-        ignore_hidden_files: if set to `True`, hidden files (names starting with ".") will be ignored
+        force: if set to `True`, files that produce errors will be ignored
+        ignore_hidden_files: if set to `True`, hidden files will be ignored
     """
     # if files was not provided, load files from the provided directory
     if files is None:
@@ -31,19 +43,19 @@ def dicom(dir: str = None, files: list[str] = None, force: bool = False, ignore_
     for f in files:
         # get the basename of the file and then check if it is a hidden file
         f_name = os.path.basename(f)
-        if ignore_hidden_files and f_name.startswith('.'):
+        if ignore_hidden_files and f_name.startswith("."):
             continue
 
         # try to read slice
         try:
             ds = dcmread(f, force=force)
-        except:
+        except Exception as e:
             if not force:
                 # forward pydicom exception so the stack trace is more useful
-                raise
+                raise e
             else:
                 continue
-        
+
         # make sure SliceLocation exists in the slice
         try:
             if isinstance(ds.SliceLocation, float):
@@ -53,12 +65,16 @@ def dicom(dir: str = None, files: list[str] = None, force: bool = False, ignore_
         # in case SliceLocation isn't an attribute of ds
         except Exception as pydicom_exception:
             if not force:
-                raise Exception(f"File does not contain SliceLocation in header: {f}") from pydicom_exception
+                raise Exception(
+                    f"File does not contain SliceLocation in header: {f}"
+                ) from pydicom_exception
             else:
                 skipped.append(f)
 
     if not force and len(skipped) > 0:
-        raise Exception(f"Failed to load {len(skipped)} files, missing SliceLocation: {skipped}")
+        raise Exception(
+            f"Failed to load {len(skipped)} files, missing SliceLocation: {skipped}"
+        )
 
     # re-sort to put the slices in the right order
     slices = sorted(slices, key=lambda s: s.SliceLocation)
@@ -76,5 +92,5 @@ def dicom(dir: str = None, files: list[str] = None, force: bool = False, ignore_
     for i, s in enumerate(slices):
         img2d = s.pixel_array
         img3d[:, :, i] = img2d
-    
+
     return Core(pixel_array=img3d, pixel_dimensions=[ps, ps, ss])
