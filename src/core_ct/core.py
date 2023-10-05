@@ -97,11 +97,11 @@ class Core:
             New core representing the specified chunk of the old core
         """
         if x2 is None:
-            x2 = len(self.pixel_array[0])
+            x2 = len(self.pixel_array)
         if y2 is None:
-            y2 = len(self.pixel_array[0, 0])
+            y2 = len(self.pixel_array[0])
         if z2 is None:
-            z2 = len(self.pixel_array[0, 0, 0])
+            z2 = len(self.pixel_array[0, 0])
 
         # Make sure that the first value smaller
         if x2 < x1:
