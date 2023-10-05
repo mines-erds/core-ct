@@ -53,3 +53,37 @@ class Core:
                 return self.pixel_array[:,:,loc]
             case _:
                 raise Exception("axis must be a value between 0 and 2 (inclusive)")
+
+    def swapaxes(self, axis1: int, axis2: int) -> None:
+        """
+        Swaps two axes of pixel_array
+
+        Parameters:
+            axis1 -- integer either 0,1,2 specifying one axis to swap:
+                    0 corresponds to x-axis
+                    1 corresponds to y-axis
+                    2 corresponds to z-axis
+            axis2 -- integer either 0,1,2 specifying the second axis to swap:
+                    0 corresponds to x-axis
+                    1 corresponds to y-axis
+                    2 corresponds to z-axis
+
+        Returns:
+            None
+
+        Raises:
+            Exception if axes are values other than 0, 1, or 2
+        """
+        # make sure axis inputs are valid
+        if axis1 < 0 or axis1 > 2:
+            raise Exception("axis1 must be a value between 0 and 2 (inclusive)")
+        if axis2 < 0 or axis2 > 2:
+            raise Exception("axis2 must be a value between 0 and 2 (inclusive)")
+        
+        # swap axes in pixel array
+        self.pixel_array.swap_axes(axis1, axis2)
+
+        # swap values in pixel dimensions
+        temp = self.pixel_dimensions[axis1]
+        self.pixel_dimensions[axis1] = self.pixel_dimensions[axis2]
+        self.pixel_dimensions[axis2] = temp
