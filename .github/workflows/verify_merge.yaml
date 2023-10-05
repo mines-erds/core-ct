@@ -1,4 +1,4 @@
-name: Verify Merge
+name: "Verify Merge"
 
 on:
   pull_request:
