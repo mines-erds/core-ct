@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
+    rev: v4.4.0
     hooks:
     -   id: check-yaml
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -8,6 +8,6 @@ repos:
     hooks:
       - id: ruff
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: ''
+    rev: 'v1.5.1'
     hooks:
     -   id: mypy
