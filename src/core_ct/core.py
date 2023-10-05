@@ -1,5 +1,6 @@
 """A class that abstracts the CT scan of a rock core."""
 
+from __future__ import annotations
 import numpy as np
 
 
@@ -19,7 +20,7 @@ class Core:
 
     def __init__(
         self,
-        pixel_array: np.ndarray | list,
+        pixel_array: np.ndarray | list[float],
         pixel_dimensions: list[float] = [1.0, 1.0, 1.0],
     ):
         """
@@ -38,7 +39,7 @@ class Core:
         else:
             self.pixel_array = pixel_array
 
-    def slice(self, axis, loc):
+    def slice(self, axis: int, loc: int) -> np.ndarray:
         """
         Get a two-dimensional slice of the core at a specific location along an axis.
 
@@ -68,7 +69,7 @@ class Core:
             case _:
                 raise Exception("axis must be a value between 0 and 2 (inclusive)")
 
-    def trim(self, axis, loc_start, loc_end=None):
+    def trim(self, axis: int, loc_start: int, loc_end: int | None = None) -> None:
         """
         Reduces the dimensions of the core along a specified axis.
 
@@ -107,7 +108,7 @@ class Core:
             case _:
                 raise Exception("axis must be a value between 0 and 2 (inclusive)")
 
-    def chunk(self, x1=0, y1=0, z1=0, x2=None, y2=None, z2=None):
+    def chunk(self, x1=0, y1=0, z1=0, x2=None, y2=None, z2=None) -> Core:
         """
         Get a three-dimensional section of the core scan.
 

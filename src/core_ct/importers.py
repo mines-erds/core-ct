@@ -84,10 +84,9 @@ def dicom(
     ss = slices[0].SliceThickness
 
     # create 3D array
-    img_shape: list = list(slices[0].pixel_array.shape)
+    img_shape: list[int] = list(slices[0].pixel_array.shape)
     img_shape.append(len(slices))
-    # numpy.typing.NDArraya
-    img3d: np.ndarray[np.float64] = np.zeros(img_shape)
+    img3d: np.typing.NDArray[np.float64] = np.zeros(img_shape)
 
     # fill 3D array with the images from the files
     for i, s in enumerate(slices):
