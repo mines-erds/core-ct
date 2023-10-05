@@ -66,9 +66,6 @@ class Core:
             loc_start -- integer value along the axis specifying the amount to trim off the smaller interval.
             loc_end -- integer value along the axis specifying the amount to trim off the larger interval.
 
-        Returns:
-            3D numpy array representing the trimmed section of the core
-
         Raises:
             Exception if axis is a value other than 0, 1, or 2
         """
