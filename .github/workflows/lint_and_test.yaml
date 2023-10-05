@@ -1,4 +1,4 @@
-name: "Verify Merge"
+name: "Lint and Test"
 
 on:
   pull_request:
