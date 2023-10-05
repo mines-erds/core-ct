@@ -1,7 +1,7 @@
 """Methods that assist in visualizing the CT scans of rock cores."""
 
 import numpy as np
-from core_ct import Core
+from core_ct.core import Core
 from PIL import Image as im
 
 

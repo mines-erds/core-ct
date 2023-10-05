@@ -1,6 +1,6 @@
 """Tests the `Core` class in the `core` module."""
 
-from core_ct import Core
+from core_ct.core import Core
 import numpy as np
 
 
