@@ -54,31 +54,31 @@ class Core:
             case _:
                 raise Exception("axis must be a value between 0 and 2 (inclusive)")
 
-    def trim(self, axis, loc_start, loc_end=None):
+    def trim(self, axis, begin, end=None):
         """Get a three-dimensional slice of the core scan trimming off the outside specified amount on the specified
-            axis.
+            axis. This function is symmetrical by default.
 
         Parameters:
             axis -- integer either 0,1,2 specifying which dimension to collapse:
                     0 corresponds to x-axis
                     1 corresponds to y-axis
                     2 corresponds to z-axis
-            loc_start -- integer value along the axis specifying the amount to trim off the smaller interval.
-            loc_end -- integer value along the axis specifying the amount to trim off the larger interval.
+            begin -- integer value along the axis specifying the amount to trim off the smaller interval.
+            end -- integer value along the axis specifying the amount to trim off the larger interval.
 
         Raises:
             Exception if axis is a value other than 0, 1, or 2
         """
-        if loc_end is None:
-            loc_end = loc_start
+        if end is None:
+            end = begin
         
         match axis:
             case 0:
-                self.pixel_array = self.pixel_array[loc_start:len(self.pixel_array) - loc_end]
+                self.pixel_array = self.pixel_array[begin:len(self.pixel_array) - end]
             case 1:
-                self.pixel_array = self.pixel_array[:, loc_start:len(self.pixel_array[0]) - loc_end]
+                self.pixel_array = self.pixel_array[:, begin:len(self.pixel_array[0]) - end]
             case 2:
-                self.pixel_array = self.pixel_array[:, :, loc_start:len(self.pixel_array[0, 0]) - loc_end]
+                self.pixel_array = self.pixel_array[:, :, begin:len(self.pixel_array[0, 0]) - end]
             case _:
                 raise Exception("axis must be a value between 0 and 2 (inclusive)")
 
