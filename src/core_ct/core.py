@@ -54,7 +54,7 @@ class Core:
             case _:
                 raise Exception("axis must be a value between 0 and 2 (inclusive)")
 
-    def trim(self, axis, begin, end=None):
+    def trim(self, axis, loc_start, loc_end=None):
         """Get a three-dimensional slice of the core scan trimming off the outside specified amount on the specified
             axis. This function is symmetrical by default.
 
@@ -63,22 +63,22 @@ class Core:
                     0 corresponds to x-axis
                     1 corresponds to y-axis
                     2 corresponds to z-axis
-            begin -- integer value along the axis specifying the amount to trim off the smaller interval.
-            end -- integer value along the axis specifying the amount to trim off the larger interval.
+            loc_start -- integer value along the axis specifying the amount to trim off the beginning.
+            loc_end -- integer value along the axis specifying the amount to trim off the end.
 
         Raises:
             Exception if axis is a value other than 0, 1, or 2
         """
-        if end is None:
-            end = begin
+        if loc_end is None:
+            loc_end = loc_start
         
         match axis:
             case 0:
-                self.pixel_array = self.pixel_array[begin:len(self.pixel_array) - end]
+                self.pixel_array = self.pixel_array[loc_start:len(self.pixel_array) - loc_end]
             case 1:
-                self.pixel_array = self.pixel_array[:, begin:len(self.pixel_array[0]) - end]
+                self.pixel_array = self.pixel_array[:, loc_start:len(self.pixel_array[0]) - loc_end]
             case 2:
-                self.pixel_array = self.pixel_array[:, :, begin:len(self.pixel_array[0, 0]) - end]
+                self.pixel_array = self.pixel_array[:, :, loc_start:len(self.pixel_array[0, 0]) - loc_end]
             case _:
                 raise Exception("axis must be a value between 0 and 2 (inclusive)")
 
