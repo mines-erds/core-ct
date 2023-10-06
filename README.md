@@ -21,6 +21,14 @@ If you would prefer to manually run a linting check, simply use the following co
 poetry run ruff .
 ```
 
+### Testing
+Just as with linting, due to settings in the GitHub repository, branches cannot be merged into `main` unless they pass all tests as specified in the `tests` repository.
+
+To run these tests simply use the following command:
+```
+poetry run pytest
+```
+
 ## Resources
 - https://github.com/mrsiegfried/SiegVent2023-Geology
 - https://osu-mgr.org/sedct
