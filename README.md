@@ -10,7 +10,7 @@ The `core-ct` scan library was built to assist geologists with the visualization
 ### Linting
 To help maintain a clean codebase, this project makes use of the `ruff` linter. Due to settings in the GitHub repository, branches cannot be merged into `main` unless they pass linting checks. 
 
-As such, this repository also has support for the Python `pre-commit` library, which can be used install a git pre-commit hook that requires the code to pass a linting check before it can be committed. These pre-commit hooks are defined in the `.pre-commit-config.yaml`.
+As such, this repository also supports the Python `pre-commit` library, which can be used to install a git pre-commit hook that requires the code to pass a linting check before it can be committed. These pre-commit hooks are defined in the `.pre-commit-config.yaml`.
 
 To set up this linting hook perform the following actions:
 1. Run `poetry install` to install `pre-commit` and `ruff`
