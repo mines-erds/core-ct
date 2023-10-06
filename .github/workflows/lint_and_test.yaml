@@ -3,8 +3,6 @@ name: "Lint and Test"
 on:
   pull_request:
     branches: [ "main" ]
-  push:
-    branches: [ "25-create-an-github-action-that-runs-the-tests" ]
 
 permissions:
   contents: read
