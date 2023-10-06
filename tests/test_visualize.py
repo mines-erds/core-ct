@@ -32,3 +32,5 @@ def test_slice():
 
     # Assert that the file was deleted
     assert not os.path.isfile(test_file)
+
+    assert False
