@@ -7,6 +7,20 @@ The `core-ct` scan library was built to assist geologists with the visualization
 3. Run `poetry install` to install the required dependencies
 4. Use `poetry shell` to activate the newly created virtual environment
 
+### Linting
+To help maintain a clean codebase, this project makes use of the `ruff` linter. Due to settings in the GitHub repository, branches cannot be merged into `main` unless they pass linting checks. 
+
+As such, this repository also has support for the Python `pre-commit` library, which can be used install a git pre-commit hook that requires the code to pass a linting check before it can be committed. These pre-commit hooks are defined in the `.pre-commit-config.yaml`.
+
+To set up this linting hook perform the following actions:
+1. Run `poetry install` to install `pre-commit` and `ruff`
+2. Run `poetry run pre-commit install` to install the commit hooks
+
+If you would prefer to manually run a linting check, simply use the following command.
+```
+poetry run ruff .
+```
+
 ## Resources
 - https://github.com/mrsiegfried/SiegVent2023-Geology
 - https://osu-mgr.org/sedct
