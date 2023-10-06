@@ -26,7 +26,6 @@ types-pillow = "^10.0.0.3"
 pytest = "^7.4.2"
 ruff = "^0.0.292"
 black = "^23.9.1"
-mypy = "^1.5.1"
 pre-commit = "^3.4.0"
 
 [build-system]
