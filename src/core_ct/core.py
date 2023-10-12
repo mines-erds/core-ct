@@ -52,7 +52,7 @@ class Core:
             case 2:
                 return self.pixel_array[:,:,loc]
             case _:
-                raise Exception("axis must be a value between 0 and 2 (inclusive)")
+                raise ValueError("axis must be a value between 0 and 2 (inclusive)")
 
     def swapaxes(self, axis1: int, axis2: int) -> None:
         """
@@ -76,9 +76,9 @@ class Core:
         """
         # make sure axis inputs are valid
         if axis1 < 0 or axis1 > 2:
-            raise Exception("axis1 must be a value between 0 and 2 (inclusive)")
+            raise ValueError("axis1 must be a value between 0 and 2 (inclusive)")
         if axis2 < 0 or axis2 > 2:
-            raise Exception("axis2 must be a value between 0 and 2 (inclusive)")
+            raise ValueError("axis2 must be a value between 0 and 2 (inclusive)")
         
         # swap axes in pixel array
         self.pixel_array.swap_axes(axis1, axis2)
@@ -87,3 +87,26 @@ class Core:
         temp = self.pixel_dimensions[axis1]
         self.pixel_dimensions[axis1] = self.pixel_dimensions[axis2]
         self.pixel_dimensions[axis2] = temp
+
+    def flip(self, axis: int) -> None:
+        """
+        Flips pixel_array on a given axis
+
+        Parameters:
+            axis -- integer either 0,1,2 specifying one axis to swap:
+                    0 corresponds to x-axis
+                    1 corresponds to y-axis
+                    2 corresponds to z-axis
+
+        Returns:
+            None
+
+        Raises:
+            Exception if axis is a value other than 0, 1, or 2
+        """
+        # make sure axis inputs are valid
+        if axis < 0 or axis > 2:
+            raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+        
+        # swap axes in pixel array
+        np.flip(self.pixel_array, axis)
