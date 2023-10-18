@@ -128,7 +128,7 @@ class Core:
 
         Raises:
         ------
-            Exception if axis is a value other than 0, 1, or 2
+            ValueError if axis is a value other than 0, 1, or 2
         """
         if loc_end is None:
             loc_end = loc_start
@@ -170,7 +170,7 @@ class Core:
 
         Raises:
         ------
-            Exception if axes are values other than 0, 1, or 2
+            ValueError if axes are values other than 0, 1, or 2
         """
         # make sure axis inputs are valid
         if axis1 < 0 or axis1 > 2:
@@ -203,7 +203,7 @@ class Core:
 
         Raises:
         ------
-            Exception if axis is a value other than 0, 1, or 2
+            ValueError if axis is a value other than 0, 1, or 2
         """
         # make sure axis inputs are valid
         if axis < 0 or axis > 2:
