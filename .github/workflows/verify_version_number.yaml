@@ -18,4 +18,4 @@ jobs:
     - name: Checkout the Branch
       uses: actions/checkout@v3
     - name: Get Current Branch Version
-      uses: grep version pyproject.toml | sed -e 's/version = "\(.*\)"/\1/'
+      run: grep version pyproject.toml | sed -e 's/version = "\(.*\)"/\1/'
