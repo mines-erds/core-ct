@@ -6,7 +6,7 @@ authors = [
     "Kira Hanson <khanson@mines.edu>",
     "Carla Ellefsen <cellefsen@mines.edu>",
     "Connor Sparks <csparks@mines.edu>",
-    "Asa Sprow <arsprow@mines.edu>"
+    "Asa Sprow <arsprow@mines.edu>",
 ]
 license = "MIT"
 readme = "README.md"
