@@ -1,0 +1,19 @@
+name: "Verify Version Update"
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: ["33-create-a-github-action-for-publishing-to-pypi"]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the Branch
+      uses: actions/checkout@v3
