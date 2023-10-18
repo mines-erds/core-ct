@@ -1,4 +1,4 @@
-name: "Verify Version Number Increment"
+name: "Verify Version Number"
 
 on:
   pull_request:
