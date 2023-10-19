@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  verify_version_increment:
+  verify_version_number:
 
     runs-on: ubuntu-latest
 
