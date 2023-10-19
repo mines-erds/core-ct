@@ -151,7 +151,7 @@ class Core:
 
     def swapaxes(self, axis1: int, axis2: int) -> None:
         """
-        Swap two axes of pixel_array.
+        Swap two axes of pixel_array and update pixel_dimensions accordingly.
 
         Arguments:
         ---------
@@ -179,7 +179,7 @@ class Core:
             raise ValueError("axis2 must be a value between 0 and 2 (inclusive)")
         
         # swap axes in pixel array
-        self.pixel_array.swap_axes(axis1, axis2)
+        np.swapaxes(self.pixel_array, axis1, axis2)
 
         # swap values in pixel dimensions
         temp = self.pixel_dimensions[axis1]
