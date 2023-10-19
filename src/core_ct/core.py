@@ -211,3 +211,64 @@ class Core:
         
         # swap axes in pixel array
         np.flip(self.pixel_array, axis)
+
+    def rotate(self, axis: int, k: int = 1, clockwise: bool = False) -> None:
+        """
+        Rotates pixel_array by 90 degrees about the given axis `k` times.
+        
+        Rotates counter-clockwise by default, set `clockwise` to `True` to rotate
+        clockwise instead.
+
+        Arguments:
+        ---------
+            axis: integer either 0,1,2 specifying one axis to swap:
+                    0 corresponds to x-axis
+                    1 corresponds to y-axis
+                    2 corresponds to z-axis
+            k: number of times to rotate pixel_array 90 degrees
+            clockwise: whether or not to rotate clockwise instead of counter-clockwise
+
+        Returns:
+        -------
+            None
+
+        Raises:
+        ------
+            ValueError if axis is a value other than 0, 1, or 2
+        """
+        # make sure axis inputs are valid
+        if axis < 0 or axis > 2:
+            raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+        
+        # handle clockwise/counter-clockwise conversion
+        if clockwise:
+            k = -k
+        
+        # figure out which axis to use in call to numpy.rot90()
+        axis1: int
+        axis2: int
+
+        match axis:
+            case 0:
+                axis1 = 1
+                axis2 = 2
+            case 1:
+                axis1 = 0
+                axis2 = 2
+            case 2:
+                axis1 = 0
+                axis2 = 1
+        
+        self.pixel_array = np.rot90(self.pixel_array, k=k, axes=(axis1, axis2))
+
+        # correcting pixel_dimensions below the rot90 call so pixel_dimensions won't
+        # be messed up if rot90 fails
+        
+        # figure out how to modify pixel_dimensions
+        # if k is even, the array is being rotated by a factor of 180 degrees so we 
+        # don't need to worry about switching dimensions
+        if k % 2 != 0:
+            # swap dimensions of correct axes
+            temp = self.pixel_dimensions[axis1]
+            self.pixel_dimensions[axis1] = self.pixel_dimensions[axis2]
+            self.pixel_dimensions[axis2] = temp
