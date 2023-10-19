@@ -17,5 +17,16 @@ jobs:
     steps:
     - name: Checkout the Branch
       uses: actions/checkout@v4
-    - name: Test Variable
-      run: echo ${{ secrets.PYPI_API_TOKEN }}
+    - name: Install Poetry
+      run: pipx install poetry
+    - name: Setup Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+        cache: "poetry"
+    - name: Install Dependencies via Poetry
+      run: poetry install
+    - name: Add PyPI Token
+      run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
+    - name: Publish Package
+      run: poetry publish --build
