@@ -10,10 +10,12 @@ permissions:
   contents: read
 
 jobs:
-  verify_version_number:
+  pypi_publish:
 
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout the Branch
       uses: actions/checkout@v4
+    - name: Test Variable
+      run: echo ${{ secrets.PYPI_API_TOKEN }}
