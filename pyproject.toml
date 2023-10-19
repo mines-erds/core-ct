@@ -17,12 +17,22 @@ numpy = "^1.26.0"
 pydicom = "^2.4.3"
 matplotlib = "^3.8.0"
 pandas = "^2.1.1"
+pillow = "^10.0.1"
+pandas-stubs = "^2.1.1.230928"
+types-pillow = "^10.0.0.3"
 
 
 [tool.poetry.group.dev.dependencies]
-pillow = "^10.0.1"
 pytest = "^7.4.2"
+ruff = "^0.0.292"
+black = "^23.9.1"
+pre-commit = "^3.4.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+# Enable pycodestyle (`E`), Pyflakes (`F`) and pydocstyle (`D`)
+select = ["E", "F", "D"]
+ignore = ["D203", "D212"]
