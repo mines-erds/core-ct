@@ -1,0 +1,19 @@
+name: "Publish to PyPI"
+
+on:
+  push:
+    branches:
+      - main
+      - 33-create-a-github-action-for-publishing-to-pypi
+
+permissions:
+  contents: read
+
+jobs:
+  verify_version_number:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the Branch
+      uses: actions/checkout@v4
