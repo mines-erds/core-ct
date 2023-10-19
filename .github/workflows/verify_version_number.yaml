@@ -25,9 +25,9 @@ jobs:
       uses: actions/checkout@v4
     - name: Parse Feature Branch Version
       run: echo FEATURE_VER=$(grep version pyproject.toml | sed -e 's/version = "\(.*\)"/\1/') >> $GITHUB_ENV
-    - name: Check Bash Variables
+    - name: Check For Version Increment
       run: |
-        if [ 5 > 4 ]
+        if [ $FEATURE_VER > $MAIN_VER ]
           then
             echo here
         fi
