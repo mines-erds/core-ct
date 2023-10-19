@@ -15,17 +15,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout the Main Branch
+    - name: Checkout Main Branch
       uses: actions/checkout@v4
       with:
         ref: main
-    - name: Get Main Branch Version
+    - name: Parse Main Branch Version
       run: echo MAIN_VER=$(grep version pyproject.toml | sed -e 's/version = "\(.*\)"/\1/') >> $GITHUB_ENV
-    - name: Checkout the Feature Branch
+    - name: Checkout Feature Branch
       uses: actions/checkout@v4
-    - name: Get Feature Branch Version
+    - name: Parse Feature Branch Version
       run: echo FEATURE_VER=$(grep version pyproject.toml | sed -e 's/version = "\(.*\)"/\1/') >> $GITHUB_ENV
     - name: Check Bash Variables
       run: |
-        echo $MAIN_VER
-        echo $FEATURE_VER
+        if [ 5 > 4 ]
+          then
+            echo here
+        fi
