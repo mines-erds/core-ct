@@ -58,15 +58,15 @@ def test_swapaxes():
 
     # Check that the swap operation worked correctly on pixel_array
     swap_xy: np.ndarray = copy.deepcopy(pixel_array)
-    np.swapaxes(swap_xy, 0, 1)
+    swap_xy = np.swapaxes(swap_xy, 0, 1)
     assert core_xy.pixel_array.shape == swap_xy.shape
     assert np.array_equal(core_xy.pixel_array, swap_xy)
     swap_xz: np.ndarray = copy.deepcopy(pixel_array)
-    np.swapaxes(swap_xz, 0, 2)
+    swap_xz = np.swapaxes(swap_xz, 0, 2)
     assert core_xz.pixel_array.shape == swap_xz.shape
     assert np.array_equal(core_xz.pixel_array, swap_xz)
     swap_yz: np.ndarray = copy.deepcopy(pixel_array)
-    np.swapaxes(swap_yz, 1, 2)
+    swap_yz = np.swapaxes(swap_yz, 1, 2)
     assert core_yz.pixel_array.shape == swap_yz.shape
     assert np.array_equal(core_yz.pixel_array, swap_yz)
 
@@ -138,15 +138,15 @@ def test_flip():
 
     # Check that the flip operation worked correctly on pixel_array
     flip_x: np.ndarray = copy.deepcopy(pixel_array)
-    np.flip(flip_x, 0)
+    flip_x = np.flip(flip_x, 0)
     assert core_x.pixel_array.shape == flip_x.shape
     assert np.array_equal(core_x.pixel_array, flip_x)
     flip_y: np.ndarray = copy.deepcopy(pixel_array)
-    np.flip(flip_y, 1)
+    flip_y = np.flip(flip_y, 1)
     assert core_y.pixel_array.shape == flip_y.shape
     assert np.array_equal(core_y.pixel_array, flip_y)
     flip_z: np.ndarray = copy.deepcopy(pixel_array)
-    np.flip(flip_z, 2)
+    flip_z = np.flip(flip_z, 2)
     assert core_z.pixel_array.shape == flip_z.shape
     assert np.array_equal(core_z.pixel_array, flip_z)
 

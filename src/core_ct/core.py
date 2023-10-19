@@ -179,7 +179,7 @@ class Core:
             raise ValueError("axis2 must be a value between 0 and 2 (inclusive)")
         
         # swap axes in pixel array
-        np.swapaxes(self.pixel_array, axis1, axis2)
+        self.pixel_array = np.swapaxes(self.pixel_array, axis1, axis2)
 
         # swap values in pixel dimensions
         temp = self.pixel_dimensions[axis1]
@@ -210,7 +210,7 @@ class Core:
             raise ValueError("axis must be a value between 0 and 2 (inclusive)")
         
         # swap axes in pixel array
-        np.flip(self.pixel_array, axis)
+        self.pixel_array = np.flip(self.pixel_array, axis)
 
     def rotate(self, axis: int, k: int = 1, clockwise: bool = False) -> None:
         """
