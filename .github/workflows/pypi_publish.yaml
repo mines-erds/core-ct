@@ -34,6 +34,6 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dist
-        path: dist/core_ct*tar
+        path: dist/core_ct*tar*
     - name: Publish the Package
       run: poetry publish
