@@ -28,4 +28,4 @@ jobs:
     - name: Check For Version Increment
       run: |
         echo -e "$MAIN_VER\n$FEATURE_VER" | sort --version-sort --check
-# [ $MAIN_VER != $FEATURE_VER]
+        [ $MAIN_VER != $FEATURE_VER ]
