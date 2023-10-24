@@ -32,6 +32,7 @@ jobs:
         fi
         if echo -e "$MAIN_VER\n$FEATURE_VER" | sort --version-sort --check
         then
+          :
         else
           echo "ahhh"
           exit 1
