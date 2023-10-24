@@ -1,0 +1,37 @@
+name: "Publish to PyPI"
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  pypi_publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the Branch
+      uses: actions/checkout@v4
+    - name: Install Poetry
+      run: pipx install poetry
+    - name: Setup Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+        cache: "poetry"
+    - name: Install Dependencies via Poetry
+      run: poetry install
+    - name: Add PyPI Token
+      run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
+    - name: Build Package
+      run: poetry build
+    - name: Archive Package
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: dist/core_ct*
+    - name: Publish the Package
+      run: poetry publish
