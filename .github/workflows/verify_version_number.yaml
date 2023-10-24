@@ -2,9 +2,9 @@ name: "Verify Version Number"
 
 on:
   pull_request:
-    branches: 
-      - main
-      - 33-create-a-github-action-for-publishing-to-pypi
+    branches: main
+  push:
+    branches: 33-create-a-github-action-for-publishing-to-pypi
 
 permissions:
   contents: read
