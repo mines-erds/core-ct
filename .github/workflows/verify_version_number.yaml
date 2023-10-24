@@ -27,7 +27,12 @@ jobs:
       run: |
         if [ $MAIN_VER == $FEATURE_VER ]
         then
-          echo "::error::Feature branch version $FEATURE_VER must be greater than main branch version $MAIN_VER. Update the version in pyproject.toml to fix this error"
+          echo "::error::Feature branch version $FEATURE_VER must be greater than main branch version $MAIN_VER. Update the package version in pyproject.toml to fix this error."
           exit 1
         fi
-        echo -e "$MAIN_VER\n$FEATURE_VER" | sort --version-sort --check
+        if echo -e "$MAIN_VER\n$FEATURE_VER" | sort --version-sort --check
+        then
+        else
+          echo "ahhh"
+          exit 1
+        fi
