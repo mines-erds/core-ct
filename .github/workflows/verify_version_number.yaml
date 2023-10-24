@@ -27,7 +27,7 @@ jobs:
       run: |
         if [ $MAIN_VER == $FEATURE_VER ]
         then
-          echo "Feature branch version $FEATURE_VER must be greater than main branch version $MAIN_VER"
+          echo "Feature branch version $FEATURE_VER must be greater than main branch version $MAIN_VER" 1>&2
           false
         fi
         echo -e "$MAIN_VER\n$FEATURE_VER" | sort --version-sort --check
