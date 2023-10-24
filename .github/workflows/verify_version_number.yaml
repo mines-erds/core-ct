@@ -27,8 +27,5 @@ jobs:
       run: echo FEATURE_VER=$(grep version pyproject.toml | sed -e 's/version = "\(.*\)"/\1/') >> $GITHUB_ENV
     - name: Check For Version Increment
       run: |
-        echo -e "1.19\n1.2" | sort --version-sort --check
-        if true
-        then
-          echo "$MAIN_VER is $FEATURE_VER or less"
-        fi
+        echo -e "$MAIN_VER\n$FEATURE_VER" | sort --version-sort --check
+# [ $MAIN_VER != $FEATURE_VER]
