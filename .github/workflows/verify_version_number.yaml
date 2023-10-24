@@ -34,6 +34,6 @@ jobs:
         then
           :
         else
-          echo "ahhh"
+          echo "::error::Feature branch version $FEATURE_VER must be greater than main branch version $MAIN_VER. Update the package version in pyproject.toml to fix this error."
           exit 1
         fi
