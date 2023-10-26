@@ -1,8 +1,11 @@
-from core_ct import Core
+"""Tests the `Core` class in the `core` module."""
+
+from core_ct.core import Core
 import numpy as np
 
 
 def test_core():
+    """Tests that a `Core` object can be created successfully."""
     # Define the pixel array and pixel_dimensions
     pixel_array = np.zeros([2, 4, 8])
     pixel_dimensions = [2.0, 4.0, 8.0]
@@ -14,7 +17,9 @@ def test_core():
     np.testing.assert_equal(core.pixel_array, pixel_array)
     np.testing.assert_equal(core.pixel_dimensions, pixel_dimensions)
 
+
 def test_slice():
+    """Tests the `slice` method on the `Core`."""
     # Define the core
     core = Core(pixel_array=np.zeros([2, 4, 8]), pixel_dimensions=[2.0, 4.0, 8.0])
 
@@ -27,4 +32,3 @@ def test_slice():
     assert slice_0.shape == (4, 8)
     assert slice_1.shape == (2, 8)
     assert slice_2.shape == (2, 4)
-    
