@@ -80,8 +80,9 @@ def dicom(
     slices = sorted(slices, key=lambda s: s.SliceLocation)
 
     # pixel dimensions, assuming all slices are the same
-    ps = slices[0].PixelSpacing
-    ss = slices[0].SliceThickness
+    x_dim: float = float(slices[0].PixelSpacing[0])
+    y_dim: float = float(slices[0].PixelSpacing[1])
+    z_dim: float = float(slices[0].SliceThickness)
 
     # create 3D array
     img_shape: list[int] = list(slices[0].pixel_array.shape)
@@ -93,4 +94,4 @@ def dicom(
         img2d = s.pixel_array
         img3d[:, :, i] = img2d
 
-    return Core(pixel_array=img3d, pixel_dimensions=[ps, ps, ss])
+    return Core(pixel_array=img3d, pixel_dimensions=[x_dim, y_dim, z_dim])
