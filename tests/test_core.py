@@ -54,16 +54,13 @@ def test_swapaxes():
     core_yz: Core = core.swapaxes(1, 2)
 
     # Check that the swap operation worked correctly on pixel_array
-    swap_xy: np.ndarray = copy.deepcopy(pixel_array)
-    swap_xy = np.swapaxes(swap_xy, 0, 1)
+    swap_xy: np.ndarray = np.swapaxes(pixel_array, 0, 1)
     assert core_xy.pixel_array.shape == swap_xy.shape
     assert np.array_equal(core_xy.pixel_array, swap_xy)
-    swap_xz: np.ndarray = copy.deepcopy(pixel_array)
-    swap_xz = np.swapaxes(swap_xz, 0, 2)
+    swap_xz: np.ndarray = np.swapaxes(pixel_array, 0, 2)
     assert core_xz.pixel_array.shape == swap_xz.shape
     assert np.array_equal(core_xz.pixel_array, swap_xz)
-    swap_yz: np.ndarray = copy.deepcopy(pixel_array)
-    swap_yz = np.swapaxes(swap_yz, 1, 2)
+    swap_yz: np.ndarray = np.swapaxes(pixel_array, 1, 2)
     assert core_yz.pixel_array.shape == swap_yz.shape
     assert np.array_equal(core_yz.pixel_array, swap_yz)
 
@@ -126,24 +123,18 @@ def test_flip():
                       pixel_dimensions=[2.0, 4.0, 8.0])
 
     # Flip various axes
-    core_x: Core = copy.deepcopy(core)
-    core_x.flip(0)
-    core_y: Core = copy.deepcopy(core)
-    core_y.flip(1)
-    core_z: Core = copy.deepcopy(core)
-    core_z.flip(2)
+    core_x: Core = core.flip(0)
+    core_y: Core = core.flip(1)
+    core_z: Core = core.flip(2)
 
     # Check that the flip operation worked correctly on pixel_array
-    flip_x: np.ndarray = copy.deepcopy(pixel_array)
-    flip_x = np.flip(flip_x, 0)
+    flip_x: np.ndarray = np.flip(pixel_array, 0)
     assert core_x.pixel_array.shape == flip_x.shape
     assert np.array_equal(core_x.pixel_array, flip_x)
-    flip_y: np.ndarray = copy.deepcopy(pixel_array)
-    flip_y = np.flip(flip_y, 1)
+    flip_y: np.ndarray = np.flip(pixel_array, 1)
     assert core_y.pixel_array.shape == flip_y.shape
     assert np.array_equal(core_y.pixel_array, flip_y)
-    flip_z: np.ndarray = copy.deepcopy(pixel_array)
-    flip_z = np.flip(flip_z, 2)
+    flip_z: np.ndarray = np.flip(pixel_array, 2)
     assert core_z.pixel_array.shape == flip_z.shape
     assert np.array_equal(core_z.pixel_array, flip_z)
 

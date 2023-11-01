@@ -233,12 +233,11 @@ class Core:
         # figure out how to modify pixel_dimensions
         # if k is even, the array is being rotated by a factor of 180 degrees so we 
         # don't need to worry about switching dimensions
-        pixel_dimensions: list[int] = self.pixel_dimensions
+        pixel_dimensions: list[int] = copy.copy(self.pixel_dimensions)
         if k % 2 != 0:
             # swap dimensions of correct axes
-            temp = pixel_dimensions[axis1]
-            pixel_dimensions[axis1] = pixel_dimensions[axis2]
-            pixel_dimensions[axis2] = temp
+            pixel_dimensions[axis1] = self.pixel_dimensions[axis2]
+            pixel_dimensions[axis2] = self.pixel_dimensions[axis1]
 
         # return new Core with transformed data
         return Core(pixel_array=pixel_array, pixel_dimensions=pixel_dimensions)
