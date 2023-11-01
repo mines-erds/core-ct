@@ -142,7 +142,7 @@ class Core:
         pixel_array = np.swapaxes(self.pixel_array, axis1, axis2)
 
         # swap values in pixel dimensions
-        pixel_dimensions: list[int] = copy.copy(self.pixel_dimensions)
+        pixel_dimensions: list[float] = copy.copy(self.pixel_dimensions)
         pixel_dimensions[axis1] = self.pixel_dimensions[axis2]
         pixel_dimensions[axis2] = self.pixel_dimensions[axis1]
         
@@ -233,7 +233,7 @@ class Core:
         # figure out how to modify pixel_dimensions
         # if k is even, the array is being rotated by a factor of 180 degrees so we 
         # don't need to worry about switching dimensions
-        pixel_dimensions: list[int] = copy.copy(self.pixel_dimensions)
+        pixel_dimensions: list[float] = copy.copy(self.pixel_dimensions)
         if k % 2 != 0:
             # swap dimensions of correct axes
             pixel_dimensions[axis1] = self.pixel_dimensions[axis2]

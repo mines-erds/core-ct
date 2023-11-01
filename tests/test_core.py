@@ -179,24 +179,18 @@ def test_rotate():
                       pixel_dimensions=[2.0, 4.0, 8.0])
 
     # Rotate various axes
-    core_x: Core = copy.deepcopy(core)
-    core_x.rotate(0, k=1)
-    core_y: Core = copy.deepcopy(core)
-    core_y.rotate(1, k=1)
-    core_z: Core = copy.deepcopy(core)
-    core_z.rotate(2, k=1)
+    core_x: Core = core.rotate(0, k=1)
+    core_y: Core = core.rotate(1, k=1)
+    core_z: Core = core.rotate(2, k=1)
 
     # Check that the flip operation worked correctly on pixel_array
-    rot_x: np.ndarray = copy.deepcopy(pixel_array)
-    rot_x = np.rot90(rot_x, k=1, axes=(1, 2))
+    rot_x: np.ndarray = np.rot90(pixel_array, k=1, axes=(1, 2))
     assert core_x.pixel_array.shape == rot_x.shape
     assert np.array_equal(core_x.pixel_array, rot_x)
-    rot_y: np.ndarray = copy.deepcopy(pixel_array)
-    rot_y = np.rot90(rot_y, k=1, axes=(0, 2))
+    rot_y: np.ndarray = np.rot90(pixel_array, k=1, axes=(0, 2))
     assert core_y.pixel_array.shape == rot_y.shape
     assert np.array_equal(core_y.pixel_array, rot_y)
-    rot_z: np.ndarray = copy.deepcopy(pixel_array)
-    rot_z = np.rot90(rot_z, k=1, axes=(0, 1))
+    rot_z: np.ndarray = np.rot90(pixel_array, k=1, axes=(0, 1))
     assert core_z.pixel_array.shape == rot_z.shape
     assert np.array_equal(core_z.pixel_array, rot_z)
 
@@ -206,24 +200,18 @@ def test_rotate():
     assert core_z.pixel_dimensions == [4.0, 2.0, 8.0]
 
     # Rotate various axes with an even k
-    core_x: Core = copy.deepcopy(core)
-    core_x.rotate(0, k=2)
-    core_y: Core = copy.deepcopy(core)
-    core_y.rotate(1, k=2)
-    core_z: Core = copy.deepcopy(core)
-    core_z.rotate(2, k=2)
+    core_x: Core = core.rotate(0, k=2)
+    core_y: Core = core.rotate(1, k=2)
+    core_z: Core = core.rotate(2, k=2)
 
     # Check that the flip operation worked correctly on pixel_array
-    rot_x: np.ndarray = copy.deepcopy(pixel_array)
-    rot_x = np.rot90(rot_x, k=2, axes=(1, 2))
+    rot_x: np.ndarray = np.rot90(pixel_array, k=2, axes=(1, 2))
     assert core_x.pixel_array.shape == rot_x.shape
     assert np.array_equal(core_x.pixel_array, rot_x)
-    rot_y: np.ndarray = copy.deepcopy(pixel_array)
-    rot_y = np.rot90(rot_y, k=2, axes=(0, 2))
+    rot_y: np.ndarray = np.rot90(pixel_array, k=2, axes=(0, 2))
     assert core_y.pixel_array.shape == rot_y.shape
     assert np.array_equal(core_y.pixel_array, rot_y)
-    rot_z: np.ndarray = copy.deepcopy(pixel_array)
-    rot_z = np.rot90(rot_z, k=2, axes=(0, 1))
+    rot_z: np.ndarray = np.rot90(pixel_array, k=2, axes=(0, 1))
     assert core_z.pixel_array.shape == rot_z.shape
     assert np.array_equal(core_z.pixel_array, rot_z)
 
@@ -233,24 +221,18 @@ def test_rotate():
     assert core_z.pixel_dimensions == shape
 
     # Rotate various axes clockwise
-    core_x: Core = copy.deepcopy(core)
-    core_x.rotate(0, k=1, clockwise=True)
-    core_y: Core = copy.deepcopy(core)
-    core_y.rotate(1, k=1, clockwise=True)
-    core_z: Core = copy.deepcopy(core)
-    core_z.rotate(2, k=1, clockwise=True)
+    core_x: Core = core.rotate(0, k=1, clockwise=True)
+    core_y: Core = core.rotate(1, k=1, clockwise=True)
+    core_z: Core = core.rotate(2, k=1, clockwise=True)
 
     # Check that the flip operation worked correctly on pixel_array
-    rot_x: np.ndarray = copy.deepcopy(pixel_array)
-    rot_x = np.rot90(rot_x, k=-1, axes=(1, 2))
+    rot_x: np.ndarray = np.rot90(pixel_array, k=-1, axes=(1, 2))
     assert core_x.pixel_array.shape == rot_x.shape
     assert np.array_equal(core_x.pixel_array, rot_x)
-    rot_y: np.ndarray = copy.deepcopy(pixel_array)
-    rot_y = np.rot90(rot_y, k=-1, axes=(0, 2))
+    rot_y: np.ndarray = np.rot90(pixel_array, k=-1, axes=(0, 2))
     assert core_y.pixel_array.shape == rot_y.shape
     assert np.array_equal(core_y.pixel_array, rot_y)
-    rot_z: np.ndarray = copy.deepcopy(pixel_array)
-    rot_z = np.rot90(rot_z, k=-1, axes=(0, 1))
+    rot_z: np.ndarray = np.rot90(pixel_array, k=-1, axes=(0, 1))
     assert core_z.pixel_array.shape == rot_z.shape
     assert np.array_equal(core_z.pixel_array, rot_z)
 
