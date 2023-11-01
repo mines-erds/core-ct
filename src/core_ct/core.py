@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 import numpy as np
+import copy
 
 
 class Core:
@@ -108,24 +109,24 @@ class Core:
             case _:
                 raise ValueError("axis must be a value between 0 and 2 (inclusive)")
 
-    def swapaxes(self, axis1: int, axis2: int) -> None:
+    def swapaxes(self, axis1: int, axis2: int) -> Core:
         """
-        Swap two axes of pixel_array and update pixel_dimensions accordingly.
+        Create a new Core object with swapped axes and updated pixel dimensions.
 
         Arguments:
         ---------
-            axis1: integer either 0,1,2 specifying one axis to swap:
-                    0 corresponds to x-axis
-                    1 corresponds to y-axis
-                    2 corresponds to z-axis
-            axis2: integer either 0,1,2 specifying the second axis to swap:
-                    0 corresponds to x-axis
-                    1 corresponds to y-axis
-                    2 corresponds to z-axis
+            axis1: integer specifying the first axis (0, 1, or 2)
+                    0: x-axis
+                    1: y-axis
+                    2: z-axis
+            axis2: integer specifying the second axis (0, 1, or 2)
+                    0: x-axis
+                    1: y-axis
+                    2: z-axis
 
         Returns:
         -------
-            None
+            New Core object containing swapped data and updated pixel dimensions
 
         Raises:
         ------
@@ -138,27 +139,30 @@ class Core:
             raise ValueError("axis2 must be a value between 0 and 2 (inclusive)")
         
         # swap axes in pixel array
-        self.pixel_array = np.swapaxes(self.pixel_array, axis1, axis2)
+        pixel_array = np.swapaxes(self.pixel_array, axis1, axis2)
 
         # swap values in pixel dimensions
-        temp = self.pixel_dimensions[axis1]
-        self.pixel_dimensions[axis1] = self.pixel_dimensions[axis2]
-        self.pixel_dimensions[axis2] = temp
+        pixel_dimensions: list[int] = copy.copy(self.pixel_dimensions)
+        pixel_dimensions[axis1] = self.pixel_dimensions[axis2]
+        pixel_dimensions[axis2] = self.pixel_dimensions[axis1]
+        
+        # return new Core containing transformed data
+        return Core(pixel_array=pixel_array, pixel_dimensions=pixel_dimensions)
 
-    def flip(self, axis: int) -> None:
+    def flip(self, axis: int) -> Core:
         """
-        Flips pixel_array on a given axis.
+        Create a new `Core` object with data reversed along the given axis.
 
         Arguments:
         ---------
-            axis: integer either 0,1,2 specifying one axis to swap:
-                    0 corresponds to x-axis
-                    1 corresponds to y-axis
-                    2 corresponds to z-axis
+            axis: integer specifying which axis to reverse (0, 1, or 2)
+                    0: x-axis
+                    1: y-axis
+                    2: z-axis
 
         Returns:
         -------
-            None
+            New Core object containing flipped data
 
         Raises:
         ------
@@ -169,27 +173,30 @@ class Core:
             raise ValueError("axis must be a value between 0 and 2 (inclusive)")
         
         # swap axes in pixel array
-        self.pixel_array = np.flip(self.pixel_array, axis)
+        pixel_array = np.flip(self.pixel_array, axis)
+        
+        # return new Core containing transformed data
+        return Core(pixel_array=pixel_array, pixel_dimensions=self.pixel_dimensions)
 
-    def rotate(self, axis: int, k: int = 1, clockwise: bool = False) -> None:
+    def rotate(self, axis: int, k: int = 1, clockwise: bool = False) -> Core:
         """
-        Rotates pixel_array by 90 degrees about the given axis `k` times.
+        Create a new `Core` object with data rotated 90 degrees about `axis` `k` times.
         
         Rotates counter-clockwise by default, set `clockwise` to `True` to rotate
         clockwise instead.
 
         Arguments:
         ---------
-            axis: integer either 0,1,2 specifying one axis to swap:
-                    0 corresponds to x-axis
-                    1 corresponds to y-axis
-                    2 corresponds to z-axis
+            axis: integer specifying which axis to rotate about (0, 1, or 2)
+                    0: x-axis
+                    1: y-axis
+                    2: z-axis
             k: number of times to rotate pixel_array 90 degrees
             clockwise: whether or not to rotate clockwise instead of counter-clockwise
 
         Returns:
         -------
-            None
+            New Core object containing rotated data and pixel dimensions
 
         Raises:
         ------
@@ -218,7 +225,7 @@ class Core:
                 axis1 = 0
                 axis2 = 1
         
-        self.pixel_array = np.rot90(self.pixel_array, k=k, axes=(axis1, axis2))
+        pixel_array = np.rot90(self.pixel_array, k=k, axes=(axis1, axis2))
 
         # correcting pixel_dimensions below the rot90 call so pixel_dimensions won't
         # be messed up if rot90 fails
@@ -226,11 +233,15 @@ class Core:
         # figure out how to modify pixel_dimensions
         # if k is even, the array is being rotated by a factor of 180 degrees so we 
         # don't need to worry about switching dimensions
+        pixel_dimensions: list[int] = self.pixel_dimensions
         if k % 2 != 0:
             # swap dimensions of correct axes
-            temp = self.pixel_dimensions[axis1]
-            self.pixel_dimensions[axis1] = self.pixel_dimensions[axis2]
-            self.pixel_dimensions[axis2] = temp
+            temp = pixel_dimensions[axis1]
+            pixel_dimensions[axis1] = pixel_dimensions[axis2]
+            pixel_dimensions[axis2] = temp
+
+        # return new Core with transformed data
+        return Core(pixel_array=pixel_array, pixel_dimensions=pixel_dimensions)
 
     def chunk(self, x1=0, y1=0, z1=0, x2=None, y2=None, z2=None) -> Core:
         """

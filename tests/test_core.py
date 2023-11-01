@@ -49,12 +49,9 @@ def test_swapaxes():
                       pixel_dimensions=[2.0, 4.0, 8.0])
 
     # Swap various axes
-    core_xy: Core = copy.deepcopy(core)
-    core_xy.swapaxes(0, 1)
-    core_xz: Core = copy.deepcopy(core)
-    core_xz.swapaxes(0, 2)
-    core_yz: Core = copy.deepcopy(core)
-    core_yz.swapaxes(1, 2)
+    core_xy: Core = core.swapaxes(0, 1)
+    core_xz: Core = core.swapaxes(0, 2)
+    core_yz: Core = core.swapaxes(1, 2)
 
     # Check that the swap operation worked correctly on pixel_array
     swap_xy: np.ndarray = copy.deepcopy(pixel_array)
