@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 import numpy as np
+import copy
 
 
 class Core:
@@ -87,7 +88,7 @@ class Core:
 
         Raises:
         ------
-            Exception if axis is a value other than 0, 1, or 2
+            ValueError if axis is a value other than 0, 1, or 2
         """
         if loc_end is None:
             loc_end = loc_start
@@ -106,7 +107,140 @@ class Core:
                     :, :, loc_start : len(self.pixel_array[0, 0]) - loc_end
                 ]
             case _:
-                raise Exception("axis must be a value between 0 and 2 (inclusive)")
+                raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+
+    def swapaxes(self, axis1: int, axis2: int) -> Core:
+        """
+        Create a new Core object with swapped axes and updated pixel dimensions.
+
+        Arguments:
+        ---------
+            axis1: integer specifying the first axis (0, 1, or 2)
+                    0: x-axis
+                    1: y-axis
+                    2: z-axis
+            axis2: integer specifying the second axis (0, 1, or 2)
+                    0: x-axis
+                    1: y-axis
+                    2: z-axis
+
+        Returns:
+        -------
+            New Core object containing swapped data and updated pixel dimensions
+
+        Raises:
+        ------
+            ValueError if axes are values other than 0, 1, or 2
+        """
+        # make sure axis inputs are valid
+        if axis1 < 0 or axis1 > 2:
+            raise ValueError("axis1 must be a value between 0 and 2 (inclusive)")
+        if axis2 < 0 or axis2 > 2:
+            raise ValueError("axis2 must be a value between 0 and 2 (inclusive)")
+        
+        # swap axes in pixel array
+        pixel_array = np.swapaxes(self.pixel_array, axis1, axis2)
+
+        # swap values in pixel dimensions
+        pixel_dimensions: list[float] = copy.copy(self.pixel_dimensions)
+        pixel_dimensions[axis1] = self.pixel_dimensions[axis2]
+        pixel_dimensions[axis2] = self.pixel_dimensions[axis1]
+        
+        # return new Core containing transformed data
+        return Core(pixel_array=pixel_array, pixel_dimensions=pixel_dimensions)
+
+    def flip(self, axis: int) -> Core:
+        """
+        Create a new `Core` object with data reversed along the given axis.
+
+        Arguments:
+        ---------
+            axis: integer specifying which axis to reverse (0, 1, or 2)
+                    0: x-axis
+                    1: y-axis
+                    2: z-axis
+
+        Returns:
+        -------
+            New Core object containing flipped data
+
+        Raises:
+        ------
+            ValueError if axis is a value other than 0, 1, or 2
+        """
+        # make sure axis inputs are valid
+        if axis < 0 or axis > 2:
+            raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+        
+        # swap axes in pixel array
+        pixel_array = np.flip(self.pixel_array, axis)
+        
+        # return new Core containing transformed data
+        return Core(pixel_array=pixel_array, pixel_dimensions=self.pixel_dimensions)
+
+    def rotate(self, axis: int, k: int = 1, clockwise: bool = False) -> Core:
+        """
+        Create a new `Core` object with data rotated 90 degrees about `axis` `k` times.
+        
+        Rotates counter-clockwise by default, set `clockwise` to `True` to rotate
+        clockwise instead.
+
+        Arguments:
+        ---------
+            axis: integer specifying which axis to rotate about (0, 1, or 2)
+                    0: x-axis
+                    1: y-axis
+                    2: z-axis
+            k: number of times to rotate pixel_array 90 degrees
+            clockwise: whether or not to rotate clockwise instead of counter-clockwise
+
+        Returns:
+        -------
+            New Core object containing rotated data and pixel dimensions
+
+        Raises:
+        ------
+            ValueError if axis is a value other than 0, 1, or 2
+        """
+        # make sure axis inputs are valid
+        if axis < 0 or axis > 2:
+            raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+        
+        # handle clockwise/counter-clockwise conversion
+        if clockwise:
+            k = -k
+        
+        # figure out which axis to use in call to numpy.rot90()
+        axis1: int
+        axis2: int
+
+        match axis:
+            case 0:
+                axis1 = 1
+                axis2 = 2
+            case 1:
+                axis1 = 0
+                axis2 = 2
+            case 2:
+                axis1 = 0
+                axis2 = 1
+        
+        pixel_array = np.rot90(self.pixel_array, k=k, axes=(axis1, axis2))
+
+        # correcting pixel_dimensions below the rot90 call so pixel_dimensions won't
+        # be messed up if rot90 fails
+        
+        # figure out how to modify pixel_dimensions
+        # if k is even, the array is being rotated by a factor of 180 degrees so we 
+        # don't need to worry about switching dimensions
+        pixel_dimensions: list[float] = copy.copy(self.pixel_dimensions)
+        if k % 2 != 0:
+            # swap dimensions of correct axes
+            pixel_dimensions[axis1] = self.pixel_dimensions[axis2]
+            pixel_dimensions[axis2] = self.pixel_dimensions[axis1]
+
+        # return new Core with transformed data
+        return Core(pixel_array=pixel_array, pixel_dimensions=pixel_dimensions)
 
     def chunk(self, x1=0, y1=0, z1=0, x2=None, y2=None, z2=None) -> Core:
         """
