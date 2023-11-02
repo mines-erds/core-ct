@@ -1,55 +1,27 @@
 """Methods that assist in visualizing the CT scans of rock cores."""
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib.image import AxesImage
-from matplotlib.colors import Normalize
 from core_ct.core import Core
-from PIL import Image as im
 from .analysis import brightness_trace
 
-def slice(core: Core, output: str, axis: int = 2, index: int = 0) -> None:
+def display_core(core: Core) -> (matplotlib.figure.Figure, matplotlib.axes.Axes):
     """
-    Output an image containing the slice at the provided index.
+    Create an orthogonal view of the core to aid in understanding the core orientation
+    Displays three cross-sections of the core object in one figure, each taken at the center of the collapsed axis.
 
-    Arguments:
-    ---------
-        core: the `Core` object to take the slice of
-        output: the name of the outputted image file
-        axis: which axis to take a slice of
-        index: where on the axis to take the slice of
+    Arguments: 
+    ----------
+        core: `Core` object to visualize
+    
+    Returns:
+    --------
+        `matplotlib.figure.Figure` object containing the subplots
+        Array of `matplotlib.axes.Axes` objects, each axis containing display information for each view
     """
-    # retrieve slice data
-    match axis:
-        case 0:
-            slice = core.pixel_array[index]
-        case 1:
-            slice = core.pixel_array[:, index]
-        case 2:
-            slice = core.pixel_array[:, :, index]
-        case _:
-            raise Exception("axis must be a value between 0 and 2 (inclusive)")
-
-    # find the min and max brightness value to help with normalizing
-    max: float = np.max(slice)
-    min: float = np.min(slice)
-
-    # normalize each data point to be an integer between 0 and 255 (inclusive)
-    offset = abs(min)
-    norm_max = max + offset
-    for i in range(len(slice)):
-        for j in range(len(slice[0])):
-            slice[i][j] = int(((slice[i][j] + offset) / norm_max) * 255)
-
-    # create an image depicting the slice using our normalized values
-    picture = im.fromarray(slice)
-    picture = picture.convert("L")
-    picture.save(output)
-
-def display_core(core: Core) -> plt.Axes:
     core_dim = core.pixel_array.shape
-    fig, axes = plt.subplots(nrows = 1, ncols = 3, width_ratios=[core_dim[2], core_dim[2], core_dim[1]], figsize = (8,5))
-    # fig, axes = plt.subplots(nrows = 1, ncols = 3)
+    fig, axes = plt.subplots(nrows = 1, ncols = 3)
     for i, ax in enumerate(axes):
         slice_loc = core_dim[i]//2
         ax.imshow(core.slice(axis = i, loc = slice_loc))
@@ -61,36 +33,63 @@ def display_core(core: Core) -> plt.Axes:
     axes[2].set_ylabel("Axis 0")
     axes[2].set_xlabel("Axis 1")
     
-    plt.suptitle('Orthogonal Core View')
-    # fig.set_figwidth = 8
+    fig.suptitle('Orthogonal Core View')
+    fig.tight_layout()
+    plt.show()
+    return fig, axes
 
-    # plt.subplots_adjust(wspace = 120)
-    plt.tight_layout()
 
+def display_slice(slice_2d: np.ndarray) -> matplotlib.image.AxesImage:
+    """
+    Display an image of a slice of a core using matplotlib's `imshow` function
 
-def display_slice(slice_2d: np.ndarray) -> AxesImage:
+    Arguments:
+    ----------
+    slice_2d: 2D numpy array of pixel data for a single slice of a core 
+
+    Returns:
+    --------
+    `matplotlib.image.AxesImage` object returned by `imshow`
+    """
     slice_image: plt.AxesImage = plt.imshow(slice_2d)
     return slice_image
 
-def display_slice_bt_std(slice_2d: np.ndarray, title: str = None) -> plt.Axes:
+def display_slice_bt_std(slice_2d: np.ndarray, title: str = None) -> (matplotlib.figure.Figure, matplotlib.pyplot.Axes):
+    """
+    Display a core slice and corresponding brightness trace and standard deviation graphs
+
+    Arguments:
+    ----------
+    slice_2d: 2D numpy array of pixel data for a single slice of a core 
+
+    Returns:
+    --------
+    `matplotlib.figure.Figure` object containing the subplots
+    Array of `matplotlib.axes.Axes` objects, each axis containing display information or data for each plot
+    """
     bt_df = brightness_trace(slice_2d)
     brightness = bt_df.iloc[:,0]
     stddev = bt_df.iloc[:,1]
-    fig, (ax1, ax2, ax3) = plt.subplots(nrows=1, ncols=3, sharey=True, figsize = (7,5), width_ratios=[2,3,3])
-    ax1.imshow(slice_2d)
+    fig, (ax1, ax2, ax3) = plt.subplots(nrows = 1, ncols = 3, sharey = True, figsize = (7,5), width_ratios = [1.5,3,3.5])
+    colors = ax1.imshow(slice_2d) # set to a variable to use for colormap
     ax1.set_xlabel("width (pixels)")
     ax1.set_ylabel("depth (pixels)")
     ax2.plot(brightness, range(len(bt_df)))
     ax2.set_xlabel("mean brightness (HU)")
     ax3.set_xlabel("brightness standard deviation (HU)")
     ax3.plot(stddev, range(len(bt_df)))
+    cbar = fig.colorbar(colors, ax = ax3)
+    cbar.minorticks_on()
     fig.suptitle(title)
     fig.tight_layout()
-    return ax1, ax2, ax3
+    return fig, (ax1, ax2, ax3)
 
 def visualize_trim(slice_2d: np.ndarray, axis: str, loc: int) -> None:
     """
     overlays trim lines onto a slice to illustrate what is being trimmed
+    trimming along 0 should show collapse of 1 and 2
+    trimming along 1 should show collapse of 0 and 2
+    trimming along 2 should show collapse of 0 and 1
     """
     plt.figure()
     plt.imshow(slice_2d)
@@ -101,9 +100,3 @@ def visualize_trim(slice_2d: np.ndarray, axis: str, loc: int) -> None:
         plt.axhline(loc)
         plt.axhline(len(slice_2d)-loc)
     plt.show()
-
-# be able to visualize graphs and slices separately
-# be able to visualize trim lines on core and slices
-# visualize orthogonal view of the cores to see what the axes correspond to on the core
-# will help you decide how you want to take your slices
-# return matplotlib objects that can be modifiable rather than just plot things
