@@ -300,23 +300,15 @@ class Core:
         if axis < 0 or axis > 2:
             raise ValueError("axis must be a value between 0 and 2 (inclusive)")
 
-        # Get the pixel array and dimensions of the source and target cores
-        source_pixel_array = core.pixel_array
-        source_pixel_dimensions = core.pixel_dimensions
-        target_pixel_array = self.pixel_array
-        target_pixel_dimensions = self.pixel_dimensions
-
         # Check that the pixel dimensions match between the two cores
-        if source_pixel_dimensions != target_pixel_dimensions:
+        if core.pixel_dimensions != self.pixel_dimensions:
             raise ValueError(
-                "{source} != {target}, the core's pixel dimensions must match".format(
-                    source=source_pixel_dimensions, target=target_pixel_dimensions
+                "the core's pixel dimensions must match, {source} != {target}".format(
+                    source=core.pixel_dimensions, target=self.pixel_dimensions
                 )
             )
 
         # Join the two pixel arrays together
-        joined_pixel_array = np.append(
-            target_pixel_array, source_pixel_array, axis=axis
-        )
+        joined_pixel_array = np.append(self.pixel_array, core.pixel_array, axis=axis)
 
-        return Core(joined_pixel_array, source_pixel_dimensions)
+        return Core(joined_pixel_array, self.pixel_dimensions)
