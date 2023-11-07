@@ -271,9 +271,17 @@ def test_rotate():
 
 def test_join():
     """Tests the `join` method on the `Core`."""
-    # Define the source and target cores for joining
-    source = Core(np.zeros([2, 4, 8]), [5.0, 4.0, 8.0])
+    # Define the target core for joining
     target = Core(np.zeros([2, 4, 8]), [2.0, 4.0, 8.0])
-    joined = source.join(target)
-    print(joined.pixel_array.shape)
-    assert False
+    # Define the source cores for joining
+    source_valid = Core(np.zeros([2, 4, 8]), [2.0, 4.0, 8.0])
+    # source_invalid_dimensions = Core(np.zeros([2, 4, 8]), [2.0, 4.0, 8.0])
+    # source_invalid_shape = Core(np.zeros([2, 4, 8]), [2.0, 4.0, 8.0])
+
+    # Assert the valid core joins together properly on each axis
+    joined_valid_0 = target.join(source_valid, axis=0)
+    # joined_valid_1 = target.join(source_valid, axis=1)
+    # joined_valid_2 = target.join(source_valid, axis=2)
+    assert joined_valid_0.pixel_array.shape == (4, 4, 8)
+
+    # Test that the join method fails on invalid dimensions
