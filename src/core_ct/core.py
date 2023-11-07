@@ -285,7 +285,7 @@ class Core:
 
     def join(self, core: Core, axis: int = 0) -> Core:
         """
-        Output an image containing the slice at the provided index.
+        Join a core to the current core on specified axis.
 
         Arguments:
         ---------
