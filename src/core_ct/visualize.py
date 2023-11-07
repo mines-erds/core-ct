@@ -44,6 +44,8 @@ def display_core(core: Core) -> (matplotlib.figure.Figure, matplotlib.axes.Axes)
 def display_slice(slice_2d: np.ndarray) -> matplotlib.image.AxesImage:
     """
     Display an image of a slice of a core using matplotlib's `imshow` function.
+    
+    Plots a colorbar alongside the slice showing the range of pixel values in the slice.
 
     Arguments:
     ---------
@@ -53,7 +55,11 @@ def display_slice(slice_2d: np.ndarray) -> matplotlib.image.AxesImage:
     -------
         `matplotlib.image.AxesImage` object returned by `imshow`
     """
-    return plt.imshow(slice_2d)
+    fig = plt.figure()
+    img = plt.imshow(slice_2d)
+    cbar = fig.colorbar(img)
+    cbar.minorticks_on()
+    return img
 
 def display_slice_bt_std(slice_2d: np.ndarray) -> (matplotlib.figure.Figure, 
                                                     matplotlib.pyplot.Axes):
