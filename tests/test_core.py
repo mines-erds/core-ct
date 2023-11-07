@@ -4,6 +4,7 @@ from core_ct.core import Core
 import numpy as np
 import copy
 
+
 def test_core():
     """Tests that a `Core` object can be created successfully."""
     # Define the pixel array and pixel_dimensions
@@ -33,6 +34,7 @@ def test_slice():
     assert slice_1.shape == (2, 8)
     assert slice_2.shape == (2, 4)
 
+
 def test_swapaxes():
     """Tests the `slice` method on the `Core`."""
     # Define the core
@@ -45,8 +47,9 @@ def test_swapaxes():
                 pixel_array[x, y, z] = counter
                 counter += 1
 
-    core: Core = Core(pixel_array=copy.deepcopy(pixel_array), 
-                      pixel_dimensions=[2.0, 4.0, 8.0])
+    core: Core = Core(
+        pixel_array=copy.deepcopy(pixel_array), pixel_dimensions=[2.0, 4.0, 8.0]
+    )
 
     # Swap various axes
     core_xy: Core = core.swapaxes(0, 1)
@@ -107,6 +110,7 @@ def test_swapaxes():
         # Make sure pixel_dimensions weren't altered
         assert core.pixel_dimensions == [2.0, 4.0, 8.0]
 
+
 def test_flip():
     """Tests the `flip` method on the `Core`."""
     # Define the core
@@ -119,8 +123,9 @@ def test_flip():
                 pixel_array[x, y, z] = counter
                 counter += 1
 
-    core: Core = Core(pixel_array=copy.deepcopy(pixel_array), 
-                      pixel_dimensions=[2.0, 4.0, 8.0])
+    core: Core = Core(
+        pixel_array=copy.deepcopy(pixel_array), pixel_dimensions=[2.0, 4.0, 8.0]
+    )
 
     # Flip various axes
     core_x: Core = core.flip(0)
@@ -163,6 +168,7 @@ def test_flip():
         # Make sure pixel_dimensions weren't altered
         assert core.pixel_dimensions == [2.0, 4.0, 8.0]
 
+
 def test_rotate():
     """Tests the `rotate` method on the `Core`."""
     # Define the core
@@ -175,8 +181,9 @@ def test_rotate():
                 pixel_array[x, y, z] = counter
                 counter += 1
 
-    core: Core = Core(pixel_array=copy.deepcopy(pixel_array), 
-                      pixel_dimensions=[2.0, 4.0, 8.0])
+    core: Core = Core(
+        pixel_array=copy.deepcopy(pixel_array), pixel_dimensions=[2.0, 4.0, 8.0]
+    )
 
     # Rotate various axes
     core_x: Core = core.rotate(0, k=1)
@@ -260,3 +267,13 @@ def test_rotate():
         assert np.array_equal(core.pixel_array, pixel_array)
         # Make sure pixel_dimensions weren't altered
         assert core.pixel_dimensions == [2.0, 4.0, 8.0]
+
+
+def test_join():
+    """Tests the `join` method on the `Core`."""
+    # Define the source and target cores for joining
+    source = Core(np.zeros([2, 4, 8]), [5.0, 4.0, 8.0])
+    target = Core(np.zeros([2, 4, 8]), [2.0, 4.0, 8.0])
+    joined = source.join(target)
+    print(joined.pixel_array.shape)
+    assert False
