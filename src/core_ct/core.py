@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 import numpy as np
-import copy
 
 
 class Core:
@@ -12,7 +11,7 @@ class Core:
     Attributes
     ----------
         pixel_array -- 3D numpy array of pixel data that make up the core
-        pixel_dimensions - list containing the dimensions of each pixel/voxel
+        pixel_dimensions -- tuple containing the dimensions of each pixel/voxel
 
     Methods
     -------
@@ -22,7 +21,7 @@ class Core:
     def __init__(
         self,
         pixel_array: np.ndarray | list[float],
-        pixel_dimensions: list[float] = [1.0, 1.0, 1.0],
+        pixel_dimensions: tuple[float, float, float] = (1.0, 1.0, 1.0),
     ):
         """
         Construct necessary attributes of a Core.
@@ -30,9 +29,9 @@ class Core:
         Arguments:
         ---------
             pixel_array: 3D numpy array of pixel data that make up the core
-            pixel_dimensions: list containing the dimensions of each pixel/voxel
+            pixel_dimensions: tuple containing the dimensions of each pixel/voxel
         """
-        self.pixel_dimensions: list[float] = pixel_dimensions
+        self.pixel_dimensions: tuple[float, float, float] = pixel_dimensions
 
         # data must be in a numpy array for slicing methods to work
         if not isinstance(pixel_array, np.ndarray):
@@ -142,12 +141,12 @@ class Core:
         pixel_array = np.swapaxes(self.pixel_array, axis1, axis2)
 
         # swap values in pixel dimensions
-        pixel_dimensions: list[float] = copy.copy(self.pixel_dimensions)
+        pixel_dimensions: list[float] = list(self.pixel_dimensions)
         pixel_dimensions[axis1] = self.pixel_dimensions[axis2]
         pixel_dimensions[axis2] = self.pixel_dimensions[axis1]
         
         # return new Core containing transformed data
-        return Core(pixel_array=pixel_array, pixel_dimensions=pixel_dimensions)
+        return Core(pixel_array=pixel_array, pixel_dimensions=tuple(pixel_dimensions))
 
     def flip(self, axis: int) -> Core:
         """
@@ -233,14 +232,14 @@ class Core:
         # figure out how to modify pixel_dimensions
         # if k is even, the array is being rotated by a factor of 180 degrees so we 
         # don't need to worry about switching dimensions
-        pixel_dimensions: list[float] = copy.copy(self.pixel_dimensions)
+        pixel_dimensions: list[float] = list(self.pixel_dimensions)
         if k % 2 != 0:
             # swap dimensions of correct axes
             pixel_dimensions[axis1] = self.pixel_dimensions[axis2]
             pixel_dimensions[axis2] = self.pixel_dimensions[axis1]
 
         # return new Core with transformed data
-        return Core(pixel_array=pixel_array, pixel_dimensions=pixel_dimensions)
+        return Core(pixel_array=pixel_array, pixel_dimensions=tuple(pixel_dimensions))
 
     def chunk(self, x1=0, y1=0, z1=0, x2=None, y2=None, z2=None) -> Core:
         """
