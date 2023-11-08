@@ -46,7 +46,7 @@ def test_swapaxes():
                 counter += 1
 
     core: Core = Core(pixel_array=copy.deepcopy(pixel_array), 
-                      pixel_dimensions=[2.0, 4.0, 8.0])
+                      pixel_dimensions=(2.0, 4.0, 8.0))
 
     # Swap various axes
     core_xy: Core = core.swapaxes(0, 1)
@@ -65,9 +65,9 @@ def test_swapaxes():
     assert np.array_equal(core_yz.pixel_array, swap_yz)
 
     # Check that pixel_dimensions were updated correctly
-    assert core_xy.pixel_dimensions == [4.0, 2.0, 8.0]
-    assert core_xz.pixel_dimensions == [8.0, 4.0, 2.0]
-    assert core_yz.pixel_dimensions == [2.0, 8.0, 4.0]
+    assert core_xy.pixel_dimensions == (4.0, 2.0, 8.0)
+    assert core_xz.pixel_dimensions == (8.0, 4.0, 2.0)
+    assert core_yz.pixel_dimensions == (2.0, 8.0, 4.0)
 
     # Check that Core.swapaxes() raises exceptions correctly
     try:
@@ -78,7 +78,7 @@ def test_swapaxes():
         # ValueError was raised (expected behavior), make sure no data was altered
         assert np.array_equal(core.pixel_array, pixel_array)
         # Make sure pixel_dimensions weren't altered
-        assert core.pixel_dimensions == [2.0, 4.0, 8.0]
+        assert core.pixel_dimensions == (2.0, 4.0, 8.0)
     try:
         core.swapaxes(0, -1)
         # if this line is reached, swapaxes failed to raise an exception
@@ -87,7 +87,7 @@ def test_swapaxes():
         # ValueError was raised (expected behavior), make sure no data was altered
         assert np.array_equal(core.pixel_array, pixel_array)
         # Make sure pixel_dimensions weren't altered
-        assert core.pixel_dimensions == [2.0, 4.0, 8.0]
+        assert core.pixel_dimensions == (2.0, 4.0, 8.0)
     try:
         core.swapaxes(3, 0)
         # if this line is reached, swapaxes failed to raise an exception
@@ -96,7 +96,7 @@ def test_swapaxes():
         # ValueError was raised (expected behavior), make sure no data was altered
         assert np.array_equal(core.pixel_array, pixel_array)
         # Make sure pixel_dimensions weren't altered
-        assert core.pixel_dimensions == [2.0, 4.0, 8.0]
+        assert core.pixel_dimensions == (2.0, 4.0, 8.0)
     try:
         core.swapaxes(0, 3)
         # if this line is reached, swapaxes failed to raise an exception
@@ -105,7 +105,7 @@ def test_swapaxes():
         # ValueError was raised (expected behavior), make sure no data was altered
         assert np.array_equal(core.pixel_array, pixel_array)
         # Make sure pixel_dimensions weren't altered
-        assert core.pixel_dimensions == [2.0, 4.0, 8.0]
+        assert core.pixel_dimensions == (2.0, 4.0, 8.0)
 
 def test_flip():
     """Tests the `flip` method on the `Core`."""
@@ -120,7 +120,7 @@ def test_flip():
                 counter += 1
 
     core: Core = Core(pixel_array=copy.deepcopy(pixel_array), 
-                      pixel_dimensions=[2.0, 4.0, 8.0])
+                      pixel_dimensions=(2.0, 4.0, 8.0))
 
     # Flip various axes
     core_x: Core = core.flip(0)
@@ -139,9 +139,9 @@ def test_flip():
     assert np.array_equal(core_z.pixel_array, flip_z)
 
     # Check that pixel_dimensions remained constant
-    assert core_x.pixel_dimensions == shape
-    assert core_y.pixel_dimensions == shape
-    assert core_z.pixel_dimensions == shape
+    assert core_x.pixel_dimensions == (2.0, 4.0, 8.0)
+    assert core_y.pixel_dimensions == (2.0, 4.0, 8.0)
+    assert core_z.pixel_dimensions == (2.0, 4.0, 8.0)
 
     # Check that Core.rotate() raises exceptions correctly
     try:
@@ -152,7 +152,7 @@ def test_flip():
         # ValueError was raised (expected behavior), make sure no data was altered
         assert np.array_equal(core.pixel_array, pixel_array)
         # Make sure pixel_dimensions weren't altered
-        assert core.pixel_dimensions == [2.0, 4.0, 8.0]
+        assert core.pixel_dimensions == (2.0, 4.0, 8.0)
     try:
         core.flip(3)
         # if this line is reached, rotate failed to raise an exception
@@ -161,7 +161,7 @@ def test_flip():
         # ValueError was raised (expected behavior), make sure no data was altered
         assert np.array_equal(core.pixel_array, pixel_array)
         # Make sure pixel_dimensions weren't altered
-        assert core.pixel_dimensions == [2.0, 4.0, 8.0]
+        assert core.pixel_dimensions == (2.0, 4.0, 8.0)
 
 def test_rotate():
     """Tests the `rotate` method on the `Core`."""
@@ -176,7 +176,7 @@ def test_rotate():
                 counter += 1
 
     core: Core = Core(pixel_array=copy.deepcopy(pixel_array), 
-                      pixel_dimensions=[2.0, 4.0, 8.0])
+                      pixel_dimensions=(2.0, 4.0, 8.0))
 
     # Rotate various axes
     core_x: Core = core.rotate(0, k=1)
@@ -195,9 +195,9 @@ def test_rotate():
     assert np.array_equal(core_z.pixel_array, rot_z)
 
     # Check that pixel_dimensions were updated correctly
-    assert core_x.pixel_dimensions == [2.0, 8.0, 4.0]
-    assert core_y.pixel_dimensions == [8.0, 4.0, 2.0]
-    assert core_z.pixel_dimensions == [4.0, 2.0, 8.0]
+    assert core_x.pixel_dimensions == (2.0, 8.0, 4.0)
+    assert core_y.pixel_dimensions == (8.0, 4.0, 2.0)
+    assert core_z.pixel_dimensions == (4.0, 2.0, 8.0)
 
     # Rotate various axes with an even k
     core_x: Core = core.rotate(0, k=2)
@@ -216,9 +216,9 @@ def test_rotate():
     assert np.array_equal(core_z.pixel_array, rot_z)
 
     # Check that pixel_dimensions were not changed
-    assert core_x.pixel_dimensions == shape
-    assert core_y.pixel_dimensions == shape
-    assert core_z.pixel_dimensions == shape
+    assert core_x.pixel_dimensions == (2.0, 4.0, 8.0)
+    assert core_y.pixel_dimensions == (2.0, 4.0, 8.0)
+    assert core_z.pixel_dimensions == (2.0, 4.0, 8.0)
 
     # Rotate various axes clockwise
     core_x: Core = core.rotate(0, k=1, clockwise=True)
@@ -237,9 +237,9 @@ def test_rotate():
     assert np.array_equal(core_z.pixel_array, rot_z)
 
     # Check that pixel_dimensions were updated correctly
-    assert core_x.pixel_dimensions == [2.0, 8.0, 4.0]
-    assert core_y.pixel_dimensions == [8.0, 4.0, 2.0]
-    assert core_z.pixel_dimensions == [4.0, 2.0, 8.0]
+    assert core_x.pixel_dimensions == (2.0, 8.0, 4.0)
+    assert core_y.pixel_dimensions == (8.0, 4.0, 2.0)
+    assert core_z.pixel_dimensions == (4.0, 2.0, 8.0)
 
     # Check that Core.rotate() raises exceptions correctly
     try:
@@ -250,7 +250,7 @@ def test_rotate():
         # ValueError was raised (expected behavior), make sure no data was altered
         assert np.array_equal(core.pixel_array, pixel_array)
         # Make sure pixel_dimensions weren't altered
-        assert core.pixel_dimensions == [2.0, 4.0, 8.0]
+        assert core.pixel_dimensions == (2.0, 4.0, 8.0)
     try:
         core.rotate(3)
         # if this line is reached, rotate failed to raise an exception
@@ -259,4 +259,4 @@ def test_rotate():
         # ValueError was raised (expected behavior), make sure no data was altered
         assert np.array_equal(core.pixel_array, pixel_array)
         # Make sure pixel_dimensions weren't altered
-        assert core.pixel_dimensions == [2.0, 4.0, 8.0]
+        assert core.pixel_dimensions == (2.0, 4.0, 8.0)
