@@ -293,7 +293,7 @@ def test_dimensions():
     # Create a fake core
     core_fake = Core(np.zeros([2, 4, 8]), [2.0, 4.0, 8.0])
 
-    # Assert that the size of the core is correct
+    # Assert that the size of the core is correct in different dimensions
     assert core_fake.dimensions() == (4.0, 16.0, 64.0)
 
     # Import the scan from the directory
