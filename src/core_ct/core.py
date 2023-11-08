@@ -297,42 +297,19 @@ class Core:
         """
         return self.pixel_array.shape
 
-    def dimensions(self, unit: str = "mm") -> tuple[float, float, float]:
+    def dimensions(self) -> tuple[float, float, float]:
         """
-        Get the dimensions of the scan in mm or a specified unit.
+        Get the dimensions of the scan in mm.
 
         Arguments:
         ---------
-            unit: string specifying what units to return the dimensions in
-                    mm: millimeters
-                    cm: centimeters
-                    ft: feet
-                    in: inches
+            none
 
         Returns:
         -------
-            The dimensions of the scan in mm or a specified unit.
-
-        Raises:
-        ------
-            ValueError if unit is a value other than "mm", "cm", "ft", or "in"
+            The dimensions of the scan in mm.
         """
-        # Calculate the dimensions in mm
-        dimensions_mm = tuple(
+        return tuple(
             size * dimension
             for size, dimension in zip(self.pixel_array.shape, self.pixel_dimensions)
         )
-
-        if unit not in ["mm", "cm", "ft", "in"]:
-            raise ValueError('unit must be a value of "mm", "cm", "ft", or "in"')
-
-        # Return the dimensions in the specified unit
-        match unit:
-            case "mm":
-                return dimensions_mm
-            case "cm":
-                return dimensions_mm / 10
-            case "ft":
-                return dimensions_mm / 304.8
-            case "in":
-                return dimensions_mm / 25.4

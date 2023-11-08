@@ -290,11 +290,15 @@ def test_shape():
 
 def test_dimensions():
     """Tests the `dimensions` method on the `Core`."""
-    # Create a fake core
-    core_fake = Core(np.zeros([2, 4, 8]), [2.0, 4.0, 8.0])
+    # Create a couple of fake cores
+    core_fake_0 = Core(np.zeros([2, 4, 8]), [2.0, 4.0, 8.0])
+    core_fake_1 = Core(np.zeros([6, 1, 11]), [2.0, 4.0, 8.0])
+    core_fake_2 = Core(np.zeros([2, 4, 8]), [0.31, 0.56, 1.2])
 
-    # Assert that the size of the core is correct in different dimensions
-    assert core_fake.dimensions() == (4.0, 16.0, 64.0)
+    # Assert that the size of the cores is correct
+    assert core_fake_0.dimensions() == (4.0, 16.0, 64.0)
+    assert core_fake_1.dimensions() == (12.0, 4.0, 88.0)
+    assert core_fake_2.dimensions() == (2 * 0.31, 4 * 0.56, 8 * 1.2)
 
     # Import the scan from the directory
     core = importers.dicom(dir=os.path.join(scans_dir, "PAT_4636_39L_0001"))
