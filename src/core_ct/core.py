@@ -285,7 +285,7 @@ class Core:
 
     def join(self, core: Core, axis: int = 0) -> Core:
         """
-        Join a core to the current core on specified axis.
+        Join a core to the current core on a specified axis.
 
         Arguments:
         ---------
