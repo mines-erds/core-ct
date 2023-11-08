@@ -290,7 +290,10 @@ class Core:
         Arguments:
         ---------
             core: the `Core` object to join with the current core
-            axis: the axis to join the cores on
+            axis: integer specifying which axis to rotate about (0, 1, or 2)
+                    0: x-axis
+                    1: y-axis
+                    2: z-axis
 
         Returns:
         -------
@@ -298,9 +301,9 @@ class Core:
 
         Raises:
         ------
-            Exception if axis is a value other than 0, 1, or 2
-            Exception if the `pixel_dimensions` of the cores don't match
-            Exception if the shapes of the cores along an axis don't match
+            ValueError if axis is a value other than 0, 1, or 2
+            ValueError if the `pixel_dimensions` of the cores don't match
+            ValueError if the shapes of the cores along an axis don't match
         """
         # Check that the axis values are valid
         if axis < 0 or axis > 2:
