@@ -108,6 +108,51 @@ class Core:
             case _:
                 raise ValueError("axis must be a value between 0 and 2 (inclusive)")
 
+    def trim_by_percent(self, axis: int, percent_on_left: float, percent_on_right: float | None = None) -> None:
+        """
+        Reduces the dimensions of the core along a specified axis.
+
+        Get a three-dimensional slice of the core scan by trimming off a percent
+        on the requested axis. This function is symmetrical by default.
+
+        Arguments:
+        ---------
+            axis: integer either 0,1,2 specifying which dimension to collapse:
+                    0 corresponds to x-axis
+                    1 corresponds to y-axis
+                    2 corresponds to z-axis
+            percent_on_left: percent to trim off the left side.
+            percent_on_right: percent to trim off the right side.
+
+        Raises:
+        ------
+            ValueError if axis is a value other than 0, 1, or 2
+        """
+        if percent_on_left is None:
+            percent_on_left = percent_on_right
+
+        match axis:
+            case 0:
+                loc_start = self.pixel_dimensions[0] * percent_on_left
+                loc_end = self.pixel_dimensions[0] * percent_on_right
+                self.pixel_array = self.pixel_array[
+                    loc_start : len(self.pixel_array) - loc_end
+                ]
+            case 1:
+                loc_start = self.pixel_dimensions[1] * percent_on_left
+                loc_end = self.pixel_dimensions[1] * percent_on_right
+                self.pixel_array = self.pixel_array[
+                    :, loc_start : len(self.pixel_array[0]) - loc_end
+                ]
+            case 2:
+                loc_start = self.pixel_dimensions[2] * percent_on_left
+                loc_end = self.pixel_dimensions[2] * percent_on_right
+                self.pixel_array = self.pixel_array[
+                    :, :, loc_start : len(self.pixel_array[0, 0]) - loc_end
+                ]
+            case _:
+                raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+
     def swapaxes(self, axis1: int, axis2: int) -> Core:
         """
         Create a new Core object with swapped axes and updated pixel dimensions.
@@ -280,4 +325,27 @@ class Core:
             z2 = temp
 
         new_core = Core(self.pixel_array[x1:x2, y1:y2, z1:z2], self.pixel_dimensions)
+        return new_core
+
+    def filter(self, brightness_filter) -> Core:
+        """
+        Get a three-dimensional section of the core scan.
+
+        Arguments:
+        ---------
+            brightness_filter: lambda function that defines what will be filtered out.
+                               This function must either return the passed value or set
+                               it to None.
+
+        Returns:
+        -------
+            New core object with only the specified brightness values left.
+        """
+        core_filtered = self.pixel_array
+        for row in self.pixel_array:
+            for col in row:
+                for brightness in col:
+                    core_filtered[row][col][brightness] = brightness_filter(brightness)
+
+        new_core = Core(core_filtered, self.pixel_dimensions)
         return new_core

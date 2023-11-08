@@ -260,3 +260,31 @@ def test_rotate():
         assert np.array_equal(core.pixel_array, pixel_array)
         # Make sure pixel_dimensions weren't altered
         assert core.pixel_dimensions == (2.0, 4.0, 8.0)
+
+def test_filter():
+    """Tests the `flip` method on the `Core`."""
+    # Define the core
+    shape: list[int] = [2, 4, 8]
+    pixel_array: np.ndarray = np.zeros(shape)
+    counter: int = 0
+    for x in range(shape[0]):
+        for y in range(shape[1]):
+            for z in range(shape[2]):
+                pixel_array[x, y, z] = counter
+                counter += 1
+
+    core: Core = Core(pixel_array=copy.deepcopy(pixel_array),
+                      pixel_dimensions=(2.0, 4.0, 8.0))
+
+    filter_func = lambda a : None if 3 <= a <= 8 else a
+
+    filtered_core: Core = core.filter(filter_func)
+
+    # Ensure that new core is the same size
+    assert filtered_core.pixel_dimensions == core.pixel_dimensions
+
+    # ensure that values left are only the filtered values
+    for row in filtered_core.pixel_dimensions:
+        for col in row:
+            for num in col:
+                assert 3 <= num <= 8
