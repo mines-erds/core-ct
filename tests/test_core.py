@@ -302,3 +302,6 @@ def test_dimensions():
     # Assert that the core imported correctly
     assert core.pixel_array.shape == (512, 512, 11)
     assert core.pixel_dimensions == [0.43, 0.43, 0.5]
+
+    # Check that the dimensions of the core are correct
+    assert core.dimensions() == (512 * 0.43, 512 * 0.43, 11 * 0.5)

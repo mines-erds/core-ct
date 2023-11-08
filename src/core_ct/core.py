@@ -3,6 +3,7 @@
 from __future__ import annotations
 import numpy as np
 import copy
+from enum import Enum
 
 
 class Core:
@@ -296,6 +297,12 @@ class Core:
             The pixel dimensions of the core scan.
         """
         return self.pixel_array.shape
+
+    class Unit(Enum):
+        """Unit neum."""
+
+        MM = 0
+        Inch = 1
 
     def dimensions(self) -> tuple[float, float, float]:
         """
