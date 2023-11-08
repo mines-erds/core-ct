@@ -272,15 +272,15 @@ def test_rotate():
         # ValueError was raised (expected behavior), make sure no data was altered
         assert np.array_equal(core.pixel_array, pixel_array)
         # Make sure pixel_dimensions weren't altered
-        assert core.pixel_dimensions == [2.0, 4.0, 8.0]
+        assert core.pixel_dimensions == (2.0, 4.0, 8.0)
 
 
 def test_shape():
     """Tests the `shape` method on the `Core`."""
     # Create a couple of test cores
-    core_0 = Core(np.zeros([2, 4, 8]), [2.0, 4.0, 8.0])
-    core_1 = Core(np.zeros([5, 2, 6]), [2.0, 4.0, 8.0])
-    core_2 = Core(np.zeros([9, 1, 7]), [2.0, 4.0, 8.0])
+    core_0 = Core(np.zeros([2, 4, 8]), (2.0, 4.0, 8.0))
+    core_1 = Core(np.zeros([5, 2, 6]), (2.0, 4.0, 8.0))
+    core_2 = Core(np.zeros([9, 1, 7]), (2.0, 4.0, 8.0))
 
     # Assert that their shapes are correct
     assert core_0.shape() == (2, 4, 8)
@@ -291,9 +291,9 @@ def test_shape():
 def test_dimensions():
     """Tests the `dimensions` method on the `Core`."""
     # Create a couple of fake cores
-    core_fake_0 = Core(np.zeros([2, 4, 8]), [2.0, 4.0, 8.0])
-    core_fake_1 = Core(np.zeros([6, 1, 11]), [2.0, 4.0, 8.0])
-    core_fake_2 = Core(np.zeros([2, 4, 8]), [0.31, 0.56, 1.2])
+    core_fake_0 = Core(np.zeros([2, 4, 8]), (2.0, 4.0, 8.0))
+    core_fake_1 = Core(np.zeros([6, 1, 11]), (2.0, 4.0, 8.0))
+    core_fake_2 = Core(np.zeros([2, 4, 8]), (0.31, 0.56, 1.2))
 
     # Assert that the size of the cores is correct
     assert core_fake_0.dimensions() == (4.0, 16.0, 64.0)
@@ -305,7 +305,7 @@ def test_dimensions():
 
     # Assert that the core imported correctly
     assert core.pixel_array.shape == (512, 512, 11)
-    assert core.pixel_dimensions == [0.43, 0.43, 0.5]
+    assert core.pixel_dimensions == (0.43, 0.43, 0.5)
 
     # Check that the dimensions of the core are correct
     assert core.dimensions() == (512 * 0.43, 512 * 0.43, 11 * 0.5)
@@ -316,7 +316,7 @@ def test_volume():
     # Define the pixel array and dimensions for the core
     shape = [2, 4, 8]
     pixel_array = np.zeros(shape)
-    pixel_dimensions = [2.0, 4.0, 8.0]
+    pixel_dimensions = (2.0, 4.0, 8.0)
 
     # Fill in the pixel array
     counter = 0
