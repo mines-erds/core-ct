@@ -295,6 +295,12 @@ class Core:
         Returns:
         -------
             New core object made up of the two joined arrays
+
+        Raises:
+        ------
+            Exception if axis is a value other than 0, 1, or 2
+            Exception if the `pixel_dimensions` of the cores don't match
+            Exception if the shapes of the cores along an axis don't match
         """
         # Check that the axis values are valid
         if axis < 0 or axis > 2:
