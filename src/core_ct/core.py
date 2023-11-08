@@ -290,7 +290,7 @@ class Core:
         Arguments:
         ---------
             core: the `Core` object to join with the current core
-            axis: integer specifying which axis to rotate about (0, 1, or 2)
+            axis: integer specifying which axis to join the cores on
                     0: x-axis
                     1: y-axis
                     2: z-axis
