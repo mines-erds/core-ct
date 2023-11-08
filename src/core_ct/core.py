@@ -313,3 +313,32 @@ class Core:
             size * dimension
             for size, dimension in zip(self.pixel_array.shape, self.pixel_dimensions)
         )
+
+    def volume(
+        self, min_density: float = 0, max_density: float = float("inf")
+    ) -> float:
+        """
+        Approximates the core volume in mm.
+
+        Arguments:
+        ---------
+            min_density: minimum density for a voxel to be counted towards the volume
+            max_density: maximum density for a voxel to be counted towards the volume
+
+        Returns:
+        -------
+            The approximate volume of the core in cubic mm.
+        """
+        # Calculate the volume of a voxel
+        voxel_volume = (
+            self.pixel_dimensions[0]
+            * self.pixel_dimensions[1]
+            * self.pixel_dimensions[2]
+        )
+
+        # Count the number of voxels within the density range
+        valid_voxels = (
+            (min_density <= self.pixel_array) & (max_density >= self.pixel_array)
+        ).sum()
+
+        return valid_voxels * voxel_volume

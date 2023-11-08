@@ -309,3 +309,31 @@ def test_dimensions():
 
     # Check that the dimensions of the core are correct
     assert core.dimensions() == (512 * 0.43, 512 * 0.43, 11 * 0.5)
+
+
+def test_volume():
+    """Tests the `volume` method on the `Core`."""
+    # Define the pixel array and dimensions for the core
+    shape = [2, 4, 8]
+    pixel_array = np.zeros(shape)
+    pixel_dimensions = [2.0, 4.0, 8.0]
+
+    # Fill in the pixel array
+    counter = 0
+    for x in range(shape[0]):
+        for y in range(shape[1]):
+            for z in range(shape[2]):
+                pixel_array[x, y, z] = counter
+                counter += 1
+
+    # Define the voxel dimensions
+    voxel_dimensions = pixel_dimensions[0] * pixel_dimensions[1] * pixel_dimensions[2]
+
+    # Create the core from the pixel array and dimensions
+    core = Core(pixel_array, pixel_dimensions)
+
+    # Verify the volume is correct within various density ranges
+    assert core.volume() == 64 * voxel_dimensions
+    assert core.volume(min_density=32) == 32 * voxel_dimensions
+    assert core.volume(max_density=15) == 16 * voxel_dimensions
+    assert core.volume(min_density=16, max_density=31) == 16 * voxel_dimensions
