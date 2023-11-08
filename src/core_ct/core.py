@@ -283,9 +283,9 @@ class Core:
         new_core = Core(self.pixel_array[x1:x2, y1:y2, z1:z2], self.pixel_dimensions)
         return new_core
 
-    def shape(self):
+    def shape(self) -> tuple[int, int, int]:
         """
-        Get the pixel dimensions of the dicom scan.
+        Get the pixel dimensions of the core scan.
 
         Arguments:
         ---------
@@ -293,5 +293,6 @@ class Core:
 
         Returns:
         -------
-            The dimensions.
+            The pixel dimensions of the core scan.
         """
+        return self.pixel_array.shape
