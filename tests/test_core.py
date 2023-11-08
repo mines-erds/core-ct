@@ -1,8 +1,14 @@
 """Tests the `Core` class in the `core` module."""
 
 from core_ct.core import Core
+from core_ct import importers
 import numpy as np
 import copy
+import os
+
+
+tests_dir = os.path.dirname(os.path.realpath(__file__))
+scans_dir = os.path.join(tests_dir, "scans")
 
 
 def test_core():
@@ -280,3 +286,19 @@ def test_shape():
     assert core_0.shape() == (2, 4, 8)
     assert core_1.shape() == (5, 2, 6)
     assert core_2.shape() == (9, 1, 7)
+
+
+def test_dimensions():
+    """Tests the `dimensions` method on the `Core`."""
+    # Create a fake core
+    core_fake = Core(np.zeros([2, 4, 8]), [2.0, 4.0, 8.0])
+
+    # Assert that the size of the core is correct
+    assert core_fake.dimensions() == (4.0, 16.0, 64.0)
+
+    # Import the scan from the directory
+    core = importers.dicom(dir=os.path.join(scans_dir, "PAT_4636_39L_0001"))
+
+    # Assert that the core imported correctly
+    assert core.pixel_array.shape == (512, 512, 11)
+    assert core.pixel_dimensions == [0.43, 0.43, 0.5]

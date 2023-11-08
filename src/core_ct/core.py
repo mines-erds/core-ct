@@ -296,3 +296,20 @@ class Core:
             The pixel dimensions of the core scan.
         """
         return self.pixel_array.shape
+
+    def dimensions(self) -> tuple[float, float, float]:
+        """
+        Get the dimensions of the scan in mm.
+
+        Arguments:
+        ---------
+            none
+
+        Returns:
+        -------
+            The dimensions of the scan in mm.
+        """
+        return tuple(
+            size * dimension
+            for size, dimension in zip(self.pixel_array.shape, self.pixel_dimensions)
+        )
