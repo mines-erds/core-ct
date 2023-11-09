@@ -3,6 +3,8 @@
 from core_ct.core import Core
 import numpy as np
 import copy
+import pytest
+
 
 def test_core():
     """Tests that a `Core` object can be created successfully."""
@@ -33,6 +35,7 @@ def test_slice():
     assert slice_1.shape == (2, 8)
     assert slice_2.shape == (2, 4)
 
+
 def test_swapaxes():
     """Tests the `slice` method on the `Core`."""
     # Define the core
@@ -45,8 +48,9 @@ def test_swapaxes():
                 pixel_array[x, y, z] = counter
                 counter += 1
 
-    core: Core = Core(pixel_array=copy.deepcopy(pixel_array), 
-                      pixel_dimensions=(2.0, 4.0, 8.0))
+    core: Core = Core(
+        pixel_array=copy.deepcopy(pixel_array), pixel_dimensions=(2.0, 4.0, 8.0)
+    )
 
     # Swap various axes
     core_xy: Core = core.swapaxes(0, 1)
@@ -107,6 +111,7 @@ def test_swapaxes():
         # Make sure pixel_dimensions weren't altered
         assert core.pixel_dimensions == (2.0, 4.0, 8.0)
 
+
 def test_flip():
     """Tests the `flip` method on the `Core`."""
     # Define the core
@@ -119,8 +124,9 @@ def test_flip():
                 pixel_array[x, y, z] = counter
                 counter += 1
 
-    core: Core = Core(pixel_array=copy.deepcopy(pixel_array), 
-                      pixel_dimensions=(2.0, 4.0, 8.0))
+    core: Core = Core(
+        pixel_array=copy.deepcopy(pixel_array), pixel_dimensions=(2.0, 4.0, 8.0)
+    )
 
     # Flip various axes
     core_x: Core = core.flip(0)
@@ -163,6 +169,7 @@ def test_flip():
         # Make sure pixel_dimensions weren't altered
         assert core.pixel_dimensions == (2.0, 4.0, 8.0)
 
+
 def test_rotate():
     """Tests the `rotate` method on the `Core`."""
     # Define the core
@@ -175,8 +182,9 @@ def test_rotate():
                 pixel_array[x, y, z] = counter
                 counter += 1
 
-    core: Core = Core(pixel_array=copy.deepcopy(pixel_array), 
-                      pixel_dimensions=(2.0, 4.0, 8.0))
+    core: Core = Core(
+        pixel_array=copy.deepcopy(pixel_array), pixel_dimensions=(2.0, 4.0, 8.0)
+    )
 
     # Rotate various axes
     core_x: Core = core.rotate(0, k=1)
@@ -288,3 +296,45 @@ def test_filter():
         for col in row:
             for num in col:
                 assert 3 <= num <= 8
+
+def test_join():
+    """Tests the `join` method on the `Core`."""
+    # Define the target core for joining
+    target = Core(np.zeros([2, 4, 8]), (2.0, 4.0, 8.0))
+    # Define the source cores for joining
+    source_valid = Core(np.zeros([2, 4, 8]), (2.0, 4.0, 8.0))
+    source_invalid_dimensions = Core(np.zeros([2, 4, 8]), (8.0, 4.0, 2.0))
+    source_invalid_axis = Core(np.zeros([2, 16, 8]), (2.0, 4.0, 8.0))
+
+    # Join the cores together on each axis
+    joined_valid_0 = target.join(source_valid, axis=0)
+    joined_valid_1 = target.join(source_valid, axis=1)
+    joined_valid_2 = target.join(source_valid, axis=2)
+
+    # Assert the valid core joins together properly on each axis
+    assert joined_valid_0.pixel_array.shape == (4, 4, 8)
+    assert joined_valid_1.pixel_array.shape == (2, 8, 8)
+    assert joined_valid_2.pixel_array.shape == (2, 4, 16)
+
+    # Test that a negative axis can't be passed
+    with pytest.raises(ValueError):
+        target.join(source_valid, axis=-1)
+
+    # Test that an axis greater than 2 can't be passed
+    with pytest.raises(ValueError):
+        target.join(source_valid, axis=3)
+
+    # Test that the join method fails on invalid dimensions
+    with pytest.raises(
+        ValueError,
+        match=r".*\(8\.0, 4\.0, 2\.0\) != \(2\.0, 4\.0, 8\.0\)",
+    ):
+        target.join(source_invalid_dimensions, axis=0)
+
+    # Test that the join method fails with an invalid shape along an axis
+    with pytest.raises(ValueError):
+        target.join(source_invalid_axis, axis=0)
+
+    # Test that it works along another axis
+    joined_invalid_axis = target.join(source_invalid_axis, axis=1)
+    assert joined_invalid_axis.pixel_array.shape == (2, 20, 8)
