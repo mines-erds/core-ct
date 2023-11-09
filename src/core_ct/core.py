@@ -85,6 +85,10 @@ class Core:
             loc_start: specifies the amount to trim off the beginning.
             loc_end: specifies the amount to trim off the end.
 
+        Returns:
+        -------
+            A new trimmed core object
+
         Raises:
         ------
             ValueError if axis is a value other than 0, 1, or 2
@@ -125,6 +129,10 @@ class Core:
                     2 corresponds to z-axis
             percent_on_left: percent to trim off the left side.
             percent_on_right: percent to trim off the right side.
+
+        Returns:
+        -------
+            A new trimmed core object
 
         Raises:
         ------
