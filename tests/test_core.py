@@ -276,7 +276,7 @@ def test_filter():
     core: Core = Core(pixel_array=copy.deepcopy(pixel_array),
                       pixel_dimensions=(2.0, 4.0, 8.0))
 
-    filter_func = lambda a : None if 3 <= a <= 8 else a
+    filter_func = lambda a : a if 3 <= a <= 8 else None
 
     filtered_core: Core = core.filter(filter_func)
 
@@ -284,7 +284,7 @@ def test_filter():
     assert filtered_core.pixel_dimensions == core.pixel_dimensions
 
     # ensure that values left are only the filtered values
-    for row in filtered_core.pixel_dimensions:
-        for col in row:
-            for num in col:
-                assert 3 <= num <= 8
+    for i, row in enumerate(filtered_core.pixel_array):
+        for j, col in enumerate(row):
+            for brightness in col:
+                assert 3 <= brightness <= 8
