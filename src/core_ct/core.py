@@ -130,28 +130,28 @@ class Core:
         ------
             ValueError if axis is a value other than 0, 1, or 2
         """
-        if percent_on_left is None:
-            percent_on_left = percent_on_right
+        if percent_on_right is None:
+            percent_on_right = percent_on_left
 
         if percent_on_left > 0.5 or percent_on_right > 0.5:
             raise ValueError("Percents must be a less than 0.5")
 
         match axis:
             case 0:
-                loc_start = int(self.pixel_dimensions[0] * percent_on_left)
-                loc_end = int(self.pixel_dimensions[0] * percent_on_right)
+                loc_start = int(self.pixel_array.shape[0] * percent_on_left)
+                loc_end = int(self.pixel_array.shape[0] * percent_on_right)
                 new_pixel_array = self.pixel_array[
                     loc_start : len(self.pixel_array) - loc_end
                 ]
             case 1:
-                loc_start = int(self.pixel_dimensions[1] * percent_on_left)
-                loc_end = int(self.pixel_dimensions[1] * percent_on_right)
+                loc_start = int(self.pixel_array.shape[1] * percent_on_left)
+                loc_end = int(self.pixel_array.shape[1] * percent_on_right)
                 new_pixel_array = self.pixel_array[
                     :, loc_start : len(self.pixel_array[0]) - loc_end
                 ]
             case 2:
-                loc_start = int(self.pixel_dimensions[2] * percent_on_left)
-                loc_end = int(self.pixel_dimensions[2] * percent_on_right)
+                loc_start = int(self.pixel_array.shape[2] * percent_on_left)
+                loc_end = int(self.pixel_array.shape[2] * percent_on_right)
                 new_pixel_array = self.pixel_array[
                     :, :, loc_start : len(self.pixel_array[0, 0]) - loc_end
                 ]
@@ -348,11 +348,11 @@ class Core:
         -------
             New core object with only the specified brightness values left.
         """
-        core_filtered = self.pixel_array
-        for row in self.pixel_array:
-            for col in row:
-                for brightness in col:
-                    core_filtered[row][col][brightness] = brightness_filter(brightness)
+        core_filtered = self.pixel_array.copy()
+        for i, row in enumerate(self.pixel_array):
+            for j, col in enumerate(row):
+                for k, brightness in enumerate(col):
+                    core_filtered[i][j][k] = brightness_filter(brightness)
 
         new_core = Core(core_filtered, self.pixel_dimensions)
         return new_core
