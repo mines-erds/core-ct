@@ -196,7 +196,7 @@ class Core:
             raise ValueError("axis1 must be a value between 0 and 2 (inclusive)")
         if axis2 < 0 or axis2 > 2:
             raise ValueError("axis2 must be a value between 0 and 2 (inclusive)")
-        
+
         # swap axes in pixel array
         pixel_array = np.swapaxes(self.pixel_array, axis1, axis2)
 
@@ -204,7 +204,7 @@ class Core:
         pixel_dimensions: list[float] = list(self.pixel_dimensions)
         pixel_dimensions[axis1] = self.pixel_dimensions[axis2]
         pixel_dimensions[axis2] = self.pixel_dimensions[axis1]
-        
+
         # return new Core containing transformed data
         return Core(pixel_array=pixel_array, pixel_dimensions=tuple(pixel_dimensions))
 
@@ -230,17 +230,17 @@ class Core:
         # make sure axis inputs are valid
         if axis < 0 or axis > 2:
             raise ValueError("axis must be a value between 0 and 2 (inclusive)")
-        
+
         # swap axes in pixel array
         pixel_array = np.flip(self.pixel_array, axis)
-        
+
         # return new Core containing transformed data
         return Core(pixel_array=pixel_array, pixel_dimensions=self.pixel_dimensions)
 
     def rotate(self, axis: int, k: int = 1, clockwise: bool = False) -> Core:
         """
         Create a new `Core` object with data rotated 90 degrees about `axis` `k` times.
-        
+
         Rotates counter-clockwise by default, set `clockwise` to `True` to rotate
         clockwise instead.
 
@@ -264,11 +264,11 @@ class Core:
         # make sure axis inputs are valid
         if axis < 0 or axis > 2:
             raise ValueError("axis must be a value between 0 and 2 (inclusive)")
-        
+
         # handle clockwise/counter-clockwise conversion
         if clockwise:
             k = -k
-        
+
         # figure out which axis to use in call to numpy.rot90()
         axis1: int
         axis2: int
@@ -283,14 +283,14 @@ class Core:
             case 2:
                 axis1 = 0
                 axis2 = 1
-        
+
         pixel_array = np.rot90(self.pixel_array, k=k, axes=(axis1, axis2))
 
         # correcting pixel_dimensions below the rot90 call so pixel_dimensions won't
         # be messed up if rot90 fails
-        
+
         # figure out how to modify pixel_dimensions
-        # if k is even, the array is being rotated by a factor of 180 degrees so we 
+        # if k is even, the array is being rotated by a factor of 180 degrees so we
         # don't need to worry about switching dimensions
         pixel_dimensions: list[float] = list(self.pixel_dimensions)
         if k % 2 != 0:
@@ -342,6 +342,7 @@ class Core:
         new_core = Core(self.pixel_array[x1:x2, y1:y2, z1:z2], self.pixel_dimensions)
         return new_core
 
+
     def filter(self, brightness_filter) -> Core:
         """
         Get a three-dimensional section of the core scan.
@@ -364,3 +365,42 @@ class Core:
 
         new_core = Core(core_filtered, self.pixel_dimensions)
         return new_core
+
+    def join(self, core: Core, axis: int = 0) -> Core:
+        """
+        Join a core to the current core on a specified axis.
+
+        Arguments:
+        ---------
+            core: the `Core` object to join with the current core
+            axis: integer specifying which axis to join the cores on
+                    0: x-axis
+                    1: y-axis
+                    2: z-axis
+
+        Returns:
+        -------
+            New core object made up of the two joined arrays
+
+        Raises:
+        ------
+            ValueError if axis is a value other than 0, 1, or 2
+            ValueError if the `pixel_dimensions` of the cores don't match
+            ValueError if the shapes of the cores along an axis don't match
+        """
+        # Check that the axis values are valid
+        if axis < 0 or axis > 2:
+            raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+
+        # Check that the pixel dimensions match between the two cores
+        if core.pixel_dimensions != self.pixel_dimensions:
+            raise ValueError(
+                "the core's pixel dimensions must match, {source} != {target}".format(
+                    source=core.pixel_dimensions, target=self.pixel_dimensions
+                )
+            )
+
+        # Join the two pixel arrays together
+        joined_pixel_array = np.append(self.pixel_array, core.pixel_array, axis=axis)
+
+        return Core(joined_pixel_array, self.pixel_dimensions)
