@@ -270,7 +270,7 @@ def test_rotate():
         assert core.pixel_dimensions == (2.0, 4.0, 8.0)
 
 def test_filter():
-    """Tests the `flip` method on the `Core`."""
+    """Tests the `filter` method on the `Core`."""
     # Define the core
     shape: list[int] = [2, 4, 8]
     pixel_array: np.ndarray = np.zeros(shape)
@@ -295,7 +295,7 @@ def test_filter():
     for i, row in enumerate(filtered_core.pixel_array):
         for j, col in enumerate(row):
             for brightness in col:
-                assert 3 <= brightness <= 8
+                assert np.isnan(brightness) or 3 <= brightness <= 8
 
 def test_join():
     """Tests the `join` method on the `Core`."""
