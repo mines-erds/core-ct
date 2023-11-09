@@ -114,7 +114,8 @@ class Core:
 
         return Core(new_pixel_array, self.pixel_dimensions)
 
-    def trim_by_percent(self, axis: int, percent_on_left: float, percent_on_right: float | None = None) -> Core:
+    def trim_by_percent(self, axis: int, percent_on_left: float,
+                        percent_on_right: float | None = None) -> Core:
         """
         Reduces the dimensions of the core along a specified axis.
 
