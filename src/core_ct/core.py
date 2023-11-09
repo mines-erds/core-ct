@@ -69,7 +69,7 @@ class Core:
             case _:
                 raise Exception("axis must be a value between 0 and 2 (inclusive)")
 
-    def trim(self, axis: int, loc_start: int, loc_end: int | None = None) -> None:
+    def trim(self, axis: int, loc_start: int, loc_end: int | None = None) -> Core:
         """
         Reduces the dimensions of the core along a specified axis.
 
@@ -94,21 +94,23 @@ class Core:
 
         match axis:
             case 0:
-                self.pixel_array = self.pixel_array[
+                new_pixel_array = self.pixel_array[
                     loc_start : len(self.pixel_array) - loc_end
                 ]
             case 1:
-                self.pixel_array = self.pixel_array[
+                new_pixel_array = self.pixel_array[
                     :, loc_start : len(self.pixel_array[0]) - loc_end
                 ]
             case 2:
-                self.pixel_array = self.pixel_array[
+                new_pixel_array = self.pixel_array[
                     :, :, loc_start : len(self.pixel_array[0, 0]) - loc_end
                 ]
             case _:
                 raise ValueError("axis must be a value between 0 and 2 (inclusive)")
 
-    def trim_by_percent(self, axis: int, percent_on_left: float, percent_on_right: float | None = None) -> None:
+        return Core(new_pixel_array, self.pixel_dimensions)
+
+    def trim_by_percent(self, axis: int, percent_on_left: float, percent_on_right: float | None = None) -> Core:
         """
         Reduces the dimensions of the core along a specified axis.
 
@@ -131,27 +133,32 @@ class Core:
         if percent_on_left is None:
             percent_on_left = percent_on_right
 
+        if percent_on_left > 0.5 or percent_on_right > 0.5:
+            raise ValueError("Percents must be a less than 0.5")
+
         match axis:
             case 0:
-                loc_start = self.pixel_dimensions[0] * percent_on_left
-                loc_end = self.pixel_dimensions[0] * percent_on_right
-                self.pixel_array = self.pixel_array[
+                loc_start = int(self.pixel_dimensions[0] * percent_on_left)
+                loc_end = int(self.pixel_dimensions[0] * percent_on_right)
+                new_pixel_array = self.pixel_array[
                     loc_start : len(self.pixel_array) - loc_end
                 ]
             case 1:
-                loc_start = self.pixel_dimensions[1] * percent_on_left
-                loc_end = self.pixel_dimensions[1] * percent_on_right
-                self.pixel_array = self.pixel_array[
+                loc_start = int(self.pixel_dimensions[1] * percent_on_left)
+                loc_end = int(self.pixel_dimensions[1] * percent_on_right)
+                new_pixel_array = self.pixel_array[
                     :, loc_start : len(self.pixel_array[0]) - loc_end
                 ]
             case 2:
-                loc_start = self.pixel_dimensions[2] * percent_on_left
-                loc_end = self.pixel_dimensions[2] * percent_on_right
-                self.pixel_array = self.pixel_array[
+                loc_start = int(self.pixel_dimensions[2] * percent_on_left)
+                loc_end = int(self.pixel_dimensions[2] * percent_on_right)
+                new_pixel_array = self.pixel_array[
                     :, :, loc_start : len(self.pixel_array[0, 0]) - loc_end
                 ]
             case _:
                 raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+
+        return Core(new_pixel_array, self.pixel_dimensions)
 
     def swapaxes(self, axis1: int, axis2: int) -> Core:
         """
