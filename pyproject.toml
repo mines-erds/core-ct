@@ -20,6 +20,7 @@ pandas = "^2.1.1"
 pillow = "^10.0.1"
 pandas-stubs = "^2.1.1.230928"
 types-pillow = "^10.0.0.3"
+ipympl = "^0.9.3"
 
 
 [tool.poetry.group.dev.dependencies]
