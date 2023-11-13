@@ -336,3 +336,42 @@ class Core:
         valid_voxels = (~np.isnan(self.pixel_array)).sum()
 
         return valid_voxels * voxel_volume
+
+    def join(self, core: Core, axis: int = 0) -> Core:
+        """
+        Join a core to the current core on a specified axis.
+
+        Arguments:
+        ---------
+            core: the `Core` object to join with the current core
+            axis: integer specifying which axis to join the cores on
+                    0: x-axis
+                    1: y-axis
+                    2: z-axis
+
+        Returns:
+        -------
+            New core object made up of the two joined arrays
+
+        Raises:
+        ------
+            ValueError if axis is a value other than 0, 1, or 2
+            ValueError if the `pixel_dimensions` of the cores don't match
+            ValueError if the shapes of the cores along an axis don't match
+        """
+        # Check that the axis values are valid
+        if axis < 0 or axis > 2:
+            raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+
+        # Check that the pixel dimensions match between the two cores
+        if core.pixel_dimensions != self.pixel_dimensions:
+            raise ValueError(
+                "the core's pixel dimensions must match, {source} != {target}".format(
+                    source=core.pixel_dimensions, target=self.pixel_dimensions
+                )
+            )
+
+        # Join the two pixel arrays together
+        joined_pixel_array = np.append(self.pixel_array, core.pixel_array, axis=axis)
+
+        return Core(joined_pixel_array, self.pixel_dimensions)

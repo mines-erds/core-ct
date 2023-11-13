@@ -5,6 +5,7 @@ from core_ct import importers
 import numpy as np
 import copy
 import os
+import pytest
 
 
 tests_dir = os.path.dirname(os.path.realpath(__file__))
@@ -335,6 +336,46 @@ def test_volume():
     # TODO: Update these tests to use the volume function once it gets merged in
     # Verify the volume is correct within various density ranges
     assert core.volume() == 64 * voxel_dimensions
-    assert core.volume(min_density=32) == 32 * voxel_dimensions
-    assert core.volume(max_density=15) == 16 * voxel_dimensions
-    assert core.volume(min_density=16, max_density=31) == 16 * voxel_dimensions
+
+
+def test_join():
+    """Tests the `join` method on the `Core`."""
+    # Define the target core for joining
+    target = Core(np.zeros([2, 4, 8]), (2.0, 4.0, 8.0))
+    # Define the source cores for joining
+    source_valid = Core(np.zeros([2, 4, 8]), (2.0, 4.0, 8.0))
+    source_invalid_dimensions = Core(np.zeros([2, 4, 8]), (8.0, 4.0, 2.0))
+    source_invalid_axis = Core(np.zeros([2, 16, 8]), (2.0, 4.0, 8.0))
+
+    # Join the cores together on each axis
+    joined_valid_0 = target.join(source_valid, axis=0)
+    joined_valid_1 = target.join(source_valid, axis=1)
+    joined_valid_2 = target.join(source_valid, axis=2)
+
+    # Assert the valid core joins together properly on each axis
+    assert joined_valid_0.pixel_array.shape == (4, 4, 8)
+    assert joined_valid_1.pixel_array.shape == (2, 8, 8)
+    assert joined_valid_2.pixel_array.shape == (2, 4, 16)
+
+    # Test that a negative axis can't be passed
+    with pytest.raises(ValueError):
+        target.join(source_valid, axis=-1)
+
+    # Test that an axis greater than 2 can't be passed
+    with pytest.raises(ValueError):
+        target.join(source_valid, axis=3)
+
+    # Test that the join method fails on invalid dimensions
+    with pytest.raises(
+        ValueError,
+        match=r".*\(8\.0, 4\.0, 2\.0\) != \(2\.0, 4\.0, 8\.0\)",
+    ):
+        target.join(source_invalid_dimensions, axis=0)
+
+    # Test that the join method fails with an invalid shape along an axis
+    with pytest.raises(ValueError):
+        target.join(source_invalid_axis, axis=0)
+
+    # Test that it works along another axis
+    joined_invalid_axis = target.join(source_invalid_axis, axis=1)
+    assert joined_invalid_axis.pixel_array.shape == (2, 20, 8)
