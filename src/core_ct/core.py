@@ -284,7 +284,7 @@ class Core:
 
     def shape(self) -> tuple[int, int, int]:
         """
-        Get the pixel dimensions of the core scan.
+        Get the dimensions of the pixel array of the core scan.
 
         Arguments:
         ---------
@@ -306,7 +306,7 @@ class Core:
 
         Returns:
         -------
-            The dimensions of the scan in mm.
+            A three-element tuple containing the dimensions of the scan in mm.
         """
         return tuple(
             size * dimension
