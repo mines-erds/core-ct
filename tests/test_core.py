@@ -332,6 +332,7 @@ def test_volume():
     # Create the core from the pixel array and dimensions
     core = Core(pixel_array, pixel_dimensions)
 
+    # TODO: Update these tests to use the volume function once it gets merged in
     # Verify the volume is correct within various density ranges
     assert core.volume() == 64 * voxel_dimensions
     assert core.volume(min_density=32) == 32 * voxel_dimensions
