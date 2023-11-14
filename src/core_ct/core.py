@@ -128,8 +128,8 @@ class Core:
                     0 corresponds to x-axis
                     1 corresponds to y-axis
                     2 corresponds to z-axis
-            percent_on_left: percent to trim off the left side.
-            percent_on_right: percent to trim off the right side.
+            percent_start: percent to trim off the left side.
+            percent_end: percent to trim off the right side.
 
         Returns:
         -------
