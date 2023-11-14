@@ -315,7 +315,7 @@ class Core:
 
     def volume(self) -> float:
         """
-        Approximates the core volume in mm.
+        Approximates the core volume in mm; ignores any NaN values.
 
         Arguments:
         ---------
@@ -323,7 +323,7 @@ class Core:
 
         Returns:
         -------
-            The approximate volume of the core in cubic mm.
+            The approximate volume of the core in cubic mm ignoring NaN values.
         """
         # Calculate the volume of a voxel
         voxel_volume = (
