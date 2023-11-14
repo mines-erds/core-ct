@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 import numpy as np
+from typing import Callable
 
 
 class Core:
@@ -69,7 +70,7 @@ class Core:
             case _:
                 raise Exception("axis must be a value between 0 and 2 (inclusive)")
 
-    def trim(self, axis: int, loc_start: int, loc_end: int | None = None) -> None:
+    def trim(self, axis: int, loc_start: int, loc_end: int | None = None) -> Core:
         """
         Reduces the dimensions of the core along a specified axis.
 
@@ -85,6 +86,10 @@ class Core:
             loc_start: specifies the amount to trim off the beginning.
             loc_end: specifies the amount to trim off the end.
 
+        Returns:
+        -------
+            A new trimmed core object
+
         Raises:
         ------
             ValueError if axis is a value other than 0, 1, or 2
@@ -94,19 +99,60 @@ class Core:
 
         match axis:
             case 0:
-                self.pixel_array = self.pixel_array[
+                new_pixel_array = self.pixel_array[
                     loc_start : len(self.pixel_array) - loc_end
                 ]
             case 1:
-                self.pixel_array = self.pixel_array[
+                new_pixel_array = self.pixel_array[
                     :, loc_start : len(self.pixel_array[0]) - loc_end
                 ]
             case 2:
-                self.pixel_array = self.pixel_array[
+                new_pixel_array = self.pixel_array[
                     :, :, loc_start : len(self.pixel_array[0, 0]) - loc_end
                 ]
             case _:
                 raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+
+        return Core(new_pixel_array, self.pixel_dimensions)
+
+    def trim_by_percent(self, axis: int, percent_start: float,
+                        percent_end: float | None = None) -> Core:
+        """
+        Reduces the dimensions of the core along a specified axis.
+
+        Get a three-dimensional slice of the core scan by trimming off a percent
+        on the requested axis. This function is symmetrical by default.
+
+        Arguments:
+        ---------
+            axis: integer either 0,1,2 specifying which dimension to collapse:
+                    0 corresponds to x-axis
+                    1 corresponds to y-axis
+                    2 corresponds to z-axis
+            percent_start: percent to trim off the left side.
+            percent_end: percent to trim off the right side.
+
+        Returns:
+        -------
+            A new trimmed core object
+
+        Raises:
+        ------
+            ValueError if axis is a value other than 0, 1, or 2
+        """
+        if percent_end is None:
+            percent_end = percent_start
+
+        if percent_start + percent_end > 1.0:
+            raise ValueError("Percents must be a less than 1.0")
+
+        if axis in [0, 1, 2]:
+            loc_start = int(self.pixel_array.shape[axis] * percent_start)
+            loc_end = int(self.pixel_array.shape[axis] * percent_end)
+        else:
+            raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+
+        return self.trim(axis, loc_start, loc_end)
 
     def swapaxes(self, axis1: int, axis2: int) -> Core:
         """
@@ -336,6 +382,32 @@ class Core:
         valid_voxels = (~np.isnan(self.pixel_array)).sum()
 
         return valid_voxels * voxel_volume
+    def filter(self, brightness_filter: Callable[[float], bool]) -> Core:
+        """
+        Get section of the core that only contains the specified brightness values.
+
+        Arguments:
+        ---------
+            brightness_filter: lambda function that defines what will be filtered out.
+                               Function must either return false if the value should
+                               not be included or true if the value should be included.
+
+        Returns:
+        -------
+            New core object with only the specified brightness values left,
+            everything else is set to nan.
+        """
+        core_filtered = self.pixel_array.copy()
+        for i, row in enumerate(self.pixel_array):
+            for j, col in enumerate(row):
+                for k, brightness in enumerate(col):
+                    if brightness_filter(brightness):
+                        core_filtered[i][j][k] = self.pixel_array[i][j][k]
+                    else:
+                        core_filtered[i][j][k] = np.nan
+
+        new_core = Core(core_filtered, self.pixel_dimensions)
+        return new_core
 
     def join(self, core: Core, axis: int = 0) -> Core:
         """
