@@ -142,7 +142,7 @@ class Core:
         if percent_end is None:
             percent_end = percent_start
 
-        if percent_start > 1.0 or percent_end > 1.0:
+        if percent_start + percent_end > 1.0:
             raise ValueError("Percents must be a less than 1.0")
 
         if axis in [0, 1, 2]:
