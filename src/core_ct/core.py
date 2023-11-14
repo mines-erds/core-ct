@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 import numpy as np
+from typing import Callable
 
 
 class Core:
@@ -327,7 +328,7 @@ class Core:
         new_core = Core(self.pixel_array[x1:x2, y1:y2, z1:z2], self.pixel_dimensions)
         return new_core
 
-    def filter(self, brightness_filter) -> Core:
+    def filter(self, brightness_filter: Callable[[float], bool]) -> Core:
         """
         Get section of the core that only contains the specified brightness values.
 
@@ -348,7 +349,7 @@ class Core:
                     if brightness_filter(brightness):
                         core_filtered[i][j][k] = self.pixel_array[i][j][k]
                     else:
-                        core_filtered[i][j][k] = None
+                        core_filtered[i][j][k] = np.nan
 
         new_core = Core(core_filtered, self.pixel_dimensions)
         return new_core
