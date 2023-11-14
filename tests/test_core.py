@@ -1,9 +1,15 @@
 """Tests the `Core` class in the `core` module."""
 
 from core_ct.core import Core
+from core_ct import importers
 import numpy as np
 import copy
+import os
 import pytest
+
+
+tests_dir = os.path.dirname(os.path.realpath(__file__))
+scans_dir = os.path.join(tests_dir, "scans")
 
 
 def test_core():
@@ -296,6 +302,68 @@ def test_filter():
         for j, col in enumerate(row):
             for brightness in col:
                 assert np.isnan(brightness) or 3 <= brightness <= 8
+
+def test_shape():
+    """Tests the `shape` method on the `Core`."""
+    # Create a couple of test cores
+    core_0 = Core(np.zeros([2, 4, 8]), (2.0, 4.0, 8.0))
+    core_1 = Core(np.zeros([5, 2, 6]), (2.0, 4.0, 8.0))
+    core_2 = Core(np.zeros([9, 1, 7]), (2.0, 4.0, 8.0))
+
+    # Assert that their shapes are correct
+    assert core_0.shape() == (2, 4, 8)
+    assert core_1.shape() == (5, 2, 6)
+    assert core_2.shape() == (9, 1, 7)
+
+
+def test_dimensions():
+    """Tests the `dimensions` method on the `Core`."""
+    # Create a couple of fake cores
+    core_fake_0 = Core(np.zeros([2, 4, 8]), (2.0, 4.0, 8.0))
+    core_fake_1 = Core(np.zeros([6, 1, 11]), (2.0, 4.0, 8.0))
+    core_fake_2 = Core(np.zeros([2, 4, 8]), (0.31, 0.56, 1.2))
+
+    # Assert that the size of the cores is correct
+    assert core_fake_0.dimensions() == (4.0, 16.0, 64.0)
+    assert core_fake_1.dimensions() == (12.0, 4.0, 88.0)
+    assert core_fake_2.dimensions() == (2 * 0.31, 4 * 0.56, 8 * 1.2)
+
+    # Import the scan from the directory
+    core = importers.dicom(dir=os.path.join(scans_dir, "PAT_4636_39L_0001"))
+
+    # Assert that the core imported correctly
+    assert core.pixel_array.shape == (512, 512, 11)
+    assert core.pixel_dimensions == (0.43, 0.43, 0.5)
+
+    # Check that the dimensions of the core are correct
+    assert core.dimensions() == (512 * 0.43, 512 * 0.43, 11 * 0.5)
+
+
+def test_volume():
+    """Tests the `volume` method on the `Core`."""
+    # Define the pixel array and dimensions for the core
+    shape = [2, 4, 8]
+    pixel_array = np.zeros(shape)
+    pixel_dimensions = (2.0, 4.0, 8.0)
+
+    # Fill in the pixel array
+    counter = 0
+    for x in range(shape[0]):
+        for y in range(shape[1]):
+            for z in range(shape[2]):
+                pixel_array[x, y, z] = counter
+                counter += 1
+
+    # Define the voxel dimensions
+    voxel_dimensions = pixel_dimensions[0] * pixel_dimensions[1] * pixel_dimensions[2]
+
+    # Create the core from the pixel array and dimensions
+    core = Core(pixel_array, pixel_dimensions)
+
+    # TODO: Update these tests to use the volume function once it gets merged in
+    # Verify the volume is correct within various density ranges
+    assert core.volume() == 64 * voxel_dimensions
+
 
 def test_join():
     """Tests the `join` method on the `Core`."""

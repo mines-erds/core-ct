@@ -328,6 +328,60 @@ class Core:
         new_core = Core(self.pixel_array[x1:x2, y1:y2, z1:z2], self.pixel_dimensions)
         return new_core
 
+    def shape(self) -> tuple[int, int, int]:
+        """
+        Get the dimensions of the pixel array of the core scan.
+
+        Arguments:
+        ---------
+            none
+
+        Returns:
+        -------
+            The pixel dimensions of the core scan.
+        """
+        return self.pixel_array.shape
+
+    def dimensions(self) -> tuple[float, float, float]:
+        """
+        Get the dimensions of the scan in mm.
+
+        Arguments:
+        ---------
+            none
+
+        Returns:
+        -------
+            A three-element tuple containing the dimensions of the scan in mm.
+        """
+        return tuple(
+            size * dimension
+            for size, dimension in zip(self.pixel_array.shape, self.pixel_dimensions)
+        )
+
+    def volume(self) -> float:
+        """
+        Approximates the core volume in mm; ignores any NaN values.
+
+        Arguments:
+        ---------
+            None
+
+        Returns:
+        -------
+            The approximate volume of the core in cubic mm ignoring NaN values.
+        """
+        # Calculate the volume of a voxel
+        voxel_volume = (
+            self.pixel_dimensions[0]
+            * self.pixel_dimensions[1]
+            * self.pixel_dimensions[2]
+        )
+
+        # Count the number of voxels within the density range
+        valid_voxels = (~np.isnan(self.pixel_array)).sum()
+
+        return valid_voxels * voxel_volume
     def filter(self, brightness_filter: Callable[[float], bool]) -> Core:
         """
         Get section of the core that only contains the specified brightness values.
