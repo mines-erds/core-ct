@@ -340,7 +340,8 @@ class Core:
 
         Returns:
         -------
-            New core object with only the specified brightness values left.
+            New core object with only the specified brightness values left,
+            everything else is set to nan.
         """
         core_filtered = self.pixel_array.copy()
         for i, row in enumerate(self.pixel_array):
