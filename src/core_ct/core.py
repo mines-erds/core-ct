@@ -154,6 +154,92 @@ class Core:
 
         return self.trim(axis, loc_start, loc_end)
 
+    def trim_radial(self,
+                    axis: int,
+                    radius: float, 
+                    x_center: int|None = None,
+                    y_center: int|None = None,
+                    z_center: int|None = None
+                    ) -> Core:
+        """
+        Trims the Core radially given an axis and a center.
+
+        Replaces all data outside of the user specified area with NaN. Also reduces the
+        size of `pixel_array` as much as possible.
+
+        The user specifies a cylindrical shape by an `axis` and a center. For example, 
+        if `axis` is set to `2` (z-axis) the user should specify the center via
+        `x_center` and `y_center`. After trimming, every z-slice will only contain
+        data within a circle of the given `radius` centered at (`x_center`, `y_center`).
+
+        Arguments:
+        ---------
+            axis: integer either 0,1,2 specifying the axis to radially trim about:
+                    0 corresponds to x-axis
+                    1 corresponds to y-axis
+                    2 corresponds to z-axis
+            radius: float specifying the circular radius to use while trimming
+            x_center: specifies the center of the cylinder along the x-axis
+            y_center: specifies the center of the cylinder along the y-axis
+            z_center: specifies the center of the cylinder along the z-axis
+
+        Returns:
+        -------
+            A new trimmed core object
+
+        Raises:
+        ------
+            ValueError if axis is a value other than 0, 1, or 2
+        """
+        # figure out which axis we are testing the radius against
+        dist_axis_1: int
+        dist_axis_2: int
+        match axis:
+            case 0:
+                dist_axis_1 = 1
+                dist_axis_2 = 2
+            case 1:
+                dist_axis_1 = 0
+                dist_axis_2 = 2
+            case 2:
+                dist_axis_1 = 0
+                dist_axis_2 = 1
+            case _:
+                raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+        
+        x_dim, y_dim, z_dim = self.pixel_dimensions
+        center: tuple[int, int, int] = (x_center, y_center, z_center)
+
+        x_pixels: int = int(radius / x_dim)
+        x_start: int = max(x_center - x_pixels, 0)
+        x_end: int = min(x_center - x_pixels, self.pixel_array.shape[0])
+
+        y_pixels: int = int(radius / y_dim)
+        y_start: int = max(y_center - y_pixels, 0)
+        y_end: int = min(y_center - y_pixels, self.pixel_array.shape[1])
+
+        z_pixels: int = int(radius / z_dim)
+        z_start: int = max(z_center - z_pixels, 0)
+        z_end: int = min(z_center - z_pixels, self.pixel_array.shape[2])
+
+        pixel_array: np.ndarray = self.pixel_array[
+            x_start:x_end, y_start:y_end, z_start:z_end]
+
+        for x in range(pixel_array.shape[0]):
+            for y in range(pixel_array.shape[1]):
+                for z in range(pixel_array.shape[2]):
+                    pos: tuple[int, int, int] = (x, y, z)
+                    dist_1: float = (center[dist_axis_1] - pos[dist_axis_1]) \
+                                    * self.pixel_dimensions[dist_axis_1]
+                    dist_2: float = (center[dist_axis_2] - pos[dist_axis_2]) \
+                                    * self.pixel_dimensions[dist_axis_2]
+                    dist: float = ((dist_1 ** 2) + (dist_2 ** 2)) ** 0.5
+
+                    if dist > radius:
+                        pixel_array[pos] = np.nan
+
+        return Core(pixel_array=pixel_array, pixel_dimensions=self.pixel_dimensions)
+
     def swapaxes(self, axis1: int, axis2: int) -> Core:
         """
         Create a new Core object with swapped axes and updated pixel dimensions.
@@ -382,6 +468,7 @@ class Core:
         valid_voxels = (~np.isnan(self.pixel_array)).sum()
 
         return valid_voxels * voxel_volume
+
     def filter(self, brightness_filter: Callable[[float], bool]) -> Core:
         """
         Get section of the core that only contains the specified brightness values.
