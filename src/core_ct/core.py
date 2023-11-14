@@ -341,7 +341,7 @@ class Core:
         Arguments:
         ---------
             brightness_filter: lambda function that defines what will be filtered out.
-                               This function must either return false if the value should
+                               Function must either return false if the value should
                                not be included or true if the value should be included.
 
         Returns:
