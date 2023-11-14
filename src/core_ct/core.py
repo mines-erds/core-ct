@@ -114,8 +114,8 @@ class Core:
 
         return Core(new_pixel_array, self.pixel_dimensions)
 
-    def trim_by_percent(self, axis: int, percent_on_left: float,
-                        percent_on_right: float | None = None) -> Core:
+    def trim_by_percent(self, axis: int, percent_start: float,
+                        percent_end: float | None = None) -> Core:
         """
         Reduces the dimensions of the core along a specified axis.
 
@@ -139,24 +139,17 @@ class Core:
         ------
             ValueError if axis is a value other than 0, 1, or 2
         """
-        if percent_on_right is None:
-            percent_on_right = percent_on_left
+        if percent_end is None:
+            percent_end = percent_start
 
-        if percent_on_left > 1.0 or percent_on_right > 1.0:
+        if percent_start > 1.0 or percent_end > 1.0:
             raise ValueError("Percents must be a less than 0.5")
 
-        match axis:
-            case 0:
-                loc_start = int(self.pixel_array.shape[0] * percent_on_left)
-                loc_end = int(self.pixel_array.shape[0] * percent_on_right)
-            case 1:
-                loc_start = int(self.pixel_array.shape[1] * percent_on_left)
-                loc_end = int(self.pixel_array.shape[1] * percent_on_right)
-            case 2:
-                loc_start = int(self.pixel_array.shape[2] * percent_on_left)
-                loc_end = int(self.pixel_array.shape[2] * percent_on_right)
-            case _:
-                raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+        if axis in [0, 1, 2]:
+            loc_start = int(self.pixel_array.shape[axis] * percent_start)
+            loc_end = int(self.pixel_array.shape[axis] * percent_end)
+        else:
+            raise ValueError("axis must be a value between 0 and 2 (inclusive)")
 
         return self.trim(axis, loc_start, loc_end)
 
