@@ -142,32 +142,23 @@ class Core:
         if percent_on_right is None:
             percent_on_right = percent_on_left
 
-        if percent_on_left > 0.5 or percent_on_right > 0.5:
+        if percent_on_left > 1.0 or percent_on_right > 1.0:
             raise ValueError("Percents must be a less than 0.5")
 
         match axis:
             case 0:
                 loc_start = int(self.pixel_array.shape[0] * percent_on_left)
                 loc_end = int(self.pixel_array.shape[0] * percent_on_right)
-                new_pixel_array = self.pixel_array[
-                    loc_start : len(self.pixel_array) - loc_end
-                ]
             case 1:
                 loc_start = int(self.pixel_array.shape[1] * percent_on_left)
                 loc_end = int(self.pixel_array.shape[1] * percent_on_right)
-                new_pixel_array = self.pixel_array[
-                    :, loc_start : len(self.pixel_array[0]) - loc_end
-                ]
             case 2:
                 loc_start = int(self.pixel_array.shape[2] * percent_on_left)
                 loc_end = int(self.pixel_array.shape[2] * percent_on_right)
-                new_pixel_array = self.pixel_array[
-                    :, :, loc_start : len(self.pixel_array[0, 0]) - loc_end
-                ]
             case _:
                 raise ValueError("axis must be a value between 0 and 2 (inclusive)")
 
-        return Core(new_pixel_array, self.pixel_dimensions)
+        return self.trim(axis, loc_start, loc_end)
 
     def swapaxes(self, axis1: int, axis2: int) -> Core:
         """
@@ -346,13 +337,14 @@ class Core:
 
     def filter(self, brightness_filter) -> Core:
         """
-        Get a three-dimensional section of the core scan.
+        Get a three-dimensional section of the core scan that only
+        the specified brightness values are left in.
 
         Arguments:
         ---------
             brightness_filter: lambda function that defines what will be filtered out.
-                               This function must either return the passed value or set
-                               it to None.
+                               This function must either return false if the value should
+                               not be included or true if the value should be included.
 
         Returns:
         -------
@@ -362,7 +354,10 @@ class Core:
         for i, row in enumerate(self.pixel_array):
             for j, col in enumerate(row):
                 for k, brightness in enumerate(col):
-                    core_filtered[i][j][k] = brightness_filter(brightness)
+                    if brightness_filter(brightness):
+                        core_filtered[i][j][k] = self.pixel_array[i][j][k]
+                    else:
+                        core_filtered[i][j][k] = None
 
         new_core = Core(core_filtered, self.pixel_dimensions)
         return new_core
