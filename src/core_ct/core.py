@@ -334,11 +334,9 @@ class Core:
         new_core = Core(self.pixel_array[x1:x2, y1:y2, z1:z2], self.pixel_dimensions)
         return new_core
 
-
     def filter(self, brightness_filter) -> Core:
         """
-        Get a three-dimensional section of the core scan that only
-        the specified brightness values are left in.
+        Get section of the core that only contains the specified brightness values.
 
         Arguments:
         ---------

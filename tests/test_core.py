@@ -284,7 +284,7 @@ def test_filter():
     core: Core = Core(pixel_array=copy.deepcopy(pixel_array),
                       pixel_dimensions=(2.0, 4.0, 8.0))
 
-    filter_func = lambda a : a if 3 <= a <= 8 else None # noqa
+    filter_func = lambda a : True if 3 <= a <= 8 else False # noqa
 
     filtered_core: Core = core.filter(filter_func)
 
