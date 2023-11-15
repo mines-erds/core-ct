@@ -33,7 +33,7 @@ class Slice:
         self.data: np.ndarray = data
         self.pixel_dimensions: tuple[float, float] = pixel_dimensions
 
-    def trim(self, axis: int, loc_start: int, loc_end: int | None = None) -> Slice:  # noqa: D417
+    def trim(self, axis: int, loc_start: int, loc_end: int | None = None) -> Slice:
         """
         Create new slice by trimming off a specified amount on the requested axis.
 
@@ -45,12 +45,12 @@ class Slice:
 
         Arguments:
         ---------
-            axis -- integer either 0 or 1 specifying which axis to trim from
+            axis: integer either 0 or 1 specifying which axis to trim from
                 0 - will perform a "horizontal" slice 
                 1 - will perform a "vertical" slice
-            loc_start -- integer specifying the amount to trim off from the start of the
+            loc_start: integer specifying the amount to trim off from the start of the
             axis
-            loc_end -- integer specifying the amount to trim off from the end of the 
+            loc_end: integer specifying the amount to trim off from the end of the 
             axis. Thus the actual index of the trim location is `len(axis)-loc_end`.
 
         Returns:
@@ -63,13 +63,13 @@ class Slice:
             IndexError if amount trimmed from end causes the ending index to be to the
             left of the starting index
         """
-        if axis != 0 or axis != 1:
+        if axis != 0 and axis != 1:
             raise ValueError("axis must be an integer either 0 or 1")
+        if loc_end is None:
+            loc_end = loc_start
         if self.data.shape[axis] - loc_end < loc_start:
             raise IndexError("starting index exceeds ending index")
         
-        if loc_end is None:
-            loc_end = loc_start
         if axis == 0:
             new_data_array = self.data[loc_start : self.data.shape[0] - loc_end, :]
         else: # axis == 1
