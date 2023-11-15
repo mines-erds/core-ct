@@ -90,6 +90,6 @@ class Slice:
 
         Returns:
         -------
-            The pixel dimensions of the core slice.
+            The shape of the data array of the core slice.
         """
         return self.data.shape

@@ -25,7 +25,7 @@ def display_core(
     Returns:
     -------
         `matplotlib.figure.Figure` object containing the subplots
-        Array of `matplotlib.axes.Axes` objects, each axis containing display
+        tuple of `matplotlib.axes.Axes` objects, each axis containing display
         information for each view of the core
     """
     fig, axes = plt.subplots(nrows=1, ncols=3)
@@ -119,7 +119,7 @@ def display_slice_bt_std(
     Returns:
     -------
         `matplotlib.figure.Figure` object containing the subplots
-        Array of `matplotlib.axes.Axes` objects, each axis containing display
+        tuple of `matplotlib.axes.Axes` objects, each axis containing display
         information or data for each plot
     """
     bt_df = brightness_trace(slice)

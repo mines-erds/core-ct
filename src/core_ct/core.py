@@ -163,7 +163,7 @@ class Core:
 
     def swapaxes(self, axis1: int, axis2: int) -> Core:
         """
-        Create a new Core object with swapped axes and updated pixel dimensions.
+        Create a new `Core` object with swapped axes and updated pixel dimensions.
 
         Arguments:
         ---------
