@@ -86,3 +86,19 @@ def test_trim():
     except IndexError:
         # IndexError was raised (expected behavior)
         assert True
+
+def test_shape():
+    """Tests that `shape()` return the proper values."""
+    # Define a pixel array and pixel_dimensions
+    pixel_array = np.array([[1, 2, 3, 4],
+                           [5, 6, 7, 8],
+                           [9, 10, 11, 12],
+                           [13, 14, 15, 16],
+                           [17, 18, 19, 20],
+                           [21, 22, 23, 24]])
+    pixel_dimensions = [2.0, 4.0]
+    
+    # Create the slice object
+    slice = Slice(data = pixel_array, pixel_dimensions = pixel_dimensions)
+    # Assert the slice was created correctly
+    assert slice.shape() == pixel_array.shape
