@@ -8,12 +8,14 @@ def brightness_trace(slice):
     """
     Compute the mean of the brightnesses and its standard deviation for each layer.
 
-    Arguments:
+    Arguments
     ---------
-        slice: a slice of the core as a 3D numpy array
+    slice : np.ndarray
+        A slice of the core as a 3D numpy array
 
-    Returns:
+    Returns
     -------
+    pd.DataFrame
         A 2D numpy array where the first column is the mean of the brightness and
         the second is the standard deviation.
     """

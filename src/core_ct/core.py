@@ -4,6 +4,10 @@ from __future__ import annotations
 import numpy as np
 from typing import Callable
 
+# Methods
+# -------
+#     slice(self, axis, loc) -- get a 2D slice of the core
+
 
 class Core:
     """
@@ -11,12 +15,11 @@ class Core:
 
     Attributes
     ----------
-        pixel_array -- 3D numpy array of pixel data that make up the core
-        pixel_dimensions -- tuple containing the dimensions of each pixel/voxel
+    pixel_array : np.ndarray
+        3D numpy array of pixel data that make up the core
 
-    Methods
-    -------
-        slice(self, axis, loc) -- get a 2D slice of the core
+    pixel_dimensions : tuple[int, int , int]
+        tuple containing the dimensions of each pixel/voxel
     """
 
     def __init__(
@@ -27,10 +30,13 @@ class Core:
         """
         Construct necessary attributes of a Core.
 
-        Arguments:
+        Arguments
         ---------
-            pixel_array: 3D numpy array of pixel data that make up the core
-            pixel_dimensions: tuple containing the dimensions of each pixel/voxel
+        pixel_array : `np.ndarray`
+            3D numpy array of pixel data that make up the core
+
+        pixel_dimensions : `tuple[int, int, int]`
+            tuple containing the dimensions of each pixel/voxel
         """
         self.pixel_dimensions: tuple[float, float, float] = pixel_dimensions
 
@@ -44,21 +50,29 @@ class Core:
         """
         Get a two-dimensional slice of the core at a specific location along an axis.
 
-        Arguments:
+        Arguments
         ---------
-            axis: integer either 0,1,2 specifying which dimension to collapse:
-                    0 corresponds to x-axis
-                    1 corresponds to y-axis
-                    2 corresponds to z-axis
-            loc: integer value along the axis specifying the location of the slice
+        axis : int
+            Integer either 0, 1, 2 specifying which dimension to collapse
 
-        Returns:
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        loc : int
+            Integer value along the axis specifying the location of the slice
+
+        Returns
         -------
+        np.ndarray
             2D numpy array representing a single slice of the core
 
-        Raises:
+        Raises
         ------
-            Exception if axis is a value other than 0, 1, or 2
+        ValueError
+            If axis is a value other than 0, 1, or 2
         """
         match axis:
             case 0:
@@ -77,22 +91,32 @@ class Core:
         Get a three-dimensional slice of the core scan by trimming off a specified
         amount on the requested axis. This function is symmetrical by default.
 
-        Arguments:
+        Arguments
         ---------
-            axis: integer either 0,1,2 specifying which dimension to collapse:
-                    0 corresponds to x-axis
-                    1 corresponds to y-axis
-                    2 corresponds to z-axis
-            loc_start: specifies the amount to trim off the beginning.
-            loc_end: specifies the amount to trim off the end.
+        axis : int
+            Integer either 0, 1, 2 specifying which dimension to collapse:
 
-        Returns:
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        loc_start : int
+            Specifies the amount to trim off the beginning
+
+        loc_end : int
+            Specifies the amount to trim off the end
+
+        Returns
         -------
+        Core
             A new trimmed core object
 
-        Raises:
+        Raises
         ------
-            ValueError if axis is a value other than 0, 1, or 2
+        ValueError
+            If axis is a value other than 0, 1, or 2
         """
         if loc_end is None:
             loc_end = loc_start
@@ -115,30 +139,41 @@ class Core:
 
         return Core(new_pixel_array, self.pixel_dimensions)
 
-    def trim_by_percent(self, axis: int, percent_start: float,
-                        percent_end: float | None = None) -> Core:
+    def trim_by_percent(
+        self, axis: int, percent_start: float, percent_end: float | None = None
+    ) -> Core:
         """
         Reduces the dimensions of the core along a specified axis.
 
         Get a three-dimensional slice of the core scan by trimming off a percent
         on the requested axis. This function is symmetrical by default.
 
-        Arguments:
+        Arguments
         ---------
-            axis: integer either 0,1,2 specifying which dimension to collapse:
-                    0 corresponds to x-axis
-                    1 corresponds to y-axis
-                    2 corresponds to z-axis
-            percent_start: percent to trim off the left side.
-            percent_end: percent to trim off the right side.
+        axis : int
+            integer either 0, 1, 2 specifying which dimension to collapse:
 
-        Returns:
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        percent_start : float
+            Percent to trim off the left side
+
+        percent_end : float
+            Percent to trim off the right side
+
+        Returns
         -------
+        Core
             A new trimmed core object
 
-        Raises:
+        Raises
         ------
-            ValueError if axis is a value other than 0, 1, or 2
+        ValueError
+            If axis is a value other than 0, 1, or 2
         """
         if percent_end is None:
             percent_end = percent_start
@@ -158,24 +193,35 @@ class Core:
         """
         Create a new Core object with swapped axes and updated pixel dimensions.
 
-        Arguments:
+        Arguments
         ---------
-            axis1: integer specifying the first axis (0, 1, or 2)
-                    0: x-axis
-                    1: y-axis
-                    2: z-axis
-            axis2: integer specifying the second axis (0, 1, or 2)
-                    0: x-axis
-                    1: y-axis
-                    2: z-axis
+        axis1 : int
+            Integer either 0, 1, 2 specifying the first axis:
 
-        Returns:
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        axis2 : int
+            Integer either 0, 1, 2 specifying the second axis:
+
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        Returns
         -------
+        Core
             New Core object containing swapped data and updated pixel dimensions
 
-        Raises:
+        Raises
         ------
-            ValueError if axes are values other than 0, 1, or 2
+        ValueError
+            If axes are values other than 0, 1, or 2
         """
         # make sure axis inputs are valid
         if axis1 < 0 or axis1 > 2:
@@ -198,20 +244,26 @@ class Core:
         """
         Create a new `Core` object with data reversed along the given axis.
 
-        Arguments:
+        Arguments
         ---------
-            axis: integer specifying which axis to reverse (0, 1, or 2)
-                    0: x-axis
-                    1: y-axis
-                    2: z-axis
+        axis : int
+            Integer either 0, 1, 2 specifying which axis to reverse
 
-        Returns:
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        Returns
         -------
+        Core
             New Core object containing flipped data
 
-        Raises:
+        Raises
         ------
-            ValueError if axis is a value other than 0, 1, or 2
+        ValueError
+            If axis is a value other than 0, 1, or 2
         """
         # make sure axis inputs are valid
         if axis < 0 or axis > 2:
@@ -230,22 +282,32 @@ class Core:
         Rotates counter-clockwise by default, set `clockwise` to `True` to rotate
         clockwise instead.
 
-        Arguments:
+        Arguments
         ---------
-            axis: integer specifying which axis to rotate about (0, 1, or 2)
-                    0: x-axis
-                    1: y-axis
-                    2: z-axis
-            k: number of times to rotate pixel_array 90 degrees
-            clockwise: whether or not to rotate clockwise instead of counter-clockwise
+        axis : int
+            Integer either 0, 1, 2 specifying which axis to rotate about
 
-        Returns:
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        k : int
+            Number of times to rotate pixel_array 90 degrees
+
+        clockwise : bool
+            whether or not to rotate clockwise instead of counter-clockwise
+
+        Returns
         -------
+        Core
             New Core object containing rotated data and pixel dimensions
 
-        Raises:
+        Raises
         ------
-            ValueError if axis is a value other than 0, 1, or 2
+        ValueError
+            If axis is a value other than 0, 1, or 2
         """
         # make sure axis inputs are valid
         if axis < 0 or axis > 2:
@@ -291,17 +353,29 @@ class Core:
         """
         Get a three-dimensional section of the core scan.
 
-        Arguments:
+        Arguments
         ---------
-            x1: the starting x position for the chunk to be taken
-            y1: the starting y position for the chunk to be taken
-            z1: the starting z position for the chunk to be taken
-            x2: the ending x position for the chunk to be taken
-            y2: the ending y position for the chunk to be taken
-            z2: the ending z position for the chunk to be taken
+            x1 : int
+                The starting x position for the chunk to be taken
 
-        Returns:
+            y1 : int
+                The starting y position for the chunk to be taken
+
+            z1 : int
+                The starting z position for the chunk to be taken
+
+            x2 : int
+                The ending x position for the chunk to be taken
+
+            y2 : int
+                The ending y position for the chunk to be taken
+
+            z2 : int
+                The ending z position for the chunk to be taken
+
+        Returns
         -------
+        Core
             New core object containing the specified chunk of the old core
         """
         if x2 is None:
@@ -332,12 +406,9 @@ class Core:
         """
         Get the dimensions of the pixel array of the core scan.
 
-        Arguments:
-        ---------
-            none
-
-        Returns:
+        Returns
         -------
+        tuple[int, int, int]
             The pixel dimensions of the core scan.
         """
         return self.pixel_array.shape
@@ -346,12 +417,9 @@ class Core:
         """
         Get the dimensions of the scan in mm.
 
-        Arguments:
-        ---------
-            none
-
-        Returns:
+        Returns
         -------
+        tuple[int, int, int]
             A three-element tuple containing the dimensions of the scan in mm.
         """
         return tuple(
@@ -363,12 +431,9 @@ class Core:
         """
         Approximates the core volume in mm; ignores any NaN values.
 
-        Arguments:
-        ---------
-            None
-
-        Returns:
+        Returns
         -------
+        float
             The approximate volume of the core in cubic mm ignoring NaN values.
         """
         # Calculate the volume of a voxel
@@ -382,18 +447,21 @@ class Core:
         valid_voxels = (~np.isnan(self.pixel_array)).sum()
 
         return valid_voxels * voxel_volume
+
     def filter(self, brightness_filter: Callable[[float], bool]) -> Core:
         """
         Get section of the core that only contains the specified brightness values.
 
-        Arguments:
+        Arguments
         ---------
-            brightness_filter: lambda function that defines what will be filtered out.
-                               Function must either return false if the value should
-                               not be included or true if the value should be included.
+        brightness_filter : Callable[[float], bool]
+            lambda function that defines what will be filtered out. Function must either
+            return false if the value should not be included or true if the value should
+            be included.
 
-        Returns:
+        Returns
         -------
+        Core
             New core object with only the specified brightness values left,
             everything else is set to nan.
         """
@@ -413,23 +481,35 @@ class Core:
         """
         Join a core to the current core on a specified axis.
 
-        Arguments:
+        Arguments
         ---------
-            core: the `Core` object to join with the current core
-            axis: integer specifying which axis to join the cores on
-                    0: x-axis
-                    1: y-axis
-                    2: z-axis
+        core : Core
+            The `Core` object to join with the current core
 
-        Returns:
+        axis : int
+            Integer either 0, 1, 2 specifying which axis to join on
+
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        Returns
         -------
+        Core
             New core object made up of the two joined arrays
 
-        Raises:
+        Raises
         ------
-            ValueError if axis is a value other than 0, 1, or 2
-            ValueError if the `pixel_dimensions` of the cores don't match
-            ValueError if the shapes of the cores along an axis don't match
+        ValueError
+            If axis is a value other than 0, 1, or 2
+
+        ValueError
+            If the `pixel_dimensions` of the cores don't match
+
+        ValueError
+            If the shapes of the cores along an axis don't match
         """
         # Check that the axis values are valid
         if axis < 0 or axis > 2:

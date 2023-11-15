@@ -17,9 +17,7 @@ numpy = "^1.26.0"
 pydicom = "^2.4.3"
 matplotlib = "^3.8.0"
 pandas = "^2.1.1"
-pillow = "^10.0.1"
-pandas-stubs = "^2.1.1.230928"
-types-pillow = "^10.0.0.3"
+sphinx-wagtail-theme = "^6.1.1"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -27,6 +25,7 @@ pytest = "^7.4.2"
 ruff = "^0.0.292"
 black = "^23.9.1"
 pre-commit = "^3.4.0"
+sphinx = "^7.2.6"
 
 [build-system]
 requires = ["poetry-core"]
@@ -36,3 +35,6 @@ build-backend = "poetry.core.masonry.api"
 # Enable pycodestyle (`E`), Pyflakes (`F`) and pydocstyle (`D`)
 select = ["E", "F", "D"]
 ignore = ["D203", "D212"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"

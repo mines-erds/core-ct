@@ -24,10 +24,17 @@ def dicom(
 
     Arguments:
     ---------
-        dir: path to directory containing DICOM dataset; ignored if `files` is specified
-        files: list of filepaths belonging to DICOM dataset
-        force: if set to `True`, files that produce errors will be ignored
-        ignore_hidden_files: if set to `True`, hidden files will be ignored
+    dir : str
+        Path to directory containing DICOM dataset; ignored if `files` is specified
+
+    files : list[str]
+        List of filepaths belonging to DICOM dataset
+
+    force : bool
+        If set to `True`, files that produce errors will be ignored
+
+    ignore_hidden_files : bool
+        If set to `True`, hidden files will be ignored
     """
     # if files was not provided, load files from the provided directory
     if files is None:
