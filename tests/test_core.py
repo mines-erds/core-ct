@@ -3,7 +3,6 @@
 from core_ct.core import Core
 from core_ct import importers
 import numpy as np
-import copy
 import os
 import pytest
 
@@ -16,7 +15,7 @@ def test_core():
     """Tests that a `Core` object can be created successfully."""
     # Define the pixel array and pixel_dimensions
     pixel_array = np.zeros([2, 4, 8])
-    pixel_dimensions = [2.0, 4.0, 8.0]
+    pixel_dimensions = (2.0, 4.0, 8.0)
 
     # Create the core object
     core = Core(pixel_array=pixel_array, pixel_dimensions=pixel_dimensions)
@@ -29,7 +28,7 @@ def test_core():
 def test_slice():
     """Tests the `slice` method on the `Core`."""
     # Define the core
-    core = Core(pixel_array=np.zeros([2, 4, 8]), pixel_dimensions=[2.0, 4.0, 8.0])
+    core = Core(pixel_array=np.zeros([2, 4, 8]), pixel_dimensions=(2.0, 4.0, 8.0))
 
     # Take slice from each axis out of the core
     slice_0 = core.slice(axis=0, loc=0)
@@ -249,7 +248,7 @@ def test_rotate():
                 counter += 1
 
     core: Core = Core(
-        pixel_array=copy.deepcopy(pixel_array), pixel_dimensions=(2.0, 4.0, 8.0)
+        pixel_array=pixel_array, pixel_dimensions=(2.0, 4.0, 8.0)
     )
 
     # Rotate various axes
@@ -347,7 +346,7 @@ def test_filter():
                 pixel_array[x, y, z] = counter
                 counter += 1
 
-    core: Core = Core(pixel_array=copy.deepcopy(pixel_array),
+    core: Core = Core(pixel_array=pixel_array,
                       pixel_dimensions=(2.0, 4.0, 8.0))
 
     filter_func = lambda a : True if 3 <= a <= 8 else False # noqa
