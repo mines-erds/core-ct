@@ -46,12 +46,14 @@ class Slice:
         Arguments:
         ---------
             axis: integer either 0 or 1 specifying which axis to trim from
-                0 - will perform a "horizontal" slice 
-                1 - will perform a "vertical" slice
+                0 - corresponds to the y axis (row) so it trims horizontally 
+                1 - corresponds to the x axis (column) so it trims vertically
             loc_start: integer specifying the amount to trim off from the start of the
             axis
-            loc_end: integer specifying the amount to trim off from the end of the 
-            axis. Thus the actual index of the trim location is `len(axis)-loc_end`.
+            loc_end: if given, is an integer specifying where the second trim will occur
+            as a distance from the end of the axis. Therefore the actual index
+            will be `len(axis)-loc_end`. If not given, loc_end is equal to loc_start
+            so the trim will be symmetric
 
         Returns:
         -------
