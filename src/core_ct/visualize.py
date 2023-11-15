@@ -1,6 +1,5 @@
 """Methods that assist in visualizing the CT scans of rock cores."""
 
-import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from core_ct.core import Core
@@ -47,8 +46,8 @@ def display_core(
                     0,
                     slice_dim[1] * slice.pixel_dimensions[1],
                     slice_dim[0] * slice.pixel_dimensions[0],
-                    0
-                )
+                    0,
+                ),
             )
         else:
             ax.imshow(slice.data)
@@ -93,8 +92,8 @@ def display_slice(slice: Slice, mm: bool = False) -> matplotlib.image.AxesImage:
                 0,
                 slice_dim[1] * slice.pixel_dimensions[1],
                 slice_dim[0] * slice.pixel_dimensions[0],
-                0
-            )
+                0,
+            ),
         )
     else:
         img = plt.imshow(slice.data)
@@ -153,18 +152,18 @@ def display_slice_bt_std(
 
 
 def visualize_trim(
-    slice_2d: np.ndarray, axis: int, loc_start: int, loc_end: int | None = None
+    slice: Slice, axis: int, loc_start: int, loc_end: int | None = None
 ) -> matplotlib.image.AxesImage:
     """
     Overlay trim lines onto a slice to illustrate where a trim would occur.
 
     Arguments:
     ---------
-        slice_2d: 2D numpy array of pixel data for a single slice of a core
+        slice: `Slice` object to visualize
         axis: integer either 0 or 1 indicating what axis to display the trim on
-            0 corresponds to the y axis (row), so a horizontal line will be plotted
-            1 corresponds to the x axis (column), so a vertical line will be plotted
-        loc_start: integer index specifying where the first line will be plotted
+            0 - corresponds to the y axis (row), so a horizontal line will be plotted
+            1 - corresponds to the x axis (column), so a vertical line will be plotted
+        loc_start: integer specifying where the first line will be plotted
         loc_end: if given, is an integer specifying where the second line will be
         plotted as a distance from the end of the axis. Therefore the actual index
         will be `len(axis)-loc_end`. If not given, loc_end is equal to loc_start
@@ -177,18 +176,23 @@ def visualize_trim(
     Raises:
     ------
         ValueError if axis is a value other than 0 or 1
+        IndexError if amount trimmed from end causes the ending index to be to the
+        left of the starting index
+        IndexError if start_loc or end_loc is out of bounds of the axis length
     """
+    slice_dim = slice.shape()
+    if axis != 0 and axis != 1:
+        raise ValueError("axis must be an integer either 0 or 1")
     if loc_end is None:
         loc_end = loc_start
+    if slice_dim[axis] - loc_end < loc_start:
+        raise IndexError("starting index exceeds ending index")
 
     plt.figure()
-    match axis:
-        case 0:
-            plt.axhline(loc_start, color="r")
-            plt.axhline(len(slice_2d[0]) - loc_end, color="r")
-        case 1:
-            plt.axvline(loc_start, color="r")
-            plt.axvline(len(slice_2d[0]) - loc_end, color="r")
-        case _:
-            raise ValueError("axis must be either 0 or 1")
-    return plt.imshow(slice_2d)
+    if axis == 0:
+        plt.axhline(loc_start, color="r")
+        plt.axhline(slice_dim[0] - loc_end, color="r")
+    else:  # axis == 1
+        plt.axvline(loc_start, color="r")
+        plt.axvline(slice_dim[1] - loc_end, color="r")
+    return plt.imshow(slice.data)
