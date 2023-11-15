@@ -62,6 +62,7 @@ class Slice:
             ValueError if axis is a value other than 0 or 1
             IndexError if amount trimmed from end causes the ending index to be to the
             left of the starting index
+            IndexError if start_loc or end_loc is out of bounds of the axis length
         """
         if axis != 0 and axis != 1:
             raise ValueError("axis must be an integer either 0 or 1")
