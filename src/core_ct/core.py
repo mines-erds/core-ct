@@ -173,22 +173,28 @@ class Core:
         `x_center` and `y_center`. After trimming, every z-slice will only contain
         data within a circle of the given `radius` centered at (`x_center`, `y_center`).
 
-        Arguments:
-        ---------
-            axis: integer either 0,1,2 specifying the axis to radially trim about:
-                    0 corresponds to x-axis
-                    1 corresponds to y-axis
-                    2 corresponds to z-axis
-            radius: float specifying the circular radius to use while trimming
-            x_center: specifies the center of the cylinder along the x-axis
-            y_center: specifies the center of the cylinder along the y-axis
-            z_center: specifies the center of the cylinder along the z-axis
+        Parameters
+        ----------
+        axis : int
+            axis to radially trim about
+                0 corresponds to x-axis
+                1 corresponds to y-axis
+                2 corresponds to z-axis
+        radius : float
+            radius from given center to trim values outside of
+        x_center : int
+            index to center the cylinder on along the x-axis
+        y_center : int
+            index to center the cylinder on along the y-axis
+        z_center : int
+            index to center the cylinder on along the z-axis
 
-        Returns:
+        Returns
         -------
+        Core
             A new trimmed core object
 
-        Raises:
+        Raises
         ------
             ValueError if axis is a value other than 0, 1, or 2
         """
