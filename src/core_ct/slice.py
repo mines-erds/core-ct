@@ -10,7 +10,7 @@ class Slice:
     ----------
         data -- 2D numpy array of pixel data that make up the slice
         pixel_dimensions -- tuple of (float, float) containing the dimensions of
-                            each pixel as (width, height)
+                            each pixel as (width, height) in mm
 
     Methods
     -------
@@ -20,15 +20,15 @@ class Slice:
         shape(self) -- get shape of the slice's `data` array
     """
 
-    def __init__(self, data: np.ndarray, pixel_dimensions: tuple[float, float]):  # noqa: D417
+    def __init__(self, data: np.ndarray, pixel_dimensions: tuple[float, float]): 
         """
         Construct necessary attributes of a core slice.
 
         Arguments:
         ---------
-            data -- 2D numpy array of pixel data that make up the slice
-            pixel_dimensions -- tuple of (float, float) containing the dimensions of
-                                each pixel as (width, height)
+            data: 2D numpy array of pixel data that make up the slice
+            pixel_dimensions: tuple of (float, float) containing the dimensions of
+                                each pixel as (width, height) in mm
         """
         self.data: np.ndarray = data
         self.pixel_dimensions: tuple[float, float] = pixel_dimensions
