@@ -1,15 +1,7 @@
 """Tests the `Core` class in the `core` module."""
 
-import sys
-import os
-
+from core_ct.slice import Slice
 import numpy as np
-
-# Add the path to local library folder for testing
-local_path = os.path.abspath("src/core_ct")
-sys.path.insert(0, os.path.abspath(local_path))
-
-from slice import Slice # noqa
 
 def test_slice():
     """Tests that a `Slice` object can be created successfully."""
