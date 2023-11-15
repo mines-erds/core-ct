@@ -3,6 +3,7 @@
 from __future__ import annotations
 import numpy as np
 from typing import Callable
+from math import pow, sqrt
 
 
 class Core:
@@ -207,24 +208,42 @@ class Core:
             case _:
                 raise ValueError("axis must be a value between 0 and 2 (inclusive)")
         
-        x_dim, y_dim, z_dim = self.pixel_dimensions
+        # clean up center inputs
+        if x_center is None:
+            x_center = int(self.pixel_array.shape[0] / 2)
+        if y_center is None:
+            y_center = int(self.pixel_array.shape[1] / 2)
+        if z_center is None:
+            z_center = int(self.pixel_array.shape[2] / 2)
+        
         center: tuple[int, int, int] = (x_center, y_center, z_center)
 
-        x_pixels: int = int(radius / x_dim)
-        x_start: int = max(x_center - x_pixels, 0)
-        x_end: int = min(x_center - x_pixels, self.pixel_array.shape[0])
+        starts: list[int] = [0] * 3
+        ends: list[int] = [0] * 3
+        for ax in range(0, 3):
+            if ax == axis:
+                starts[ax] = 0
+                ends[ax] = self.pixel_array.shape[ax]
+                continue
 
-        y_pixels: int = int(radius / y_dim)
-        y_start: int = max(y_center - y_pixels, 0)
-        y_end: int = min(y_center - y_pixels, self.pixel_array.shape[1])
+            pixel_radius = int(radius / self.pixel_dimensions[ax])
+            starts[ax] = int(max(center[ax] - pixel_radius, 0))
+            ends[ax] = int(min(center[ax] + pixel_radius, 
+                               self.pixel_array.shape[ax])) + 1
 
-        z_pixels: int = int(radius / z_dim)
-        z_start: int = max(z_center - z_pixels, 0)
-        z_end: int = min(z_center - z_pixels, self.pixel_array.shape[2])
-
+        # must create a copy instead of a view because we are destructively modifying
+        # data during the filter step
         pixel_array: np.ndarray = self.pixel_array[
-            x_start:x_end, y_start:y_end, z_start:z_end]
+            starts[0]:ends[0], starts[1]:ends[1], starts[2]:ends[2]
+        ].copy()
+        
+        # should calculate radius in terms of our new reduced matrix, move center 
+        # accordingly
+        center = (
+            center[0] - starts[0], center[1] - starts[1], center[2] - starts[2]
+        )
 
+        # filter out all data outside of the radius
         for x in range(pixel_array.shape[0]):
             for y in range(pixel_array.shape[1]):
                 for z in range(pixel_array.shape[2]):
@@ -233,7 +252,7 @@ class Core:
                                     * self.pixel_dimensions[dist_axis_1]
                     dist_2: float = (center[dist_axis_2] - pos[dist_axis_2]) \
                                     * self.pixel_dimensions[dist_axis_2]
-                    dist: float = ((dist_1 ** 2) + (dist_2 ** 2)) ** 0.5
+                    dist: float = sqrt(pow(dist_1, 2) + pow(dist_2, 2))
 
                     if dist > radius:
                         pixel_array[pos] = np.nan

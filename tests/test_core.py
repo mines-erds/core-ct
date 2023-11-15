@@ -41,11 +41,10 @@ def test_slice():
     assert slice_1.shape == (2, 8)
     assert slice_2.shape == (2, 4)
 
-
-def test_swapaxes():
-    """Tests the `slice` method on the `Core`."""
-    # Define the core
-    shape: list[int] = [2, 4, 8]
+def test_trim_radial():
+    """Tests the 'trim_radial` method on the `Core`."""
+    # Define a simple Core
+    shape: list[int] = (9, 9, 16)
     pixel_array: np.ndarray = np.zeros(shape)
     counter: int = 0
     for x in range(shape[0]):
@@ -55,7 +54,68 @@ def test_swapaxes():
                 counter += 1
 
     core: Core = Core(
-        pixel_array=copy.deepcopy(pixel_array), pixel_dimensions=(2.0, 4.0, 8.0)
+        pixel_array=pixel_array, pixel_dimensions=(1.0, 1.0, 1.0)
+    )
+
+    trimmed: Core = core.trim_radial(axis=2, radius=3.0, x_center=4, y_center=4)
+
+    # make sure the matrix was reduced correctly
+    assert trimmed.shape() == (7, 7, 16)
+
+    # make sure corners are empty
+    assert np.isnan(trimmed.pixel_array[0,0,0])
+    assert np.isnan(trimmed.pixel_array[0,6,0])
+    assert np.isnan(trimmed.pixel_array[6,6,0])
+    assert np.isnan(trimmed.pixel_array[6,0,0])
+
+    # make sure correct data was maintained
+    assert np.array_equal(trimmed.pixel_array[1:6, 1:6, :], pixel_array[2:7, 2:7, :])
+
+    # test trimming where radius includes entire Core
+    trimmed = core.trim_radial(axis=2, radius=100.0, x_center=4, y_center=4)
+
+    # make sure the matrix shape didn't change
+    assert trimmed.shape() == (9, 9, 16)
+
+    # make sure data wasn't changed
+    assert np.array_equal(trimmed.pixel_array, pixel_array)
+
+    # test trimming on a Core with irregular pixel/voxel dimensions
+    core_irregular: Core = Core(
+        pixel_array=pixel_array, pixel_dimensions=(1.0, 2.0, 4.0)
+    )
+
+    trimmed_irregular: Core = core_irregular.trim_radial(axis=2, radius=3.0, 
+                                                         x_center=4, y_center=4)
+
+    # make sure the matrix was reduced correctly
+    assert trimmed_irregular.shape() == (7, 3, 16)
+
+    # make sure corners are empty
+    assert np.isnan(trimmed_irregular.pixel_array[0,0,0])
+    assert np.isnan(trimmed_irregular.pixel_array[0,2,0])
+    assert np.isnan(trimmed_irregular.pixel_array[6,2,0])
+    assert np.isnan(trimmed_irregular.pixel_array[6,0,0])
+
+    # make sure correct data was maintained
+    assert np.array_equal(trimmed_irregular.pixel_array[1:6, 0:3, :], 
+                          pixel_array[2:7, 3:6, :])
+
+
+def test_swapaxes():
+    """Tests the `slice` method on the `Core`."""
+    # Define the core
+    shape: list[int] = (2, 4, 8)
+    pixel_array: np.ndarray = np.zeros(shape)
+    counter: int = 0
+    for x in range(shape[0]):
+        for y in range(shape[1]):
+            for z in range(shape[2]):
+                pixel_array[x, y, z] = counter
+                counter += 1
+
+    core: Core = Core(
+        pixel_array=pixel_array, pixel_dimensions=(2.0, 4.0, 8.0)
     )
 
     # Swap various axes
@@ -121,7 +181,7 @@ def test_swapaxes():
 def test_flip():
     """Tests the `flip` method on the `Core`."""
     # Define the core
-    shape: list[int] = [2, 4, 8]
+    shape: list[int] = (2, 4, 8)
     pixel_array: np.ndarray = np.zeros(shape)
     counter: int = 0
     for x in range(shape[0]):
@@ -131,7 +191,7 @@ def test_flip():
                 counter += 1
 
     core: Core = Core(
-        pixel_array=copy.deepcopy(pixel_array), pixel_dimensions=(2.0, 4.0, 8.0)
+        pixel_array=pixel_array, pixel_dimensions=(2.0, 4.0, 8.0)
     )
 
     # Flip various axes
@@ -179,7 +239,7 @@ def test_flip():
 def test_rotate():
     """Tests the `rotate` method on the `Core`."""
     # Define the core
-    shape: list[int] = [2, 4, 8]
+    shape: list[int] = (2, 4, 8)
     pixel_array: np.ndarray = np.zeros(shape)
     counter: int = 0
     for x in range(shape[0]):
