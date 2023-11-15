@@ -28,8 +28,19 @@ def test_core():
 
 def test_slice():
     """Tests the `slice` method on the `Core`."""
-    # Define the core
-    core = Core(pixel_array=np.zeros([2, 4, 8]), pixel_dimensions=[2.0, 4.0, 8.0])
+    # Define the core parameters
+    pixel_array = np.array(
+        [
+            [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15]],
+            [[16, 17, 18, 19, 20], [21, 22, 23, 24, 25], [26, 27, 28, 29, 30]],
+            [[31, 32, 33, 34, 35], [36, 37, 38, 39, 40], [41, 42, 43, 44, 45]],
+            [[46, 47, 48, 49, 50], [51, 52, 53, 54, 55], [56, 57, 58, 59, 60]],
+        ]
+    )
+    pixel_dimensions = (2.0, 4.0, 8.0)
+
+    # Create the Core object
+    core = Core(pixel_array=pixel_array, pixel_dimensions=pixel_dimensions)
 
     # Take slice from each axis out of the core
     slice_0 = core.slice(axis=0, loc=0)
@@ -37,9 +48,33 @@ def test_slice():
     slice_2 = core.slice(axis=2, loc=0)
 
     # Check that the shape of each slice is correct
-    assert slice_0.shape == (4, 8)
-    assert slice_1.shape == (2, 8)
-    assert slice_2.shape == (2, 4)
+    assert slice_0.shape() == (3, 5)
+    assert slice_1.shape() == (4, 5)
+    assert slice_2.shape() == (4, 3)
+
+    # Check that the data values are as expected
+    assert np.array_equal(
+        slice_0.data,
+        np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15]]),
+    )
+    assert np.array_equal(
+        slice_1.data,
+        np.array(
+            [
+                [1, 2, 3, 4, 5],
+                [16, 17, 18, 19, 20],
+                [31, 32, 33, 34, 35],
+                [46, 47, 48, 49, 50],
+            ]
+        ),
+    )
+    assert np.array_equal(
+        slice_2.data, np.array([[1, 6, 11], [16, 21, 26], [31, 36, 41], [46, 51, 56]])
+    )
+    # assert that the pixel dimensions are correct
+    assert slice_0.pixel_dimensions == (4.0, 8.0)
+    assert slice_1.pixel_dimensions == (2.0, 8.0)
+    assert slice_2.pixel_dimensions == (2.0, 4.0)
 
 
 def test_swapaxes():
@@ -275,6 +310,7 @@ def test_rotate():
         # Make sure pixel_dimensions weren't altered
         assert core.pixel_dimensions == (2.0, 4.0, 8.0)
 
+
 def test_filter():
     """Tests the `filter` method on the `Core`."""
     # Define the core
@@ -287,10 +323,11 @@ def test_filter():
                 pixel_array[x, y, z] = counter
                 counter += 1
 
-    core: Core = Core(pixel_array=copy.deepcopy(pixel_array),
-                      pixel_dimensions=(2.0, 4.0, 8.0))
+    core: Core = Core(
+        pixel_array=copy.deepcopy(pixel_array), pixel_dimensions=(2.0, 4.0, 8.0)
+    )
 
-    filter_func = lambda a : True if 3 <= a <= 8 else False # noqa
+    filter_func = lambda a: True if 3 <= a <= 8 else False  # noqa
 
     filtered_core: Core = core.filter(filter_func)
 
@@ -302,6 +339,7 @@ def test_filter():
         for j, col in enumerate(row):
             for brightness in col:
                 assert np.isnan(brightness) or 3 <= brightness <= 8
+
 
 def test_shape():
     """Tests the `shape` method on the `Core`."""

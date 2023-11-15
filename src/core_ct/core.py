@@ -3,6 +3,7 @@
 from __future__ import annotations
 import numpy as np
 from typing import Callable
+from core_ct.slice import Slice
 
 
 class Core:
@@ -40,9 +41,9 @@ class Core:
         else:
             self.pixel_array = pixel_array
 
-    def slice(self, axis: int, loc: int) -> np.ndarray:
+    def slice(self, axis: int, loc: int) -> Slice:
         """
-        Get a two-dimensional slice of the core at a specific location along an axis.
+        Get a 2D `Slice` of the core at a specific location along an axis.
 
         Arguments:
         ---------
@@ -50,25 +51,31 @@ class Core:
                     0 corresponds to x-axis
                     1 corresponds to y-axis
                     2 corresponds to z-axis
-            loc: integer value along the axis specifying the location of the slice
+            loc: integer value along the axis specifying the location to take the slice
 
         Returns:
         -------
-            2D numpy array representing a single slice of the core
+            `Slice` object containing pixel data and dimensions 
 
         Raises:
         ------
-            Exception if axis is a value other than 0, 1, or 2
+            ValueError if axis is a value other than 0, 1, or 2
         """
         match axis:
             case 0:
-                return self.pixel_array[loc]
+                return Slice(data = self.pixel_array[loc], 
+                            pixel_dimensions = (self.pixel_dimensions[1],
+                                                self.pixel_dimensions[2])) # 0th and 1st
             case 1:
-                return self.pixel_array[:, loc]
+                return Slice(data = self.pixel_array[:, loc],
+                            pixel_dimensions = (self.pixel_dimensions[0], 
+                                                self.pixel_dimensions[2]))
             case 2:
-                return self.pixel_array[:, :, loc]
+                return Slice(data = self.pixel_array[:, :, loc], 
+                            pixel_dimensions = (self.pixel_dimensions[0], 
+                                                self.pixel_dimensions[1]))
             case _:
-                raise Exception("axis must be a value between 0 and 2 (inclusive)")
+                raise ValueError("axis must be a value between 0 and 2 (inclusive)")
 
     def trim(self, axis: int, loc_start: int, loc_end: int | None = None) -> Core:
         """
