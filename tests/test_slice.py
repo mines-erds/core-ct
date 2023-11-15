@@ -1,4 +1,4 @@
-"""Tests the `Core` class in the `core` module."""
+"""Tests the `Slice` class in the `slice` module."""
 
 from core_ct.slice import Slice
 import numpy as np
