@@ -1,0 +1,19 @@
+name: "Trigger Documentation Build"
+
+on:
+  push:
+    branches: ["53-generate-documentation-from-docstrings"]
+
+permissions:
+  contents: read
+
+jobs:
+  build_docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Read the Docs Build
+        uses: distributhor/workflow-webhook@v3
+        with:
+          webhook_url: ${{ secrets.RTD_WEBHOOK_URL }}
+          webhook_secret: ${{ secrets.RTD_WEBHOOK_SECRET }}
