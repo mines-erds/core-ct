@@ -155,13 +155,8 @@ class Core:
 
         return self.trim(axis, loc_start, loc_end)
 
-    def trim_radial(self,
-                    axis: int,
-                    radius: float, 
-                    x_center: int|None = None,
-                    y_center: int|None = None,
-                    z_center: int|None = None
-                    ) -> Core:
+    def trim_radial(self, axis: int, radius: float, x_center: int|None = None,
+                    y_center: int|None = None, z_center: int|None = None) -> Core:
         """
         Trims the Core radially given an axis and a center.
 
