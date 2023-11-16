@@ -1,6 +1,9 @@
 # Core-CT
 The `core-ct` scan library was built to assist geologists with the visualization and analysis of the CT scans of rock cores.
 
+## Documentation
+https://core-ct.readthedocs.io/en/latest/
+
 ## Development Environment
 1. Install `poetry` using the instructions at https://python-poetry.org/docs/#installation
 2. Navigate to inside the repository 

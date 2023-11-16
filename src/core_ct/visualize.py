@@ -17,16 +17,18 @@ def display_core(
     Each slice is taken at the center of the collapsed axis for convenience. Option to
     have axes shown in pixels or millimeters.
 
-    Arguments:
+    Arguments
     ---------
-        core: `Core` object to visualize
-        mm: boolean if set to `True`, will show plot axes in mm - default is pixels
+    core : Core
+        `Core` object to visualize
 
-    Returns:
+    Returns
     -------
-        `matplotlib.figure.Figure` object containing the subplots
-        tuple of `matplotlib.axes.Axes` objects, each axis containing display
-        information for each view of the core
+    matplotlib.figure.Figure
+        Object containing the subplots
+
+    list[matplotlib.axes.Axes]
+        Each axis contains display information for each view of the core
     """
     fig, axes = plt.subplots(nrows=1, ncols=3)
     core_dim = core.shape()
@@ -72,14 +74,18 @@ def display_slice(slice: Slice, mm: bool = False) -> matplotlib.image.AxesImage:
     Plots a colorbar alongside the slice showing the range of pixel values in the slice.
     Option to have axes shown in pixels or millimeters.
 
-    Arguments:
+    Arguments
     ---------
-        slice: `Slice` object to display
-        mm: boolean if set to `True`, will show plot axes in mm - default is pixels
+    slice : Slice
+        `Slice` object to display
 
-    Returns:
+    mm : bool
+        If set to `True`, will show plot axes in mm - default is pixels
+
+    Returns
     -------
-        `matplotlib.image.AxesImage` object returned by `imshow`
+    matplotlib.image.AxesImage
+        Object returned by `imshow`
     """
     fig = plt.figure()
     slice_dim = slice.shape()
@@ -111,16 +117,21 @@ def display_slice_bt_std(
     """
     Display a core slice and corresponding brightness trace and standard deviation.
 
-    Arguments:
+    Arguments
     ---------
-        slice: 2D numpy array of pixel data for a single slice of a core
-        mm: boolean if set to `True`, will show plot axes in mm - default is pixels
+    slice : Slice
+        `Slice` object to display
 
-    Returns:
+    mm : bool
+        If set to `True`, will show plot axes in mm - default is pixels
+
+    Returns
     -------
-        `matplotlib.figure.Figure` object containing the subplots
-        tuple of `matplotlib.axes.Axes` objects, each axis containing display
-        information or data for each plot
+    matplotlib.figure.Figure
+        Object containing the subplots
+
+    list[matplotlib.axes.Axes]
+        Each axis contains display information for each view of the core
     """
     bt_df = brightness_trace(slice)
     brightness = bt_df.iloc[:, 0]
@@ -157,28 +168,43 @@ def visualize_trim(
     """
     Overlay trim lines onto a slice to illustrate where a trim would occur.
 
-    Arguments:
+    Arguments
     ---------
-        slice: `Slice` object to visualize
-        axis: integer either 0 or 1 indicating what axis to display the trim on
-            0 - corresponds to the y axis (row), so a horizontal line will be plotted
-            1 - corresponds to the x axis (column), so a vertical line will be plotted
-        loc_start: integer specifying where the first line will be plotted
-        loc_end: if given, is an integer specifying where the second line will be
-        plotted as a distance from the end of the axis. Therefore the actual index
-        will be `len(axis)-loc_end`. If not given, loc_end is equal to loc_start
-        so the trim will be symmetric
+    slice : Slice
+        `Slice` object to visualize
 
-    Returns:
+    axis : int
+        Integer either 0 or 1 indicating what axis to display the trim on
+
+            0: corresponds to the y axis (row), so a horizontal line will be plotted
+
+            1: corresponds to the x axis (column), so a vertical line will be plotted
+
+    loc_start : int
+        Integer index specifying where the first line will be plotted
+
+    loc_end : int
+        If given, is an integer specifying where the second line will be plotted as a
+        distance from the end of the axis. Therefore the actual index will be
+        `len(axis)-loc_end`. If not given, loc_end is equal to loc_start so the trim
+        will be symmetric
+
+    Returns
     -------
-        `matplotlib.image.AxesImage` object returned by `imshow`
+    matplotlib.image.AxesImage
+        Object returned by `imshow`
 
-    Raises:
+    Raises
     ------
-        ValueError if axis is a value other than 0 or 1
-        IndexError if amount trimmed from end causes the ending index to be to the
+    ValueError
+        If axis is a value other than 0 or 1
+
+    IndexError
+        If amount trimmed from end causes the ending index to be to the
         left of the starting index
-        IndexError if start_loc or end_loc is out of bounds of the axis length
+
+    IndexError
+        If start_loc or end_loc is out of bounds of the axis length
     """
     slice_dim = slice.shape()
     if axis != 0 and axis != 1:
