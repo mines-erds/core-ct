@@ -94,4 +94,4 @@ def dicom(
         img2d = s.pixel_array
         img3d[:, :, i] = img2d
 
-    return Core(pixel_array=img3d, pixel_dimensions=(x_dim, y_dim, z_dim))
+    return Core(data=img3d, pixel_dimensions=(x_dim, y_dim, z_dim))
