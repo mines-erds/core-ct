@@ -5,28 +5,28 @@ import numpy as np
 
 def test_slice():
     """Tests that a `Slice` object can be created successfully."""
-    # Define a pixel array and pixel_dimensions
-    pixel_array = np.zeros([4, 8])
+    # Define a data array and pixel_dimensions
+    data = np.zeros([4, 8])
     pixel_dimensions = [2.0, 4.0]
     
     # Create the slice object
-    slice = Slice(data = pixel_array, pixel_dimensions = pixel_dimensions)
+    slice = Slice(data = data, pixel_dimensions = pixel_dimensions)
 
     # Assert the slice was created correctly
-    np.testing.assert_equal(slice.data, pixel_array)
+    np.testing.assert_equal(slice.data, data)
     np.testing.assert_equal(slice.pixel_dimensions, pixel_dimensions)
 
 def test_trim():
     """Tests that a new `Slice` object is created correctly by trimming a slice."""
     # create fake pixel data 
-    pixel_array = np.array([[1, 2, 3, 4],
+    data = np.array([[1, 2, 3, 4],
                            [5, 6, 7, 8],
                            [9, 10, 11, 12],
                            [13, 14, 15, 16],
                            [17, 18, 19, 20],
                            [21, 22, 23, 24]])
     pixel_dimensions = [2.0, 4.0]
-    slice = Slice(data = pixel_array, pixel_dimensions = pixel_dimensions)
+    slice = Slice(data = data, pixel_dimensions = pixel_dimensions)
     # take various slices on each axis, and with and without loc_end
     slice_0 = slice.trim(axis = 0, loc_start = 2)
     slice_1 = slice.trim(axis = 0, loc_start = 2, loc_end = 3)
@@ -89,8 +89,8 @@ def test_trim():
 
 def test_shape():
     """Tests that `shape()` return the proper values."""
-    # Define a pixel array and pixel_dimensions
-    pixel_array = np.array([[1, 2, 3, 4],
+    # Define a data array and pixel_dimensions
+    data = np.array([[1, 2, 3, 4],
                            [5, 6, 7, 8],
                            [9, 10, 11, 12],
                            [13, 14, 15, 16],
@@ -99,6 +99,6 @@ def test_shape():
     pixel_dimensions = [2.0, 4.0]
     
     # Create the slice object
-    slice = Slice(data = pixel_array, pixel_dimensions = pixel_dimensions)
+    slice = Slice(data = data, pixel_dimensions = pixel_dimensions)
     # Assert the slice was created correctly
-    assert slice.shape() == pixel_array.shape
+    assert slice.shape() == data.shape
