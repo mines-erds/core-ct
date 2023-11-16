@@ -168,7 +168,7 @@ class Core:
         Trims the Core radially given an axis and a center.
 
         Replaces all data outside of the user specified area with NaN. Also reduces the
-        size of `pixel_array` as much as possible.
+        size of `data` as much as possible.
 
         The user specifies a cylindrical shape by an `axis` and a center. For example, 
         if `axis` is set to `2` (z-axis) the user should specify the center via
@@ -218,11 +218,11 @@ class Core:
         
         # clean up center inputs
         if x_center is None:
-            x_center = int(self.pixel_array.shape[0] / 2)
+            x_center = int(self.data.shape[0] / 2)
         if y_center is None:
-            y_center = int(self.pixel_array.shape[1] / 2)
+            y_center = int(self.data.shape[1] / 2)
         if z_center is None:
-            z_center = int(self.pixel_array.shape[2] / 2)
+            z_center = int(self.data.shape[2] / 2)
         
         center: tuple[int, int, int] = (x_center, y_center, z_center)
 
@@ -231,17 +231,17 @@ class Core:
         for ax in range(0, 3):
             if ax == axis:
                 starts[ax] = 0
-                ends[ax] = self.pixel_array.shape[ax]
+                ends[ax] = self.data.shape[ax]
                 continue
 
             pixel_radius = int(radius / self.pixel_dimensions[ax])
             starts[ax] = int(max(center[ax] - pixel_radius, 0))
             ends[ax] = int(min(center[ax] + pixel_radius, 
-                               self.pixel_array.shape[ax])) + 1
+                               self.data.shape[ax])) + 1
 
         # must create a copy instead of a view because we are destructively modifying
         # data during the filter step
-        pixel_array: np.ndarray = self.pixel_array[
+        data: np.ndarray = self.data[
             starts[0]:ends[0], starts[1]:ends[1], starts[2]:ends[2]
         ].copy()
         
@@ -252,9 +252,9 @@ class Core:
         )
 
         # filter out all data outside of the radius
-        for x in range(pixel_array.shape[0]):
-            for y in range(pixel_array.shape[1]):
-                for z in range(pixel_array.shape[2]):
+        for x in range(data.shape[0]):
+            for y in range(data.shape[1]):
+                for z in range(data.shape[2]):
                     pos: tuple[int, int, int] = (x, y, z)
                     dist_1: float = (center[dist_axis_1] - pos[dist_axis_1]) \
                                     * self.pixel_dimensions[dist_axis_1]
@@ -263,9 +263,9 @@ class Core:
                     dist: float = sqrt(pow(dist_1, 2) + pow(dist_2, 2))
 
                     if dist > radius:
-                        pixel_array[pos] = np.nan
+                        data[pos] = np.nan
 
-        return Core(pixel_array=pixel_array, pixel_dimensions=self.pixel_dimensions)
+        return Core(data=data, pixel_dimensions=self.pixel_dimensions)
 
     def swapaxes(self, axis1: int, axis2: int) -> Core:
         """
