@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 import numpy as np
+from typing import Callable
+from math import pow, sqrt
 
 
 class Core:
@@ -69,7 +71,7 @@ class Core:
             case _:
                 raise Exception("axis must be a value between 0 and 2 (inclusive)")
 
-    def trim(self, axis: int, loc_start: int, loc_end: int | None = None) -> None:
+    def trim(self, axis: int, loc_start: int, loc_end: int | None = None) -> Core:
         """
         Reduces the dimensions of the core along a specified axis.
 
@@ -85,6 +87,10 @@ class Core:
             loc_start: specifies the amount to trim off the beginning.
             loc_end: specifies the amount to trim off the end.
 
+        Returns:
+        -------
+            A new trimmed core object
+
         Raises:
         ------
             ValueError if axis is a value other than 0, 1, or 2
@@ -94,19 +100,165 @@ class Core:
 
         match axis:
             case 0:
-                self.pixel_array = self.pixel_array[
+                new_pixel_array = self.pixel_array[
                     loc_start : len(self.pixel_array) - loc_end
                 ]
             case 1:
-                self.pixel_array = self.pixel_array[
+                new_pixel_array = self.pixel_array[
                     :, loc_start : len(self.pixel_array[0]) - loc_end
                 ]
             case 2:
-                self.pixel_array = self.pixel_array[
+                new_pixel_array = self.pixel_array[
                     :, :, loc_start : len(self.pixel_array[0, 0]) - loc_end
                 ]
             case _:
                 raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+
+        return Core(new_pixel_array, self.pixel_dimensions)
+
+    def trim_by_percent(self, axis: int, percent_start: float,
+                        percent_end: float | None = None) -> Core:
+        """
+        Reduces the dimensions of the core along a specified axis.
+
+        Get a three-dimensional slice of the core scan by trimming off a percent
+        on the requested axis. This function is symmetrical by default.
+
+        Arguments:
+        ---------
+            axis: integer either 0,1,2 specifying which dimension to collapse:
+                    0 corresponds to x-axis
+                    1 corresponds to y-axis
+                    2 corresponds to z-axis
+            percent_start: percent to trim off the left side.
+            percent_end: percent to trim off the right side.
+
+        Returns:
+        -------
+            A new trimmed core object
+
+        Raises:
+        ------
+            ValueError if axis is a value other than 0, 1, or 2
+        """
+        if percent_end is None:
+            percent_end = percent_start
+
+        if percent_start + percent_end > 1.0:
+            raise ValueError("Percents must be a less than 1.0")
+
+        if axis in [0, 1, 2]:
+            loc_start = int(self.pixel_array.shape[axis] * percent_start)
+            loc_end = int(self.pixel_array.shape[axis] * percent_end)
+        else:
+            raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+
+        return self.trim(axis, loc_start, loc_end)
+
+    def trim_radial(self, axis: int, radius: float, x_center: int|None = None,
+                    y_center: int|None = None, z_center: int|None = None) -> Core:
+        """
+        Trims the Core radially given an axis and a center.
+
+        Replaces all data outside of the user specified area with NaN. Also reduces the
+        size of `pixel_array` as much as possible.
+
+        The user specifies a cylindrical shape by an `axis` and a center. For example, 
+        if `axis` is set to `2` (z-axis) the user should specify the center via
+        `x_center` and `y_center`. After trimming, every z-slice will only contain
+        data within a circle of the given `radius` centered at (`x_center`, `y_center`).
+
+        Parameters
+        ----------
+        axis : int
+            axis to radially trim about
+                0 corresponds to x-axis
+                1 corresponds to y-axis
+                2 corresponds to z-axis
+        radius : float
+            radius from given center to trim values outside of
+        x_center : int
+            index to center the cylinder on along the x-axis
+        y_center : int
+            index to center the cylinder on along the y-axis
+        z_center : int
+            index to center the cylinder on along the z-axis
+
+        Returns
+        -------
+        Core
+            A new trimmed core object
+
+        Raises
+        ------
+            ValueError if axis is a value other than 0, 1, or 2
+        """
+        # figure out which axis we are testing the radius against
+        dist_axis_1: int
+        dist_axis_2: int
+        match axis:
+            case 0:
+                dist_axis_1 = 1
+                dist_axis_2 = 2
+            case 1:
+                dist_axis_1 = 0
+                dist_axis_2 = 2
+            case 2:
+                dist_axis_1 = 0
+                dist_axis_2 = 1
+            case _:
+                raise ValueError("axis must be a value between 0 and 2 (inclusive)")
+        
+        # clean up center inputs
+        if x_center is None:
+            x_center = int(self.pixel_array.shape[0] / 2)
+        if y_center is None:
+            y_center = int(self.pixel_array.shape[1] / 2)
+        if z_center is None:
+            z_center = int(self.pixel_array.shape[2] / 2)
+        
+        center: tuple[int, int, int] = (x_center, y_center, z_center)
+
+        starts: list[int] = [0] * 3
+        ends: list[int] = [0] * 3
+        for ax in range(0, 3):
+            if ax == axis:
+                starts[ax] = 0
+                ends[ax] = self.pixel_array.shape[ax]
+                continue
+
+            pixel_radius = int(radius / self.pixel_dimensions[ax])
+            starts[ax] = int(max(center[ax] - pixel_radius, 0))
+            ends[ax] = int(min(center[ax] + pixel_radius, 
+                               self.pixel_array.shape[ax])) + 1
+
+        # must create a copy instead of a view because we are destructively modifying
+        # data during the filter step
+        pixel_array: np.ndarray = self.pixel_array[
+            starts[0]:ends[0], starts[1]:ends[1], starts[2]:ends[2]
+        ].copy()
+        
+        # should calculate radius in terms of our new reduced matrix, move center 
+        # accordingly
+        center = (
+            center[0] - starts[0], center[1] - starts[1], center[2] - starts[2]
+        )
+
+        # filter out all data outside of the radius
+        for x in range(pixel_array.shape[0]):
+            for y in range(pixel_array.shape[1]):
+                for z in range(pixel_array.shape[2]):
+                    pos: tuple[int, int, int] = (x, y, z)
+                    dist_1: float = (center[dist_axis_1] - pos[dist_axis_1]) \
+                                    * self.pixel_dimensions[dist_axis_1]
+                    dist_2: float = (center[dist_axis_2] - pos[dist_axis_2]) \
+                                    * self.pixel_dimensions[dist_axis_2]
+                    dist: float = sqrt(pow(dist_1, 2) + pow(dist_2, 2))
+
+                    if dist > radius:
+                        pixel_array[pos] = np.nan
+
+        return Core(pixel_array=pixel_array, pixel_dimensions=self.pixel_dimensions)
 
     def swapaxes(self, axis1: int, axis2: int) -> Core:
         """
@@ -280,6 +432,88 @@ class Core:
             z2 = temp
 
         new_core = Core(self.pixel_array[x1:x2, y1:y2, z1:z2], self.pixel_dimensions)
+        return new_core
+
+    def shape(self) -> tuple[int, int, int]:
+        """
+        Get the dimensions of the pixel array of the core scan.
+
+        Arguments:
+        ---------
+            none
+
+        Returns:
+        -------
+            The pixel dimensions of the core scan.
+        """
+        return self.pixel_array.shape
+
+    def dimensions(self) -> tuple[float, float, float]:
+        """
+        Get the dimensions of the scan in mm.
+
+        Arguments:
+        ---------
+            none
+
+        Returns:
+        -------
+            A three-element tuple containing the dimensions of the scan in mm.
+        """
+        return tuple(
+            size * dimension
+            for size, dimension in zip(self.pixel_array.shape, self.pixel_dimensions)
+        )
+
+    def volume(self) -> float:
+        """
+        Approximates the core volume in mm; ignores any NaN values.
+
+        Arguments:
+        ---------
+            None
+
+        Returns:
+        -------
+            The approximate volume of the core in cubic mm ignoring NaN values.
+        """
+        # Calculate the volume of a voxel
+        voxel_volume = (
+            self.pixel_dimensions[0]
+            * self.pixel_dimensions[1]
+            * self.pixel_dimensions[2]
+        )
+
+        # Count the number of voxels within the density range
+        valid_voxels = (~np.isnan(self.pixel_array)).sum()
+
+        return valid_voxels * voxel_volume
+
+    def filter(self, brightness_filter: Callable[[float], bool]) -> Core:
+        """
+        Get section of the core that only contains the specified brightness values.
+
+        Arguments:
+        ---------
+            brightness_filter: lambda function that defines what will be filtered out.
+                               Function must either return false if the value should
+                               not be included or true if the value should be included.
+
+        Returns:
+        -------
+            New core object with only the specified brightness values left,
+            everything else is set to nan.
+        """
+        core_filtered = self.pixel_array.copy()
+        for i, row in enumerate(self.pixel_array):
+            for j, col in enumerate(row):
+                for k, brightness in enumerate(col):
+                    if brightness_filter(brightness):
+                        core_filtered[i][j][k] = self.pixel_array[i][j][k]
+                    else:
+                        core_filtered[i][j][k] = np.nan
+
+        new_core = Core(core_filtered, self.pixel_dimensions)
         return new_core
 
     def join(self, core: Core, axis: int = 0) -> Core:
