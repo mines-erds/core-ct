@@ -22,7 +22,7 @@ def dicom(
     When specifying a directory all files in that directory will be treated as
     part of the DICOM dataset. If this is undesirable, use `files` instead.
 
-    Arguments:
+    Arguments
     ---------
     dir : str
         Path to directory containing DICOM dataset; ignored if `files` is specified
