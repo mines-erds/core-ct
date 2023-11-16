@@ -2,11 +2,12 @@
 
 import numpy as np
 import pandas as pd
+from core_ct.slice import Slice
 
 
-def brightness_trace(slice):
+def brightness_trace(slice: Slice) -> pd.DataFrame:
     """
-    Compute the mean of the brightnesses and its standard deviation for each layer.
+    Compute the mean brightness across each row of a slice and its standard deviation.
 
     Arguments
     ---------
@@ -21,5 +22,5 @@ def brightness_trace(slice):
     """
     # Return a pandas dataframe containing the mean and STD for each slice row
     return pd.DataFrame(
-        {"mean": np.mean(slice, axis=1), "stddev": np.std(slice, axis=1)}
+        {"mean": np.mean(slice.data, axis=1), "stddev": np.std(slice.data, axis=1)}
     )
