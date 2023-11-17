@@ -222,6 +222,9 @@ class Core:
         `x_center` and `y_center`. After trimming, every z-slice will only contain
         data within a circle of the given `radius` centered at (`x_center`, `y_center`).
 
+        This function is inclusive on `radius`, i.e. the returned Core maintains data 
+        where distance from center is equal to `radius`.
+
         Parameters
         ----------
         axis : int
@@ -303,21 +306,46 @@ class Core:
         # accordingly
         center = (center[0] - starts[0], center[1] - starts[1], center[2] - starts[2])
 
-        # filter out all data outside of the radius
-        for x in range(data.shape[0]):
-            for y in range(data.shape[1]):
-                for z in range(data.shape[2]):
-                    pos: tuple[int, int, int] = (x, y, z)
-                    dist_1: float = (
-                        center[dist_axis_1] - pos[dist_axis_1]
-                    ) * self.pixel_dimensions[dist_axis_1]
-                    dist_2: float = (
-                        center[dist_axis_2] - pos[dist_axis_2]
-                    ) * self.pixel_dimensions[dist_axis_2]
-                    dist: float = sqrt(pow(dist_1, 2) + pow(dist_2, 2))
+        # filter out all data outside the radius
+        for idx_1 in range(data.shape[dist_axis_1]):
+            for idx_2 in range(data.shape[dist_axis_2]):
+                # find distance from center to this point using pixel_dimensions
+                dist_1: float = (center[dist_axis_1] - idx_1) \
+                    * self.pixel_dimensions[dist_axis_1]
+                dist_2: float = (center[dist_axis_2] - idx_2) \
+                    * self.pixel_dimensions[dist_axis_2]
+                dist: float = sqrt(pow(dist_1, 2) + pow(dist_2, 2))
 
-                    if dist > radius:
-                        data[pos] = np.nan
+                # only want to erase data outside radius
+                if dist <= radius:
+                    continue
+
+                # find indices of data we want to erase
+                indices = [None] * 3
+                indices[dist_axis_1] = idx_1
+                indices[dist_axis_2] = idx_2
+                indices[axis] = slice(None)
+                # convert indices to tuple to be useable in a numpy subscript operation
+                indices = tuple(indices)
+
+                # indices will be unwrapped when used in a numpy operation
+                # for example, if we assume:
+                #   dist_axis_1 = 0
+                #   dist_axis_2 = 1
+                #   axis = 2
+                #   idx_1 = 4
+                #   idx_2 = 8
+                # then:
+                #   indices = (4, 8, slice(None))
+                # which when used in a numpy operation like this:
+                #   a = data[indices]
+                # is equivalent to this:
+                #   a = data[4, 8, :]
+
+                # create view containing data we want to erase
+                view: np.ndarray = data[indices]
+                # erase data contained in view
+                view.fill(np.nan)
 
         return Core(data=data, pixel_dimensions=self.pixel_dimensions)
 
