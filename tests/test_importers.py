@@ -24,7 +24,7 @@ def test_import_from_files():
     core = importers.dicom(files=scan_files)
 
     # Assert that the core imported correctly
-    assert core.pixel_array.shape == (512, 512, 11)
+    assert core.data.shape == (512, 512, 11)
 
 
 def test_import_from_dir():
@@ -36,5 +36,5 @@ def test_import_from_dir():
     core = importers.dicom(dir=scan_dir)
 
     # Assert that the core imported correctly
-    assert core.pixel_array.shape == (512, 512, 11)
+    assert core.data.shape == (512, 512, 11)
     assert core.pixel_dimensions == (0.43, 0.43, 0.5)

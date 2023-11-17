@@ -3,6 +3,7 @@
 from __future__ import annotations
 import numpy as np
 from typing import Callable
+from core_ct.slice import Slice
 from math import pow, sqrt
 
 
@@ -12,7 +13,7 @@ class Core:
 
     Attributes
     ----------
-        pixel_array -- 3D numpy array of pixel data that make up the core
+        data -- 3D numpy array of pixel data that make up the core
         pixel_dimensions -- tuple containing the dimensions of each pixel/voxel
 
     Methods
@@ -22,7 +23,7 @@ class Core:
 
     def __init__(
         self,
-        pixel_array: np.ndarray | list[float],
+        data: np.ndarray | list[float],
         pixel_dimensions: tuple[float, float, float] = (1.0, 1.0, 1.0),
     ):
         """
@@ -30,20 +31,20 @@ class Core:
 
         Arguments:
         ---------
-            pixel_array: 3D numpy array of pixel data that make up the core
+            data: 3D numpy array of pixel data that make up the core
             pixel_dimensions: tuple containing the dimensions of each pixel/voxel
         """
         self.pixel_dimensions: tuple[float, float, float] = pixel_dimensions
 
         # data must be in a numpy array for slicing methods to work
-        if not isinstance(pixel_array, np.ndarray):
-            self.pixel_array = np.array(pixel_array)
+        if not isinstance(data, np.ndarray):
+            self.data = np.array(data)
         else:
-            self.pixel_array = pixel_array
+            self.data = data
 
-    def slice(self, axis: int, loc: int) -> np.ndarray:
+    def slice(self, axis: int, loc: int) -> Slice:
         """
-        Get a two-dimensional slice of the core at a specific location along an axis.
+        Get a 2D `Slice` of the core at a specific location along an axis.
 
         Arguments:
         ---------
@@ -51,25 +52,31 @@ class Core:
                     0 corresponds to x-axis
                     1 corresponds to y-axis
                     2 corresponds to z-axis
-            loc: integer value along the axis specifying the location of the slice
+            loc: integer value along the axis specifying the location to take the slice
 
         Returns:
         -------
-            2D numpy array representing a single slice of the core
+            `Slice` object containing pixel data and dimensions 
 
         Raises:
         ------
-            Exception if axis is a value other than 0, 1, or 2
+            ValueError if axis is a value other than 0, 1, or 2
         """
         match axis:
             case 0:
-                return self.pixel_array[loc]
+                return Slice(data = self.data[loc], 
+                            pixel_dimensions = (self.pixel_dimensions[1],
+                                                self.pixel_dimensions[2])) # 0th and 1st
             case 1:
-                return self.pixel_array[:, loc]
+                return Slice(data = self.data[:, loc],
+                            pixel_dimensions = (self.pixel_dimensions[0], 
+                                                self.pixel_dimensions[2]))
             case 2:
-                return self.pixel_array[:, :, loc]
+                return Slice(data = self.data[:, :, loc], 
+                            pixel_dimensions = (self.pixel_dimensions[0], 
+                                                self.pixel_dimensions[1]))
             case _:
-                raise Exception("axis must be a value between 0 and 2 (inclusive)")
+                raise ValueError("axis must be a value between 0 and 2 (inclusive)")
 
     def trim(self, axis: int, loc_start: int, loc_end: int | None = None) -> Core:
         """
@@ -100,21 +107,21 @@ class Core:
 
         match axis:
             case 0:
-                new_pixel_array = self.pixel_array[
-                    loc_start : len(self.pixel_array) - loc_end
+                new_data = self.data[
+                    loc_start : len(self.data) - loc_end
                 ]
             case 1:
-                new_pixel_array = self.pixel_array[
-                    :, loc_start : len(self.pixel_array[0]) - loc_end
+                new_data = self.data[
+                    :, loc_start : len(self.data[0]) - loc_end
                 ]
             case 2:
-                new_pixel_array = self.pixel_array[
-                    :, :, loc_start : len(self.pixel_array[0, 0]) - loc_end
+                new_data = self.data[
+                    :, :, loc_start : len(self.data[0, 0]) - loc_end
                 ]
             case _:
                 raise ValueError("axis must be a value between 0 and 2 (inclusive)")
 
-        return Core(new_pixel_array, self.pixel_dimensions)
+        return Core(new_data, self.pixel_dimensions)
 
     def trim_by_percent(self, axis: int, percent_start: float,
                         percent_end: float | None = None) -> Core:
@@ -148,8 +155,8 @@ class Core:
             raise ValueError("Percents must be a less than 1.0")
 
         if axis in [0, 1, 2]:
-            loc_start = int(self.pixel_array.shape[axis] * percent_start)
-            loc_end = int(self.pixel_array.shape[axis] * percent_end)
+            loc_start = int(self.data.shape[axis] * percent_start)
+            loc_end = int(self.data.shape[axis] * percent_end)
         else:
             raise ValueError("axis must be a value between 0 and 2 (inclusive)")
 
@@ -161,7 +168,7 @@ class Core:
         Trims the Core radially given an axis and a center.
 
         Replaces all data outside of the user specified area with NaN. Also reduces the
-        size of `pixel_array` as much as possible.
+        size of `data` as much as possible.
 
         The user specifies a cylindrical shape by an `axis` and a center. For example, 
         if `axis` is set to `2` (z-axis) the user should specify the center via
@@ -211,11 +218,11 @@ class Core:
         
         # clean up center inputs
         if x_center is None:
-            x_center = int(self.pixel_array.shape[0] / 2)
+            x_center = int(self.data.shape[0] / 2)
         if y_center is None:
-            y_center = int(self.pixel_array.shape[1] / 2)
+            y_center = int(self.data.shape[1] / 2)
         if z_center is None:
-            z_center = int(self.pixel_array.shape[2] / 2)
+            z_center = int(self.data.shape[2] / 2)
         
         center: tuple[int, int, int] = (x_center, y_center, z_center)
 
@@ -224,17 +231,17 @@ class Core:
         for ax in range(0, 3):
             if ax == axis:
                 starts[ax] = 0
-                ends[ax] = self.pixel_array.shape[ax]
+                ends[ax] = self.data.shape[ax]
                 continue
 
             pixel_radius = int(radius / self.pixel_dimensions[ax])
             starts[ax] = int(max(center[ax] - pixel_radius, 0))
             ends[ax] = int(min(center[ax] + pixel_radius, 
-                               self.pixel_array.shape[ax])) + 1
+                               self.data.shape[ax])) + 1
 
         # must create a copy instead of a view because we are destructively modifying
         # data during the filter step
-        pixel_array: np.ndarray = self.pixel_array[
+        data: np.ndarray = self.data[
             starts[0]:ends[0], starts[1]:ends[1], starts[2]:ends[2]
         ].copy()
         
@@ -245,9 +252,9 @@ class Core:
         )
 
         # filter out all data outside of the radius
-        for x in range(pixel_array.shape[0]):
-            for y in range(pixel_array.shape[1]):
-                for z in range(pixel_array.shape[2]):
+        for x in range(data.shape[0]):
+            for y in range(data.shape[1]):
+                for z in range(data.shape[2]):
                     pos: tuple[int, int, int] = (x, y, z)
                     dist_1: float = (center[dist_axis_1] - pos[dist_axis_1]) \
                                     * self.pixel_dimensions[dist_axis_1]
@@ -256,13 +263,13 @@ class Core:
                     dist: float = sqrt(pow(dist_1, 2) + pow(dist_2, 2))
 
                     if dist > radius:
-                        pixel_array[pos] = np.nan
+                        data[pos] = np.nan
 
-        return Core(pixel_array=pixel_array, pixel_dimensions=self.pixel_dimensions)
+        return Core(data=data, pixel_dimensions=self.pixel_dimensions)
 
     def swapaxes(self, axis1: int, axis2: int) -> Core:
         """
-        Create a new Core object with swapped axes and updated pixel dimensions.
+        Create a new `Core` object with swapped axes and updated pixel dimensions.
 
         Arguments:
         ---------
@@ -289,8 +296,8 @@ class Core:
         if axis2 < 0 or axis2 > 2:
             raise ValueError("axis2 must be a value between 0 and 2 (inclusive)")
 
-        # swap axes in pixel array
-        pixel_array = np.swapaxes(self.pixel_array, axis1, axis2)
+        # swap axes in data array
+        data = np.swapaxes(self.data, axis1, axis2)
 
         # swap values in pixel dimensions
         pixel_dimensions: list[float] = list(self.pixel_dimensions)
@@ -298,7 +305,7 @@ class Core:
         pixel_dimensions[axis2] = self.pixel_dimensions[axis1]
 
         # return new Core containing transformed data
-        return Core(pixel_array=pixel_array, pixel_dimensions=tuple(pixel_dimensions))
+        return Core(data=data, pixel_dimensions=tuple(pixel_dimensions))
 
     def flip(self, axis: int) -> Core:
         """
@@ -323,11 +330,11 @@ class Core:
         if axis < 0 or axis > 2:
             raise ValueError("axis must be a value between 0 and 2 (inclusive)")
 
-        # swap axes in pixel array
-        pixel_array = np.flip(self.pixel_array, axis)
+        # swap axes in data array
+        data = np.flip(self.data, axis)
 
         # return new Core containing transformed data
-        return Core(pixel_array=pixel_array, pixel_dimensions=self.pixel_dimensions)
+        return Core(data=data, pixel_dimensions=self.pixel_dimensions)
 
     def rotate(self, axis: int, k: int = 1, clockwise: bool = False) -> Core:
         """
@@ -342,7 +349,7 @@ class Core:
                     0: x-axis
                     1: y-axis
                     2: z-axis
-            k: number of times to rotate pixel_array 90 degrees
+            k: number of times to rotate data 90 degrees
             clockwise: whether or not to rotate clockwise instead of counter-clockwise
 
         Returns:
@@ -376,7 +383,7 @@ class Core:
                 axis1 = 0
                 axis2 = 1
 
-        pixel_array = np.rot90(self.pixel_array, k=k, axes=(axis1, axis2))
+        data = np.rot90(self.data, k=k, axes=(axis1, axis2))
 
         # correcting pixel_dimensions below the rot90 call so pixel_dimensions won't
         # be messed up if rot90 fails
@@ -391,7 +398,7 @@ class Core:
             pixel_dimensions[axis2] = self.pixel_dimensions[axis1]
 
         # return new Core with transformed data
-        return Core(pixel_array=pixel_array, pixel_dimensions=tuple(pixel_dimensions))
+        return Core(data=data, pixel_dimensions=tuple(pixel_dimensions))
 
     def chunk(self, x1=0, y1=0, z1=0, x2=None, y2=None, z2=None) -> Core:
         """
@@ -411,11 +418,11 @@ class Core:
             New core object containing the specified chunk of the old core
         """
         if x2 is None:
-            x2 = len(self.pixel_array)
+            x2 = len(self.data)
         if y2 is None:
-            y2 = len(self.pixel_array[0])
+            y2 = len(self.data[0])
         if z2 is None:
-            z2 = len(self.pixel_array[0, 0])
+            z2 = len(self.data[0, 0])
 
         # Make sure that the first value smaller
         if x2 < x1:
@@ -431,7 +438,7 @@ class Core:
             z1 = z2
             z2 = temp
 
-        new_core = Core(self.pixel_array[x1:x2, y1:y2, z1:z2], self.pixel_dimensions)
+        new_core = Core(self.data[x1:x2, y1:y2, z1:z2], self.pixel_dimensions)
         return new_core
 
     def shape(self) -> tuple[int, int, int]:
@@ -446,7 +453,7 @@ class Core:
         -------
             The pixel dimensions of the core scan.
         """
-        return self.pixel_array.shape
+        return self.data.shape
 
     def dimensions(self) -> tuple[float, float, float]:
         """
@@ -462,7 +469,7 @@ class Core:
         """
         return tuple(
             size * dimension
-            for size, dimension in zip(self.pixel_array.shape, self.pixel_dimensions)
+            for size, dimension in zip(self.data.shape, self.pixel_dimensions)
         )
 
     def volume(self) -> float:
@@ -485,7 +492,7 @@ class Core:
         )
 
         # Count the number of voxels within the density range
-        valid_voxels = (~np.isnan(self.pixel_array)).sum()
+        valid_voxels = (~np.isnan(self.data)).sum()
 
         return valid_voxels * voxel_volume
 
@@ -504,12 +511,12 @@ class Core:
             New core object with only the specified brightness values left,
             everything else is set to nan.
         """
-        core_filtered = self.pixel_array.copy()
-        for i, row in enumerate(self.pixel_array):
+        core_filtered = self.data.copy()
+        for i, row in enumerate(self.data):
             for j, col in enumerate(row):
                 for k, brightness in enumerate(col):
                     if brightness_filter(brightness):
-                        core_filtered[i][j][k] = self.pixel_array[i][j][k]
+                        core_filtered[i][j][k] = self.data[i][j][k]
                     else:
                         core_filtered[i][j][k] = np.nan
 
@@ -550,7 +557,7 @@ class Core:
                 )
             )
 
-        # Join the two pixel arrays together
-        joined_pixel_array = np.append(self.pixel_array, core.pixel_array, axis=axis)
+        # Join the two data arrays together
+        joined_data = np.append(self.data, core.data, axis=axis)
 
-        return Core(joined_pixel_array, self.pixel_dimensions)
+        return Core(joined_data, self.pixel_dimensions)
