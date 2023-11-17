@@ -6,6 +6,10 @@ from typing import Callable
 from core_ct.slice import Slice
 from math import pow, sqrt
 
+# Methods
+# -------
+#     slice(self, axis, loc) -- get a 2D slice of the core
+
 
 class Core:
     """
@@ -13,12 +17,11 @@ class Core:
 
     Attributes
     ----------
-        data -- 3D numpy array of pixel data that make up the core
-        pixel_dimensions -- tuple containing the dimensions of each pixel/voxel
+    data : np.ndarray
+        3D numpy array of pixel data that make up the core
 
-    Methods
-    -------
-        slice(self, axis, loc) -- get a 2D slice of the core
+    pixel_dimensions : tuple[int, int , int]
+        tuple containing the dimensions of each pixel/voxel
     """
 
     def __init__(
@@ -29,10 +32,13 @@ class Core:
         """
         Construct necessary attributes of a Core.
 
-        Arguments:
+        Arguments
         ---------
-            data: 3D numpy array of pixel data that make up the core
-            pixel_dimensions: tuple containing the dimensions of each pixel/voxel
+        data : `np.ndarray`
+            3D numpy array of pixel data that make up the core
+
+        pixel_dimensions : `tuple[int, int, int]`
+            tuple containing the dimensions of each pixel/voxel
         """
         self.pixel_dimensions: tuple[float, float, float] = pixel_dimensions
 
@@ -46,35 +52,55 @@ class Core:
         """
         Get a 2D `Slice` of the core at a specific location along an axis.
 
-        Arguments:
+        Arguments
         ---------
-            axis: integer either 0,1,2 specifying which dimension to collapse:
-                    0 corresponds to x-axis
-                    1 corresponds to y-axis
-                    2 corresponds to z-axis
-            loc: integer value along the axis specifying the location to take the slice
+        axis : int
+            Integer either 0, 1, 2 specifying which dimension to collapse
 
-        Returns:
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        loc : int
+            Integer value along the axis specifying the location of the slice
+
+        Returns
         -------
-            `Slice` object containing pixel data and dimensions 
+        Slice
+            `Slice` object containing pixel data and dimensions
 
-        Raises:
+        Raises
         ------
-            ValueError if axis is a value other than 0, 1, or 2
+        ValueError
+            If axis is a value other than 0, 1, or 2
         """
         match axis:
             case 0:
-                return Slice(data = self.data[loc], 
-                            pixel_dimensions = (self.pixel_dimensions[1],
-                                                self.pixel_dimensions[2])) # 0th and 1st
+                return Slice(
+                    data=self.data[loc],
+                    pixel_dimensions=(
+                        self.pixel_dimensions[1],
+                        self.pixel_dimensions[2],
+                    ),
+                )  # 0th and 1st
             case 1:
-                return Slice(data = self.data[:, loc],
-                            pixel_dimensions = (self.pixel_dimensions[0], 
-                                                self.pixel_dimensions[2]))
+                return Slice(
+                    data=self.data[:, loc],
+                    pixel_dimensions=(
+                        self.pixel_dimensions[0],
+                        self.pixel_dimensions[2],
+                    ),
+                )
             case 2:
-                return Slice(data = self.data[:, :, loc], 
-                            pixel_dimensions = (self.pixel_dimensions[0], 
-                                                self.pixel_dimensions[1]))
+                return Slice(
+                    data=self.data[:, :, loc],
+                    pixel_dimensions=(
+                        self.pixel_dimensions[0],
+                        self.pixel_dimensions[1],
+                    ),
+                )
             case _:
                 raise ValueError("axis must be a value between 0 and 2 (inclusive)")
 
@@ -85,68 +111,83 @@ class Core:
         Get a three-dimensional slice of the core scan by trimming off a specified
         amount on the requested axis. This function is symmetrical by default.
 
-        Arguments:
+        Arguments
         ---------
-            axis: integer either 0,1,2 specifying which dimension to collapse:
-                    0 corresponds to x-axis
-                    1 corresponds to y-axis
-                    2 corresponds to z-axis
-            loc_start: specifies the amount to trim off the beginning.
-            loc_end: specifies the amount to trim off the end.
+        axis : int
+            Integer either 0, 1, 2 specifying which dimension to collapse:
 
-        Returns:
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        loc_start : int
+            Specifies the amount to trim off the beginning
+
+        loc_end : int
+            Specifies the amount to trim off the end
+
+        Returns
         -------
+        Core
             A new trimmed core object
 
-        Raises:
+        Raises
         ------
-            ValueError if axis is a value other than 0, 1, or 2
+        ValueError
+            If axis is a value other than 0, 1, or 2
         """
         if loc_end is None:
             loc_end = loc_start
 
         match axis:
             case 0:
-                new_data = self.data[
-                    loc_start : len(self.data) - loc_end
-                ]
+                new_data = self.data[loc_start : len(self.data) - loc_end]
             case 1:
-                new_data = self.data[
-                    :, loc_start : len(self.data[0]) - loc_end
-                ]
+                new_data = self.data[:, loc_start : len(self.data[0]) - loc_end]
             case 2:
-                new_data = self.data[
-                    :, :, loc_start : len(self.data[0, 0]) - loc_end
-                ]
+                new_data = self.data[:, :, loc_start : len(self.data[0, 0]) - loc_end]
             case _:
                 raise ValueError("axis must be a value between 0 and 2 (inclusive)")
 
         return Core(new_data, self.pixel_dimensions)
 
-    def trim_by_percent(self, axis: int, percent_start: float,
-                        percent_end: float | None = None) -> Core:
+    def trim_by_percent(
+        self, axis: int, percent_start: float, percent_end: float | None = None
+    ) -> Core:
         """
         Reduces the dimensions of the core along a specified axis.
 
         Get a three-dimensional slice of the core scan by trimming off a percent
         on the requested axis. This function is symmetrical by default.
 
-        Arguments:
+        Arguments
         ---------
-            axis: integer either 0,1,2 specifying which dimension to collapse:
-                    0 corresponds to x-axis
-                    1 corresponds to y-axis
-                    2 corresponds to z-axis
-            percent_start: percent to trim off the left side.
-            percent_end: percent to trim off the right side.
+        axis : int
+            integer either 0, 1, 2 specifying which dimension to collapse:
 
-        Returns:
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        percent_start : float
+            Percent to trim off the left side
+
+        percent_end : float
+            Percent to trim off the right side
+
+        Returns
         -------
+        Core
             A new trimmed core object
 
-        Raises:
+        Raises
         ------
-            ValueError if axis is a value other than 0, 1, or 2
+        ValueError
+            If axis is a value other than 0, 1, or 2
         """
         if percent_end is None:
             percent_end = percent_start
@@ -162,15 +203,21 @@ class Core:
 
         return self.trim(axis, loc_start, loc_end)
 
-    def trim_radial(self, axis: int, radius: float, x_center: int|None = None,
-                    y_center: int|None = None, z_center: int|None = None) -> Core:
+    def trim_radial(
+        self,
+        axis: int,
+        radius: float,
+        x_center: int | None = None,
+        y_center: int | None = None,
+        z_center: int | None = None,
+    ) -> Core:
         """
         Trims the Core radially given an axis and a center.
 
         Replaces all data outside of the user specified area with NaN. Also reduces the
         size of `data` as much as possible.
 
-        The user specifies a cylindrical shape by an `axis` and a center. For example, 
+        The user specifies a cylindrical shape by an `axis` and a center. For example,
         if `axis` is set to `2` (z-axis) the user should specify the center via
         `x_center` and `y_center`. After trimming, every z-slice will only contain
         data within a circle of the given `radius` centered at (`x_center`, `y_center`).
@@ -179,15 +226,22 @@ class Core:
         ----------
         axis : int
             axis to radially trim about
+
                 0 corresponds to x-axis
+
                 1 corresponds to y-axis
+
                 2 corresponds to z-axis
+
         radius : float
             radius from given center to trim values outside of
+
         x_center : int
             index to center the cylinder on along the x-axis
+
         y_center : int
             index to center the cylinder on along the y-axis
+
         z_center : int
             index to center the cylinder on along the z-axis
 
@@ -198,7 +252,8 @@ class Core:
 
         Raises
         ------
-            ValueError if axis is a value other than 0, 1, or 2
+        ValueError
+            If axis is a value other than 0, 1, or 2
         """
         # figure out which axis we are testing the radius against
         dist_axis_1: int
@@ -215,7 +270,7 @@ class Core:
                 dist_axis_2 = 1
             case _:
                 raise ValueError("axis must be a value between 0 and 2 (inclusive)")
-        
+
         # clean up center inputs
         if x_center is None:
             x_center = int(self.data.shape[0] / 2)
@@ -223,7 +278,7 @@ class Core:
             y_center = int(self.data.shape[1] / 2)
         if z_center is None:
             z_center = int(self.data.shape[2] / 2)
-        
+
         center: tuple[int, int, int] = (x_center, y_center, z_center)
 
         starts: list[int] = [0] * 3
@@ -236,30 +291,29 @@ class Core:
 
             pixel_radius = int(radius / self.pixel_dimensions[ax])
             starts[ax] = int(max(center[ax] - pixel_radius, 0))
-            ends[ax] = int(min(center[ax] + pixel_radius, 
-                               self.data.shape[ax])) + 1
+            ends[ax] = int(min(center[ax] + pixel_radius, self.data.shape[ax])) + 1
 
         # must create a copy instead of a view because we are destructively modifying
         # data during the filter step
         data: np.ndarray = self.data[
-            starts[0]:ends[0], starts[1]:ends[1], starts[2]:ends[2]
+            starts[0] : ends[0], starts[1] : ends[1], starts[2] : ends[2]
         ].copy()
-        
-        # should calculate radius in terms of our new reduced matrix, move center 
+
+        # should calculate radius in terms of our new reduced matrix, move center
         # accordingly
-        center = (
-            center[0] - starts[0], center[1] - starts[1], center[2] - starts[2]
-        )
+        center = (center[0] - starts[0], center[1] - starts[1], center[2] - starts[2])
 
         # filter out all data outside of the radius
         for x in range(data.shape[0]):
             for y in range(data.shape[1]):
                 for z in range(data.shape[2]):
                     pos: tuple[int, int, int] = (x, y, z)
-                    dist_1: float = (center[dist_axis_1] - pos[dist_axis_1]) \
-                                    * self.pixel_dimensions[dist_axis_1]
-                    dist_2: float = (center[dist_axis_2] - pos[dist_axis_2]) \
-                                    * self.pixel_dimensions[dist_axis_2]
+                    dist_1: float = (
+                        center[dist_axis_1] - pos[dist_axis_1]
+                    ) * self.pixel_dimensions[dist_axis_1]
+                    dist_2: float = (
+                        center[dist_axis_2] - pos[dist_axis_2]
+                    ) * self.pixel_dimensions[dist_axis_2]
                     dist: float = sqrt(pow(dist_1, 2) + pow(dist_2, 2))
 
                     if dist > radius:
@@ -271,24 +325,35 @@ class Core:
         """
         Create a new `Core` object with swapped axes and updated pixel dimensions.
 
-        Arguments:
+        Arguments
         ---------
-            axis1: integer specifying the first axis (0, 1, or 2)
-                    0: x-axis
-                    1: y-axis
-                    2: z-axis
-            axis2: integer specifying the second axis (0, 1, or 2)
-                    0: x-axis
-                    1: y-axis
-                    2: z-axis
+        axis1 : int
+            Integer either 0, 1, 2 specifying the first axis:
 
-        Returns:
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        axis2 : int
+            Integer either 0, 1, 2 specifying the second axis:
+
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        Returns
         -------
+        Core
             New Core object containing swapped data and updated pixel dimensions
 
-        Raises:
+        Raises
         ------
-            ValueError if axes are values other than 0, 1, or 2
+        ValueError
+            If axes are values other than 0, 1, or 2
         """
         # make sure axis inputs are valid
         if axis1 < 0 or axis1 > 2:
@@ -311,20 +376,26 @@ class Core:
         """
         Create a new `Core` object with data reversed along the given axis.
 
-        Arguments:
+        Arguments
         ---------
-            axis: integer specifying which axis to reverse (0, 1, or 2)
-                    0: x-axis
-                    1: y-axis
-                    2: z-axis
+        axis : int
+            Integer either 0, 1, 2 specifying which axis to reverse
 
-        Returns:
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        Returns
         -------
+        Core
             New Core object containing flipped data
 
-        Raises:
+        Raises
         ------
-            ValueError if axis is a value other than 0, 1, or 2
+        ValueError
+            If axis is a value other than 0, 1, or 2
         """
         # make sure axis inputs are valid
         if axis < 0 or axis > 2:
@@ -343,22 +414,32 @@ class Core:
         Rotates counter-clockwise by default, set `clockwise` to `True` to rotate
         clockwise instead.
 
-        Arguments:
+        Arguments
         ---------
-            axis: integer specifying which axis to rotate about (0, 1, or 2)
-                    0: x-axis
-                    1: y-axis
-                    2: z-axis
-            k: number of times to rotate data 90 degrees
-            clockwise: whether or not to rotate clockwise instead of counter-clockwise
+        axis : int
+            Integer either 0, 1, 2 specifying which axis to rotate about
 
-        Returns:
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        k : int
+            Number of times to rotate pixel_array 90 degrees
+
+        clockwise : bool
+            whether or not to rotate clockwise instead of counter-clockwise
+
+        Returns
         -------
+        Core
             New Core object containing rotated data and pixel dimensions
 
-        Raises:
+        Raises
         ------
-            ValueError if axis is a value other than 0, 1, or 2
+        ValueError
+            If axis is a value other than 0, 1, or 2
         """
         # make sure axis inputs are valid
         if axis < 0 or axis > 2:
@@ -404,17 +485,29 @@ class Core:
         """
         Get a three-dimensional section of the core scan.
 
-        Arguments:
+        Arguments
         ---------
-            x1: the starting x position for the chunk to be taken
-            y1: the starting y position for the chunk to be taken
-            z1: the starting z position for the chunk to be taken
-            x2: the ending x position for the chunk to be taken
-            y2: the ending y position for the chunk to be taken
-            z2: the ending z position for the chunk to be taken
+            x1 : int
+                The starting x position for the chunk to be taken
 
-        Returns:
+            y1 : int
+                The starting y position for the chunk to be taken
+
+            z1 : int
+                The starting z position for the chunk to be taken
+
+            x2 : int
+                The ending x position for the chunk to be taken
+
+            y2 : int
+                The ending y position for the chunk to be taken
+
+            z2 : int
+                The ending z position for the chunk to be taken
+
+        Returns
         -------
+        Core
             New core object containing the specified chunk of the old core
         """
         if x2 is None:
@@ -445,12 +538,9 @@ class Core:
         """
         Get the dimensions of the pixel array of the core scan.
 
-        Arguments:
-        ---------
-            none
-
-        Returns:
+        Returns
         -------
+        tuple[int, int, int]
             The pixel dimensions of the core scan.
         """
         return self.data.shape
@@ -459,12 +549,9 @@ class Core:
         """
         Get the dimensions of the scan in mm.
 
-        Arguments:
-        ---------
-            none
-
-        Returns:
+        Returns
         -------
+        tuple[int, int, int]
             A three-element tuple containing the dimensions of the scan in mm.
         """
         return tuple(
@@ -476,12 +563,9 @@ class Core:
         """
         Approximates the core volume in mm; ignores any NaN values.
 
-        Arguments:
-        ---------
-            None
-
-        Returns:
+        Returns
         -------
+        float
             The approximate volume of the core in cubic mm ignoring NaN values.
         """
         # Calculate the volume of a voxel
@@ -500,14 +584,16 @@ class Core:
         """
         Get section of the core that only contains the specified brightness values.
 
-        Arguments:
+        Arguments
         ---------
-            brightness_filter: lambda function that defines what will be filtered out.
-                               Function must either return false if the value should
-                               not be included or true if the value should be included.
+        brightness_filter : Callable[[float], bool]
+            lambda function that defines what will be filtered out. Function must either
+            return false if the value should not be included or true if the value should
+            be included.
 
-        Returns:
+        Returns
         -------
+        Core
             New core object with only the specified brightness values left,
             everything else is set to nan.
         """
@@ -527,23 +613,35 @@ class Core:
         """
         Join a core to the current core on a specified axis.
 
-        Arguments:
+        Arguments
         ---------
-            core: the `Core` object to join with the current core
-            axis: integer specifying which axis to join the cores on
-                    0: x-axis
-                    1: y-axis
-                    2: z-axis
+        core : Core
+            The `Core` object to join with the current core
 
-        Returns:
+        axis : int
+            Integer either 0, 1, 2 specifying which axis to join on
+
+                0: corresponds to x-axis
+
+                1: corresponds to y-axis
+
+                2: corresponds to z-axis
+
+        Returns
         -------
+        Core
             New core object made up of the two joined arrays
 
-        Raises:
+        Raises
         ------
-            ValueError if axis is a value other than 0, 1, or 2
-            ValueError if the `pixel_dimensions` of the cores don't match
-            ValueError if the shapes of the cores along an axis don't match
+        ValueError
+            If axis is a value other than 0, 1, or 2
+
+        ValueError
+            If the `pixel_dimensions` of the cores don't match
+
+        ValueError
+            If the shapes of the cores along an axis don't match
         """
         # Check that the axis values are valid
         if axis < 0 or axis > 2:

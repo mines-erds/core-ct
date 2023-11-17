@@ -9,13 +9,15 @@ def brightness_trace(slice: Slice) -> pd.DataFrame:
     """
     Compute the mean brightness across each row of a slice and its standard deviation.
 
-    Arguments:
+    Arguments
     ---------
-        slice: a `Slice` object taken from a core scan
+    slice : np.ndarray
+        A slice of the core as a 3D numpy array
 
-    Returns:
+    Returns
     -------
-        A Pandas dataframe where the first column is the mean of the brightness and
+    pd.DataFrame
+        A 2D numpy array where the first column is the mean of the brightness and
         the second is the standard deviation.
     """
     # Return a pandas dataframe containing the mean and STD for each slice row
