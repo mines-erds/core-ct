@@ -1,6 +1,7 @@
 """A class that abstracts a 2D slice of a `Core`."""
 from __future__ import annotations
 import numpy as np
+from typing import Callable
 
 
 class Slice:
@@ -98,3 +99,25 @@ class Slice:
             The shape of the data array of the core slice.
         """
         return self.data.shape
+
+    def filter(self, brightness_filter: Callable[[float], bool]) -> Slice:
+        """
+        Get section of the slice that only contains the specified brightness values.
+
+        Arguments
+        ---------
+        brightness_filter : Callable[[float], bool]
+            Lambda function that defines what will be filtered out. Function must either
+            return false if the value should not be included or true if the value should
+            be included.
+
+        Returns
+        -------
+        Slice
+            New `Slice` object with only the specified brightness values left,
+            everything else is set to nan.
+        """
+        filter_lambda = np.vectorize(lambda x: x if brightness_filter(x) else np.nan)
+        filtered = filter_lambda(self.data)
+
+        return Slice(data=filtered, pixel_dimensions=self.pixel_dimensions)
