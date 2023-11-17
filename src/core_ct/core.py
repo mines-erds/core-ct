@@ -328,7 +328,7 @@ class Core:
                 # convert indices to tuple to be useable in a numpy subscript operation
                 indices = tuple(indices)
 
-                # indices will be unwrapped when used in a numpy operation
+                # indices will be unwrapped when used in a numpy subscript operation
                 # for example, if we assume:
                 #   dist_axis_1 = 0
                 #   dist_axis_2 = 1
@@ -337,7 +337,7 @@ class Core:
                 #   idx_2 = 8
                 # then:
                 #   indices = (4, 8, slice(None))
-                # which when used in a numpy operation like this:
+                # which when used on a numpy array like this:
                 #   a = data[indices]
                 # is equivalent to this:
                 #   a = data[4, 8, :]
