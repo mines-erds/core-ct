@@ -625,17 +625,10 @@ class Core:
             New core object with only the specified brightness values left,
             everything else is set to nan.
         """
-        core_filtered = self.data.copy()
-        for i, row in enumerate(self.data):
-            for j, col in enumerate(row):
-                for k, brightness in enumerate(col):
-                    if brightness_filter(brightness):
-                        core_filtered[i][j][k] = self.data[i][j][k]
-                    else:
-                        core_filtered[i][j][k] = np.nan
+        filter_lambda = np.vectorize(lambda x: x if brightness_filter(x) else np.nan)
+        filtered = filter_lambda(self.data)
 
-        new_core = Core(core_filtered, self.pixel_dimensions)
-        return new_core
+        return Core(data=filtered, pixel_dimensions=self.pixel_dimensions)
 
     def join(self, core: Core, axis: int = 0) -> Core:
         """
