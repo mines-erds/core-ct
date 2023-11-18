@@ -215,12 +215,19 @@ class Core:
         Trims the Core radially given an axis and a center.
 
         Replaces all data outside of the user specified area with NaN. Also reduces the
-        size of `data` as much as possible.
+        dimensions of `data` as much as possible.
 
         The user specifies a cylindrical shape by an `axis` and a center. For example,
         if `axis` is set to `2` (z-axis) the user should specify the center via
         `x_center` and `y_center`. After trimming, every z-slice will only contain
         data within a circle of the given `radius` centered at (`x_center`, `y_center`).
+
+        This function is inclusive on `radius`, i.e. the returned Core maintains data 
+        where distance from center is equal to `radius`.
+
+        The user does not need to specify the `center` argument for their chosen `axis`.
+        All `center` arguments default to the middle of their respective axes if not 
+        provided.
 
         Parameters
         ----------
@@ -303,21 +310,46 @@ class Core:
         # accordingly
         center = (center[0] - starts[0], center[1] - starts[1], center[2] - starts[2])
 
-        # filter out all data outside of the radius
-        for x in range(data.shape[0]):
-            for y in range(data.shape[1]):
-                for z in range(data.shape[2]):
-                    pos: tuple[int, int, int] = (x, y, z)
-                    dist_1: float = (
-                        center[dist_axis_1] - pos[dist_axis_1]
-                    ) * self.pixel_dimensions[dist_axis_1]
-                    dist_2: float = (
-                        center[dist_axis_2] - pos[dist_axis_2]
-                    ) * self.pixel_dimensions[dist_axis_2]
-                    dist: float = sqrt(pow(dist_1, 2) + pow(dist_2, 2))
+        # filter out all data outside the radius
+        for idx_1 in range(data.shape[dist_axis_1]):
+            for idx_2 in range(data.shape[dist_axis_2]):
+                # find distance from center to this point using pixel_dimensions
+                dist_1: float = (center[dist_axis_1] - idx_1) \
+                    * self.pixel_dimensions[dist_axis_1]
+                dist_2: float = (center[dist_axis_2] - idx_2) \
+                    * self.pixel_dimensions[dist_axis_2]
+                dist: float = sqrt(pow(dist_1, 2) + pow(dist_2, 2))
 
-                    if dist > radius:
-                        data[pos] = np.nan
+                # only want to erase data outside radius
+                if dist <= radius:
+                    continue
+
+                # find indices of data we want to erase
+                indices = [None] * 3
+                indices[dist_axis_1] = idx_1
+                indices[dist_axis_2] = idx_2
+                indices[axis] = slice(None)
+                # convert indices to tuple to be useable in a numpy subscript operation
+                indices = tuple(indices)
+
+                # indices will be unwrapped when used in a numpy subscript operation
+                # for example, if we assume:
+                #   dist_axis_1 = 0
+                #   dist_axis_2 = 1
+                #   axis = 2
+                #   idx_1 = 4
+                #   idx_2 = 8
+                # then:
+                #   indices = (4, 8, slice(None))
+                # which when used on a numpy array like this:
+                #   a = data[indices]
+                # is equivalent to this:
+                #   a = data[4, 8, :]
+
+                # create view containing data we want to erase
+                view: np.ndarray = data[indices]
+                # erase data contained in view
+                view.fill(np.nan)
 
         return Core(data=data, pixel_dimensions=self.pixel_dimensions)
 
@@ -582,32 +614,34 @@ class Core:
 
     def filter(self, brightness_filter: Callable[[float], bool]) -> Core:
         """
-        Get section of the core that only contains the specified brightness values.
+        Create new Core containing data filtered according to the provided function.
+
+        The filter function (lambda) is run on every brightness value in `data`. If the 
+        lambda returns `True`, the new Core will contain that brightness value. If the 
+        lambda returns `False`, the new Core will not contain that datapoint, 
+        substituting it with `numpy.nan` (`np.nan`).
+
+        This function can take a long time to run depending on how much data the Core
+        contains. Consider using `Core.trim()`, `Core.trim_radial()`, or `Core.chunk()`
+        to reduce the amount of data you are filtering.
 
         Arguments
         ---------
         brightness_filter : Callable[[float], bool]
-            lambda function that defines what will be filtered out. Function must either
-            return false if the value should not be included or true if the value should
-            be included.
+            Lambda function that defines what will be filtered out. Function must either
+            return `False` if the value should not be included or `True` if the value 
+            should be included.
 
         Returns
         -------
         Core
-            New core object with only the specified brightness values left,
-            everything else is set to nan.
+            New core object with only matching brightness values left,
+            everything else is set to `numpy.nan` (`np.nan`).
         """
-        core_filtered = self.data.copy()
-        for i, row in enumerate(self.data):
-            for j, col in enumerate(row):
-                for k, brightness in enumerate(col):
-                    if brightness_filter(brightness):
-                        core_filtered[i][j][k] = self.data[i][j][k]
-                    else:
-                        core_filtered[i][j][k] = np.nan
+        filter_lambda = np.vectorize(lambda x: x if brightness_filter(x) else np.nan)
+        filtered = filter_lambda(self.data)
 
-        new_core = Core(core_filtered, self.pixel_dimensions)
-        return new_core
+        return Core(data=filtered, pixel_dimensions=self.pixel_dimensions)
 
     def join(self, core: Core, axis: int = 0) -> Core:
         """
