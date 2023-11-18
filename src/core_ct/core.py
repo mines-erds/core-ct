@@ -215,7 +215,7 @@ class Core:
         Trims the Core radially given an axis and a center.
 
         Replaces all data outside of the user specified area with NaN. Also reduces the
-        size of `data` as much as possible.
+        dimensions of `data` as much as possible.
 
         The user specifies a cylindrical shape by an `axis` and a center. For example,
         if `axis` is set to `2` (z-axis) the user should specify the center via
@@ -224,6 +224,10 @@ class Core:
 
         This function is inclusive on `radius`, i.e. the returned Core maintains data 
         where distance from center is equal to `radius`.
+
+        The user does not need to specify the `center` argument for their chosen `axis`.
+        All `center` arguments default to the middle of their respective axes if not 
+        provided.
 
         Parameters
         ----------
@@ -610,20 +614,29 @@ class Core:
 
     def filter(self, brightness_filter: Callable[[float], bool]) -> Core:
         """
-        Get section of the core that only contains the specified brightness values.
+        Create new Core containing data filtered according to the provided function.
+
+        The filter function (lambda) is run on every brightness value in `data`. If the 
+        lambda returns `True`, the new Core will contain that brightness value. If the 
+        lambda returns `False`, the new Core will not contain that datapoint, 
+        substituting it with `numpy.nan` (`np.nan`).
+
+        This function can take a long time to run depending on how much data the Core
+        contains. Consider using `Core.trim()`, `Core.trim_radial()`, or `Core.chunk()`
+        to reduce the amount of data you are filtering.
 
         Arguments
         ---------
         brightness_filter : Callable[[float], bool]
-            lambda function that defines what will be filtered out. Function must either
-            return false if the value should not be included or true if the value should
-            be included.
+            Lambda function that defines what will be filtered out. Function must either
+            return `False` if the value should not be included or `True` if the value 
+            should be included.
 
         Returns
         -------
         Core
-            New core object with only the specified brightness values left,
-            everything else is set to nan.
+            New core object with only matching brightness values left,
+            everything else is set to `numpy.nan` (`np.nan`).
         """
         filter_lambda = np.vectorize(lambda x: x if brightness_filter(x) else np.nan)
         filtered = filter_lambda(self.data)
