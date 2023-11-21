@@ -21,6 +21,9 @@ def display_core(
     ---------
     core : Core
         `Core` object to visualize
+        
+    mm : bool
+        If set to `True`, will show plot axes in mm - default is pixels
 
     Returns
     -------
@@ -139,22 +142,37 @@ def display_slice_bt_std(
     fig, (ax1, ax2, ax3) = plt.subplots(
         nrows=1, ncols=3, sharey=True, width_ratios=[1.5, 3, 3.5]
     )
-    # slice_dim = slice.shape()
+    slice_dim = slice.shape()
+    pixel_dim = slice.pixel_dimensions
     units = "(pixels)"
-
-    # TODO: figure out how to get plots to display correctly with mm
-    img = ax1.imshow(slice.data)
+    y_data = list(range(slice_dim[0]))  # values for y axis of brightness and std plots
+    if mm:
+        units = "(mm)"
+        y_data = [
+            y * pixel_dim[0] for y in range(slice_dim[0])
+        ]  # scale according to mm
+        img = ax1.imshow(
+            slice.data,
+            extent=(
+                0,
+                slice_dim[1] * pixel_dim[1],
+                slice_dim[0] * pixel_dim[0],
+                0,
+            ),
+        )
+    else:
+        img = ax1.imshow(slice.data)
 
     ax1.set_xlabel("width {}".format(units))
     ax1.set_ylabel("depth {}".format(units))
 
     # plot brightness graph
-    ax2.plot(brightness, range(len(bt_df)))
+    ax2.plot(brightness, y_data)
     ax2.set_xlabel("mean brightness (HU)")
     # plot standard deviation graph
-    ax3.plot(stddev, range(len(bt_df)))
+    ax3.plot(stddev, y_data)
     ax3.set_xlabel("standard deviation (HU)")
-
+    # add colorbar legend
     cbar = fig.colorbar(img, ax=ax3)
     cbar.minorticks_on()
     fig.suptitle("Core CT Scan Brightness Trace")
