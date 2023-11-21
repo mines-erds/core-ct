@@ -21,6 +21,9 @@ def display_core(
     ---------
     core : Core
         `Core` object to visualize
+        
+    mm : bool
+        If set to `True`, will show plot axes in mm - default is pixels
 
     Returns
     -------
