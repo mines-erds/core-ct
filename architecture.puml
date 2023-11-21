@@ -1,0 +1,76 @@
+@startuml
+' left to right direction
+
+object Importers {
+ +dicom(folder?: str, files?: list[str], force?: bool): Core
+}
+
+class Core {
+ +data: np.ndarray
+ +pixel_dimensions: tuple[float, float, float]
+ +slice(axis: int, location: int): Slice
+ +chunk(x1: int, y1: int, z1: int, x2: int, y2: int, z2: int): Core
+ +trim(axis: int, loc_start: int, loc_end?: int): Core
+'  +trim_by_percent(axis: int, percent_start: float, percent_end?: float): Core
+ +trim_radial(axis: int, radius: float, x_center: int, y_center: int, z_center: int): Core
+ +join(core: Core): Core
+ +filter(brightness_filter: Callable[[float], bool]): Core
+ +flip(axis: int): Core
+ +rotate(axis: int, k?: int, clockwise?: bool): Core
+ +swapaxes(axis1: int, axis2: int): Core
+ +volume(): float
+ +dimensions(): tuple[float, float, float]
+ +shape(): tuple[int, int, int]
+}
+
+class Slice {
+ +data: np.ndarray
+ +pixel_dimensions: tuple[float, float]
+ +trim(axis: int, loc_start: int, loc_end?: int): Slice
+ +filter(brightness_filter: Callable[[float], bool]): Slice
+ +shape(): tuple[int, int]
+}
+
+object Analysis {
+ +brightness_trace(slice: Slice): pd.DataFrame
+}
+
+object Visualize {
+ +display_core(core: Core, mm: bool = False): Figure, Axes
+ +display_slice(slice: Slice, mm: bool = False): AxesImage
+ +display_slice_bt_std(slice: Slice, mm: bool = False): Figure, list[Axes]
+ +visualize_trim(slice: Slice, axis: int, loc_start: int, loc_end: int): AxesImage
+}
+
+Importers --> Core
+' Core -r-> Analysis : "                                "
+Core -u-> Slice
+Core -r-> Visualize
+Slice -r-> Analysis
+Slice -d-> Visualize
+Analysis -d-> Visualize
+' Visualize -u-> Analysis
+
+' Core -[hidden]r-> Analysis
+' Importers -r-> Slice
+' Importers -u-> Visualize
+@enduml
+
+
+' Importers --> Core
+' ' Core -r-> Analysis : "                                "
+' Core -u-> Slice
+' Core -r-> Visualize
+' Slice --> Analysis
+' Slice -r-> Visualize
+' Analysis -d-> Visualize
+' ' Visualize -u-> Analysis
+
+' Importers -d-> Core
+' ' Core -r-> Analysis
+' Core -u-> Slice
+' Core -r-> Visualize
+' ' Slice --> Analysis
+' Slice --> Visualize
+' ' Analysis -d-> Visualize
+' Visualize -d-> Analysis
