@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "core-ct"
-version = "1.0.3"
+version = "1.0.4"
 description = "A Python library to assist geologists with the analysis of rock core CT scans"
 authors = [
     "Kira Hanson <khanson@mines.edu>",
