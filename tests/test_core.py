@@ -102,6 +102,12 @@ def test_trim_radial():
     assert np.isnan(trimmed.data[6,6,0])
     assert np.isnan(trimmed.data[6,0,0])
 
+    # make sure it is inclusive if distance == radius
+    assert not np.isnan(trimmed.data[3,0,0])
+    assert not np.isnan(trimmed.data[6,3,0])
+    assert not np.isnan(trimmed.data[3,6,0])
+    assert not np.isnan(trimmed.data[0,3,0])
+
     # make sure correct data was maintained
     assert np.array_equal(trimmed.data[1:6, 1:6, :], data[2:7, 2:7, :])
 
