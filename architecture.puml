@@ -46,10 +46,11 @@ Importers --> Core
 ' Core -r-> Analysis : "                                "
 Core -u-> Slice
 Core -r-> Visualize
+' Slice -r-> Analysis
 Slice -r-> Analysis
 Slice -d-> Visualize
-Analysis -d-> Visualize
-' Visualize -u-> Analysis
+' Analysis -d-> Visualize
+Visualize -[hidden]u-> Analysis
 
 ' Core -[hidden]r-> Analysis
 ' Importers -r-> Slice
