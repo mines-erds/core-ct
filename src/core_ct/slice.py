@@ -37,7 +37,7 @@ class Slice:
         Create new slice by trimming off a specified amount on the requested axis.
 
         Remove unwanted space around a core that must be removed before analysis.
-        A new `Slice` obeject will be created by taking a slice of the data array
+        A new `Slice` object will be created by taking a slice of the data array
         between indices `start_loc` and `len(axis) - end_loc`.
         By default this function is symmetric so the same amount will be taken from
         either ends of the specified axis. The new slice has the same pixel dimensions.
