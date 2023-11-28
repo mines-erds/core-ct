@@ -160,7 +160,8 @@ class Core:
         Reduces the dimensions of the core along a specified axis.
 
         Get a three-dimensional slice of the core scan by trimming off a percent
-        on the requested axis. This function is symmetrical by default.
+        on the requested axis. This function is symmetrical by default, trimming 
+        `percent_start` from each side.
 
         Arguments
         ---------
