@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "core-ct"
-version = "1.0.5"
+version = "1.1.0"
 description = "A Python library to assist geologists with the analysis of rock core CT scans"
 authors = [
     "Kira Hanson <khanson@mines.edu>",
@@ -17,7 +17,7 @@ numpy = "^1.26.0"
 pydicom = "^2.4.3"
 matplotlib = "^3.8.0"
 pandas = "^2.1.1"
-sphinx-wagtail-theme = "^6.1.1"
+ipympl = "^0.9.3"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -28,6 +28,7 @@ pre-commit = "^3.4.0"
 sphinx = "^7.2.6"
 sphinx-copybutton = "^0.5.2"
 myst-parser = "^2.0.0"
+sphinx-wagtail-theme = "^6.1.1"
 
 [build-system]
 requires = ["poetry-core"]
